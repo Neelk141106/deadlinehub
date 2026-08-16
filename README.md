@@ -1,35 +1,16 @@
-# DeadlineHub
+# React + Vite
 
-DeadlineHub is a smart academic deadline and announcement board designed to provide students with one centralized place to view upcoming deadlines, important announcements, and academic updates.
+This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
 
-## Project Development
+Currently, two official plugins are available:
 
-This project is being developed incrementally as part of the Full Stack Development laboratory.
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
 
-Each experiment will add a new feature or technology to the same application.
+## React Compiler
 
-## Planned Tech Stack
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
-- React.js
-- Tailwind CSS
-- Node.js
-- Express.js
-- MongoDB
-- Mongoose
-- JWT Authentication
-- Socket.IO
-- Git & GitHub
-- Docker
+## Expanding the Oxlint configuration
 
-## Development Progress
-
-- [ ] Experiment 1 — Tailwind CSS
-- [ ] Experiment 2 — React Hooks
-- [ ] Experiment 3 — Context API / Redux
-- [ ] Experiment 4 — MongoDB + Mongoose
-- [ ] Experiment 5 — Secure REST APIs
-- [ ] Experiment 6 — JWT Authentication
-- [ ] Experiment 7 — Postman API Testing
-- [ ] Experiment 8 — WebSockets
-- [ ] Experiment 9 — CI/CD & Deployment
-- [ ] Experiment 10 — Docker
+If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
