@@ -33,7 +33,7 @@ Status: DONE
 - Do not build application screens yet
 
 ### DH-002 — Clean Vite Starter
-Status: TODO
+Status: DONE
 
 - Remove default Vite demo content
 - Remove unused starter assets/styles

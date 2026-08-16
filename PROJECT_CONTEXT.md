@@ -20,6 +20,7 @@ The application should immediately help students answer:
 DeadlineHub is an information and reminder platform.
 
 It is NOT:
+
 - An assignment submission platform
 - A complete LMS
 - A college ERP
@@ -27,7 +28,7 @@ It is NOT:
 
 Students do NOT submit assignments through DeadlineHub.
 
-There must be NO "Submit" button or assignment-upload functionality.
+There must be NO "Submit", "Upload", or "Turn In" functionality.
 
 ---
 
@@ -53,6 +54,7 @@ They will eventually be able to:
 - Login
 - Manage classes/divisions
 - Approve student join requests
+- Add students using email or student code
 - Add and manage deadlines
 - Add and manage announcements
 - Manage subjects
@@ -65,22 +67,22 @@ Students belong to a class/division.
 
 Example:
 
-Branch: Information Technology
-Semester: 5
-Division: D15C
+- Branch: Information Technology
+- Semester: 5
+- Division: D15C
 
 Students can join using a class code.
 
 Example:
 
-D15C-5IT
+`D15C-5IT`
 
 Flow:
 
-Student registers
-→ Enters class code
-→ Join request created
-→ Teacher/Admin/CR approves
+Student registers  
+→ Enters class code  
+→ Join request created  
+→ Teacher/Admin/CR approves  
 → Student gets access to class information
 
 Students can be identified using:
@@ -127,9 +129,13 @@ Future experiment functionality must NOT be implemented early.
 
 ## Current Stage
 
-Stage 0 — Project Foundation
+Experiment 1 — Tailwind CSS
 
-### Completed
+Status: IN PROGRESS
+
+---
+
+## Completed Foundation
 
 - GitHub repository created
 - Repository cloned locally
@@ -137,9 +143,28 @@ Stage 0 — Project Foundation
 - Dependencies installed
 - Development server verified
 - Project documentation structure created
-- Tailwind CSS configured
+- Stage 0 foundation committed and pushed to GitHub
 
-### Current Technologies
+---
+
+## Experiment 1 Progress
+
+### Completed
+
+- DH-001 — Tailwind CSS configured and verified
+- DH-002 — Default Vite starter cleaned
+
+### Current Task
+
+DH-003 — Establish DeadlineHub Design System
+
+### Next After DH-003
+
+DH-004 — Responsive Student Navigation
+
+---
+
+## Current Technologies
 
 - React
 - Vite
@@ -147,37 +172,77 @@ Stage 0 — Project Foundation
 - Git
 - GitHub
 
-### Not Implemented Yet
+---
 
-- DeadlineHub UI
+## Current Frontend State
+
+The default Vite starter interface has been removed.
+
+The application currently contains a minimal DeadlineHub placeholder used to verify that React, Vite and Tailwind CSS are working correctly.
+
+The actual DeadlineHub interface has NOT been implemented yet.
+
+---
+
+## Not Implemented Yet
+
+- DeadlineHub design system
+- Student navigation
+- Student dashboard
+- Deadline cards
+- Announcement cards
+- Deadlines page
+- Announcements page
+- Student login UI
+- Teacher/Admin login UI
+- Join class UI
+- Teacher/Admin dashboard
 - React application logic
 - Backend
 - Database
 - Authentication
 - Authorization
 - APIs
+- JWT
 - WebSockets
 
 ---
 
-## Current Experiment
+## Experiment 1 Rules
 
-Experiment 1 — Tailwind CSS
+Experiment 1 is a static responsive frontend experiment.
 
-Status: IN PROGRESS
+Use:
+
+- React
+- Tailwind CSS
+- Hardcoded mock data
+
+Do NOT implement:
+
+- Backend
+- Database
+- Real authentication
+- JWT
+- REST APIs
+- Socket.IO
+- Persistent forms
+- Real class approval
+- Assignment submission
+- Functionality belonging to future experiments
 
 ---
 
 ## Documentation
 
-Project documentation:
+Current project documentation:
 
 - `PROJECT_CONTEXT.md` — current project state and AI context
 - `docs/PRD.md` — product requirements
 - `docs/FRONTEND_DOC.md` — frontend and UI specification
 - `docs/FEATURE_TICKETS.md` — implementation task list
 
-Future documentation will be introduced only when required.
+Future documentation will be introduced when required.
 
 Planned later:
 
@@ -192,34 +257,42 @@ Planned later:
 
 2. Treat this file as the source of truth for the CURRENT implementation state.
 
-3. Do not implement functionality belonging to future experiments.
+3. Read other documentation only when relevant to the requested task.
 
-4. Inspect only files relevant to the requested task unless additional context is genuinely required.
+4. Do not implement functionality belonging to future experiments.
 
-5. Do not refactor unrelated working code.
+5. Work only on the requested ticket unless explicitly instructed otherwise.
 
-6. Preserve existing functionality.
+6. Inspect only files relevant to the requested task unless additional context is genuinely required.
 
-7. Do not introduce unnecessary dependencies.
+7. Do not refactor unrelated working code.
 
-8. Work ticket-by-ticket when a feature ticket is provided.
+8. Preserve existing functionality.
 
-9. After completing meaningful work, update the relevant project documentation.
+9. Do not introduce unnecessary dependencies.
 
-10. Update `PROJECT_CONTEXT.md` when the current implementation state changes.
+10. Test changes before marking a ticket complete.
 
-11. Update `FEATURE_TICKETS.md` when a ticket is completed or changed.
+11. Update `PROJECT_CONTEXT.md` when the current implementation state changes.
 
-12. Update `FRONTEND_DOC.md` only when frontend requirements/design decisions change.
+12. Update `docs/FEATURE_TICKETS.md` when a ticket is completed or changed.
 
-13. Update `PRD.md` only when product requirements change.
+13. Update `docs/FRONTEND_DOC.md` only when frontend requirements or design decisions change.
 
-14. Keep this file concise. Do not paste source code or detailed Git history here.
+14. Update `docs/PRD.md` only when actual product requirements change.
 
-15. Git is the source of detailed implementation history.
+15. Keep documentation concise.
+
+16. Do not paste source code or detailed Git history into this file.
+
+17. Git is the source of detailed implementation history.
 
 ---
 
 ## Next Task
 
-Clean Vite Starter (DH-002)
+Implement:
+
+**DH-003 — Establish DeadlineHub Design System**
+
+Do not begin DH-004 or any later ticket until DH-003 has been completed and verified.
