@@ -25,7 +25,7 @@ No backend, database, authentication logic, APIs or real-time functionality shou
 ## Phase 1 — Foundation
 
 ### DH-001 — Configure Tailwind CSS
-Status: TODO
+Status: DONE
 
 - Install required Tailwind dependencies
 - Configure Tailwind with the existing Vite project
