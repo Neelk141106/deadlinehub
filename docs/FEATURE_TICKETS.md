@@ -41,7 +41,7 @@ Status: DONE
 - Create a clean application starting point
 
 ### DH-003 — Establish DeadlineHub Design System
-Status: TODO
+Status: DONE
 
 Define reusable frontend styling for:
 

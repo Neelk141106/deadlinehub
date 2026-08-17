@@ -1,1 +1,100 @@
 @import "tailwindcss";
+
+@theme {
+  --color-primary-50: var(--color-indigo-50);
+  --color-primary-100: var(--color-indigo-100);
+  --color-primary-200: var(--color-indigo-200);
+  --color-primary-300: var(--color-indigo-300);
+  --color-primary-400: var(--color-indigo-400);
+  --color-primary-500: var(--color-indigo-500);
+  --color-primary-600: var(--color-indigo-600);
+  --color-primary-700: var(--color-indigo-700);
+  --color-primary-800: var(--color-indigo-800);
+  --color-primary-900: var(--color-indigo-900);
+  --color-primary-950: var(--color-indigo-950);
+
+  /* Status Colors */
+  --color-status-urgent: var(--color-red-600);
+  --color-status-urgent-bg: var(--color-red-50);
+  --color-status-urgent-text: var(--color-red-700);
+
+  --color-status-approaching: var(--color-amber-500);
+  --color-status-approaching-bg: var(--color-amber-50);
+  --color-status-approaching-text: var(--color-amber-700);
+
+  --color-status-normal: var(--color-indigo-600);
+  --color-status-normal-bg: var(--color-indigo-50);
+  --color-status-normal-text: var(--color-indigo-700);
+
+  --color-status-past: var(--color-gray-500);
+  --color-status-past-bg: var(--color-gray-50);
+  --color-status-past-text: var(--color-gray-700);
+}
+
+@layer base {
+  body {
+    @apply bg-gray-50 text-gray-900 antialiased;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold text-gray-900 tracking-tight;
+  }
+}
+
+@layer components {
+  /* Buttons */
+  .btn {
+    @apply inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  
+  .btn-primary {
+    @apply inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500 shadow-sm;
+  }
+  
+  .btn-secondary {
+    @apply inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 focus:ring-primary-500 shadow-sm;
+  }
+  
+  .btn-danger {
+    @apply inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed bg-red-600 text-white hover:bg-red-700 focus:ring-red-500 shadow-sm;
+  }
+
+  /* Cards */
+  .card {
+    @apply bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden;
+  }
+  
+  .card-hover {
+    @apply bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden transition-shadow hover:shadow-md;
+  }
+
+  /* Badges */
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+  
+  .badge-urgent {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-status-urgent-bg text-status-urgent-text border border-red-200;
+  }
+  
+  .badge-approaching {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-status-approaching-bg text-status-approaching-text border border-amber-200;
+  }
+  
+  .badge-normal {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-status-normal-bg text-status-normal-text border border-indigo-200;
+  }
+  
+  .badge-past {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-status-past-bg text-status-past-text border border-gray-200;
+  }
+
+  /* Inputs */
+  .input-field {
+    @apply block w-full rounded-lg border border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm px-3 py-2 outline-none transition-colors bg-white;
+  }
+  
+  .label-text {
+    @apply block text-sm font-medium text-gray-700 mb-1;
+  }
+}

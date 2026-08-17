@@ -153,14 +153,15 @@ Status: IN PROGRESS
 
 - DH-001 — Tailwind CSS configured and verified
 - DH-002 — Default Vite starter cleaned
+- DH-003 — Establish DeadlineHub Design System
 
 ### Current Task
 
-DH-003 — Establish DeadlineHub Design System
-
-### Next After DH-003
-
 DH-004 — Responsive Student Navigation
+
+### Next After DH-004
+
+DH-005 — Shared UI Components
 
 ---
 
@@ -178,15 +179,14 @@ DH-004 — Responsive Student Navigation
 
 The default Vite starter interface has been removed.
 
-The application currently contains a minimal DeadlineHub placeholder used to verify that React, Vite and Tailwind CSS are working correctly.
+The application currently contains the DeadlineHub Design System UI placeholder (DH-003) to verify that Tailwind CSS tokens and components are working correctly.
 
-The actual DeadlineHub interface has NOT been implemented yet.
+The actual DeadlineHub application interface has NOT been implemented yet.
 
 ---
 
 ## Not Implemented Yet
 
-- DeadlineHub design system
 - Student navigation
 - Student dashboard
 - Deadline cards
@@ -293,6 +293,6 @@ Planned later:
 
 Implement:
 
-**DH-003 — Establish DeadlineHub Design System**
+**DH-004 — Responsive Student Navigation**
 
-Do not begin DH-004 or any later ticket until DH-003 has been completed and verified.
+Do not begin DH-005 or any later ticket until DH-004 has been completed and verified.
