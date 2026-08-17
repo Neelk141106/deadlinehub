@@ -64,7 +64,7 @@ Follow FRONTEND_DOC.md.
 # Phase 2 — Shared Layout
 
 ### DH-004 — Responsive Student Navigation
-Status: TODO
+Status: DONE
 
 Create static navigation containing:
 

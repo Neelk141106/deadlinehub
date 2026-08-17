@@ -1,71 +1,83 @@
+import React from 'react';
+
 function App() {
   return (
-    <div className="min-h-screen p-8 max-w-4xl mx-auto space-y-12">
-      <div className="text-center space-y-4">
-        <h1 className="text-4xl text-primary-600">
-          DeadlineHub Design System
-        </h1>
-        <p className="text-gray-500">
-          DH-003 — Design System UI Verification
-        </p>
-      </div>
-
-      <section className="space-y-4">
-        <h2 className="text-2xl border-b pb-2">Typography & Colors</h2>
-        <div className="space-y-2">
-          <p className="text-gray-900 font-medium">Primary Text (Gray 900)</p>
-          <p className="text-gray-500">Secondary Text (Gray 500)</p>
-          <p className="text-primary-600 font-medium">Brand Accent (Primary 600)</p>
+    <div className="min-h-screen bg-gray-50 flex flex-col md:flex-row">
+      {/* Desktop Sidebar Navigation */}
+      <aside className="hidden md:flex flex-col w-64 bg-white border-r border-gray-200">
+        <div className="p-6 border-b border-gray-100">
+          <h1 className="text-2xl font-bold text-primary-600 tracking-tight">DeadlineHub</h1>
         </div>
-      </section>
+        
+        <nav className="flex-1 p-4 space-y-1">
+          <a href="#" className="flex items-center gap-3 px-3 py-2 text-primary-700 bg-primary-50 rounded-lg font-medium transition-colors">
+            {/* Dashboard Icon */}
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            Dashboard
+          </a>
+          <a href="#" className="flex items-center gap-3 px-3 py-2 text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-lg font-medium transition-colors">
+            {/* Deadlines Icon */}
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Deadlines
+          </a>
+          <a href="#" className="flex items-center gap-3 px-3 py-2 text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-lg font-medium transition-colors">
+            {/* Announcements Icon */}
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            Announcements
+          </a>
+        </nav>
 
-      <section className="space-y-4">
-        <h2 className="text-2xl border-b pb-2">Buttons</h2>
-        <div className="flex flex-wrap gap-4">
-          <button className="btn-primary">Primary Button</button>
-          <button className="btn-secondary">Secondary Button</button>
-          <button className="btn-danger">Danger Button</button>
-        </div>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-2xl border-b pb-2">Badges</h2>
-        <div className="flex flex-wrap gap-4">
-          <span className="badge-urgent">Urgent</span>
-          <span className="badge-approaching">Approaching</span>
-          <span className="badge-normal">Normal</span>
-          <span className="badge-past">Past</span>
-        </div>
-      </section>
-
-      <section className="space-y-4">
-        <h2 className="text-2xl border-b pb-2">Cards</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="card p-6">
-            <h3 className="text-lg font-semibold mb-2">Standard Card</h3>
-            <p className="text-sm text-gray-500">This is a standard card with moderate rounded corners, white background, and a light shadow.</p>
-          </div>
-          <div className="card-hover p-6">
-            <h3 className="text-lg font-semibold mb-2">Hover Card</h3>
-            <p className="text-sm text-gray-500">This card elevates slightly when hovered, providing interactive feedback.</p>
-            <div className="mt-4">
-              <button className="btn-primary">Action</button>
-            </div>
+        <div className="p-4 border-t border-gray-200">
+          <div className="space-y-1">
+            <a href="#" className="flex items-center gap-3 px-3 py-2 text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-lg font-medium transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              Profile
+            </a>
+            <a href="#" className="flex items-center gap-3 px-3 py-2 text-gray-600 hover:bg-gray-50 hover:text-gray-900 rounded-lg font-medium transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+              Logout
+            </a>
           </div>
         </div>
-      </section>
+      </aside>
 
-      <section className="space-y-4">
-        <h2 className="text-2xl border-b pb-2">Inputs</h2>
-        <div className="max-w-md space-y-4">
-          <div>
-            <label htmlFor="example-input" className="label-text">Email Address</label>
-            <input type="email" id="example-input" className="input-field" placeholder="student@college.edu" />
+      {/* Mobile Top Header */}
+      <header className="md:hidden bg-white border-b border-gray-200 p-4 flex items-center justify-between sticky top-0 z-10">
+        <h1 className="text-xl font-bold text-primary-600 tracking-tight">DeadlineHub</h1>
+        <div className="w-8 h-8 rounded-full bg-primary-100 text-primary-700 flex items-center justify-center font-bold">
+          S
+        </div>
+      </header>
+
+      {/* Main Content Area */}
+      <main className="flex-1 p-4 md:p-8 pb-24 md:pb-8 overflow-auto">
+        <div className="max-w-4xl mx-auto space-y-6">
+          <div className="card p-8 text-center border border-dashed border-gray-300 bg-gray-50/50">
+            <h2 className="text-xl font-semibold text-gray-700 mb-2">Student Dashboard Area</h2>
+            <p className="text-gray-500">The actual dashboard content will be built here in DH-008.</p>
           </div>
         </div>
-      </section>
+      </main>
+
+      {/* Mobile Bottom Navigation */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-10">
+        <div className="flex justify-around items-center p-2">
+          <a href="#" className="flex flex-col items-center p-2 text-primary-600">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mb-1"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <span className="text-[10px] font-medium">Dashboard</span>
+          </a>
+          <a href="#" className="flex flex-col items-center p-2 text-gray-500 hover:text-gray-900">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mb-1"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span className="text-[10px] font-medium">Deadlines</span>
+          </a>
+          <a href="#" className="flex flex-col items-center p-2 text-gray-500 hover:text-gray-900">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mb-1"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            <span className="text-[10px] font-medium">Alerts</span>
+          </a>
+        </div>
+      </nav>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
