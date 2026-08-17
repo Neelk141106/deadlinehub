@@ -172,7 +172,7 @@ No horizontal scrolling.
 # Phase 4 — Student Pages
 
 ### DH-010 — All Deadlines Page
-Status: TODO
+Status: DONE
 
 Create static deadlines page.
 
