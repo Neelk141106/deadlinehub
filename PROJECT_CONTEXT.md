@@ -156,14 +156,15 @@ Status: IN PROGRESS
 - DH-003 — Establish DeadlineHub Design System
 
 - DH-004 — Responsive Student Navigation
+- DH-005 — Shared UI Components
 
 ### Current Task
 
-DH-005 — Shared UI Components
-
-### Next After DH-005
-
 DH-006 — Deadline Card
+
+### Next After DH-006
+
+DH-007 — Announcement Card
 
 ---
 
@@ -181,7 +182,7 @@ DH-006 — Deadline Card
 
 The default Vite starter interface has been removed.
 
-The application currently contains the Responsive Student Navigation shell (DH-004), displaying a static sidebar for desktop and bottom navigation for mobile.
+The application currently contains the Responsive Student Navigation shell (DH-004), and reusable Shared UI Components (DH-005) have been created and are ready for use in building the dashboard.
 
 The actual DeadlineHub dashboard content has NOT been implemented yet.
 
@@ -294,6 +295,6 @@ Planned later:
 
 Implement:
 
-**DH-005 — Shared UI Components**
+**DH-006 — Deadline Card**
 
-Do not begin DH-006 or any later ticket until DH-005 has been completed and verified.
+Do not begin DH-007 or any later ticket until DH-006 has been completed and verified.

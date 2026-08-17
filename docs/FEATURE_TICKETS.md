@@ -85,7 +85,7 @@ Secondary actions may include:
 - Logout
 
 ### DH-005 — Shared UI Components
-Status: TODO
+Status: DONE
 
 Create reusable static UI components where appropriate, such as:
 
