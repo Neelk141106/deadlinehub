@@ -102,7 +102,7 @@ Avoid unnecessary abstraction.
 # Phase 3 — Student Dashboard
 
 ### DH-006 — Deadline Card
-Status: TODO
+Status: DONE
 
 Create reusable deadline card UI.
 
@@ -124,7 +124,7 @@ Do NOT include:
 - Assignment completion actions
 
 ### DH-007 — Announcement Card
-Status: TODO
+Status: DONE
 
 Create reusable announcement card UI.
 

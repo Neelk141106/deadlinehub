@@ -1,4 +1,7 @@
 import React from 'react';
+import { DeadlineCard } from './components/DeadlineCard';
+import { AnnouncementCard } from './components/AnnouncementCard';
+import { SectionHeader } from './components/ui/SectionHeader';
 
 function App() {
   return (
@@ -51,14 +54,56 @@ function App() {
 
       {/* Main Content Area */}
       <main className="flex-1 p-4 md:p-8 pb-24 md:pb-8 overflow-auto">
-        <div className="max-w-4xl mx-auto space-y-6">
-          <div className="card p-8 text-center border border-dashed border-gray-300 bg-gray-50/50">
-            <h2 className="text-xl font-semibold text-gray-700 mb-2">Student Dashboard Area</h2>
-            <p className="text-gray-500">The actual dashboard content will be built here in DH-008.</p>
+        <div className="max-w-3xl mx-auto space-y-8">
+          
+          <div>
+            <SectionHeader title="DH-006 Preview: Deadline Cards" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <DeadlineCard
+                urgency="DUE TOMORROW"
+                urgencyVariant="urgent"
+                subject="Analysis of Algorithms"
+                title="Assignment 2"
+                dateTime="18 Aug • 11:59 PM"
+                priority="High"
+              />
+              <DeadlineCard
+                urgency="DUE IN 3 DAYS"
+                urgencyVariant="approaching"
+                subject="Full Stack Development"
+                title="Experiment 4"
+                dateTime="20 Aug • 11:59 PM"
+                priority="Important"
+              />
+            </div>
           </div>
+          
+          <div>
+            <SectionHeader title="DH-007 Preview: Announcement Cards" />
+            <div className="grid grid-cols-1 gap-4">
+              <AnnouncementCard
+                priorityText="URGENT"
+                priorityVariant="urgent"
+                isPinned={false}
+                title="DBMS Practical Room Changed"
+                message="Tomorrow's practical will be conducted in Lab 405 instead of Lab 301."
+                postedBy="CR"
+                postedTime="2 hours ago"
+              />
+              <AnnouncementCard
+                priorityText="IMPORTANT"
+                priorityVariant="important"
+                isPinned={true}
+                title="Project Review Schedule Released"
+                message="The project review schedule for this week has been published."
+                postedBy="CR"
+                postedTime="Yesterday"
+              />
+            </div>
+          </div>
+          
         </div>
       </main>
-
       {/* Mobile Bottom Navigation */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-10">
         <div className="flex justify-around items-center p-2">
