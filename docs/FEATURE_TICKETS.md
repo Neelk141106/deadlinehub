@@ -138,7 +138,7 @@ Display:
 - Pinned indicator when applicable
 
 ### DH-008 — Student Dashboard
-Status: TODO
+Status: DONE
 
 Build the static student dashboard.
 
@@ -157,7 +157,7 @@ IT • Semester 5 • D15C
 Use realistic hardcoded academic data.
 
 ### DH-009 — Dashboard Responsiveness
-Status: TODO
+Status: DONE
 
 Verify dashboard on:
 
