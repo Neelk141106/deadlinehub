@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { StudentDashboard } from './components/StudentDashboard';
 import { DeadlinesPage } from './components/DeadlinesPage';
 import { AnnouncementsPage } from './components/AnnouncementsPage';
+import { WelcomeScreen } from './components/WelcomeScreen';
 
 function App() {
+  const [currentView, setCurrentView] = useState('welcome');
   const [activeTab, setActiveTab] = useState('deadlines');
 
   const navItemClass = (tabId) => 
@@ -12,6 +14,10 @@ function App() {
         ? 'text-primary-700 bg-primary-50' 
         : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
     }`;
+
+  if (currentView === 'welcome') {
+    return <WelcomeScreen onSelectRole={(role) => setCurrentView('app')} />;
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col md:flex-row">

@@ -204,7 +204,7 @@ Filters are visual only during Experiment 1.
 # Phase 5 — Entry & Class Joining UI
 
 ### DH-012 — Welcome / Role Selection
-Status: TODO
+Status: DONE
 
 Create a simple welcome screen with:
 
