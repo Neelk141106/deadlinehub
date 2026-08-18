@@ -212,7 +212,7 @@ Create a simple welcome screen with:
 - Teacher/Admin entry
 
 ### DH-013 — Student Login UI
-Status: TODO
+Status: DONE
 
 Create student login interface.
 

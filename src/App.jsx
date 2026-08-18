@@ -3,6 +3,7 @@ import { StudentDashboard } from './components/StudentDashboard';
 import { DeadlinesPage } from './components/DeadlinesPage';
 import { AnnouncementsPage } from './components/AnnouncementsPage';
 import { WelcomeScreen } from './components/WelcomeScreen';
+import { StudentLogin } from './components/StudentLogin';
 
 function App() {
   const [currentView, setCurrentView] = useState('welcome');
@@ -16,7 +17,14 @@ function App() {
     }`;
 
   if (currentView === 'welcome') {
-    return <WelcomeScreen onSelectRole={(role) => setCurrentView('app')} />;
+    return <WelcomeScreen onSelectRole={(role) => {
+      if (role === 'student') setCurrentView('studentLogin');
+      else setCurrentView('app'); // Placeholder for Teacher/Admin for now
+    }} />;
+  }
+
+  if (currentView === 'studentLogin') {
+    return <StudentLogin onLogin={() => setCurrentView('app')} onBack={() => setCurrentView('welcome')} />;
   }
 
   return (

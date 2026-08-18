@@ -164,14 +164,15 @@ Status: IN PROGRESS
 - DH-010 — Deadlines Page
 - DH-011 — Announcements Page
 - DH-012 — Welcome / Role Selection
+- DH-013 — Student Login UI
 
 ### Current Task
 
-DH-013 — Student Login UI
-
-### Next After DH-013
-
 DH-014 — Student Registration UI
+
+### Next After DH-014
+
+DH-015 — Teacher/Admin Login UI
 
 ---
 
@@ -189,13 +190,12 @@ DH-014 — Student Registration UI
 
 The default Vite starter interface has been removed.
 
-The application currently contains the Responsive Student Navigation shell (DH-004), reusable Shared UI Components (DH-005), the fully integrated and responsive Student Dashboard layout (DH-008, DH-009), the Deadlines Page (DH-010), the Announcements Page (DH-011), and the Welcome / Role Selection Screen (DH-012).
+The application currently contains the Responsive Student Navigation shell (DH-004), reusable Shared UI Components (DH-005), the fully integrated and responsive Student Dashboard layout (DH-008, DH-009), the Deadlines Page (DH-010), the Announcements Page (DH-011), the Welcome / Role Selection Screen (DH-012), and the Student Login UI (DH-013).
 
 ---
 
 ## Not Implemented Yet
 
-- Student login UI
 - Teacher/Admin login UI
 - Join class UI
 - Teacher/Admin dashboard
@@ -295,6 +295,6 @@ Planned later:
 
 Implement:
 
-**DH-013 — Student Login UI**
+**DH-014 — Student Registration UI**
 
-Do not begin DH-014 or any later ticket until DH-013 has been completed and verified.
+Do not begin DH-015 or any later ticket until DH-014 has been completed and verified.
