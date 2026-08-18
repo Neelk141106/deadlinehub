@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Input } from './ui/Input';
 import { Button } from './ui/Button';
 
-export function StudentLogin({ onLogin, onBack, onRegisterClick }) {
+export function StudentRegistration({ onRegister, onLoginClick, onBack }) {
   const [showPassword, setShowPassword] = useState(false);
 
   return (
@@ -17,7 +17,7 @@ export function StudentLogin({ onLogin, onBack, onRegisterClick }) {
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="m15 18-6-6 6-6"/>
           </svg>
-          Back to Role Selection
+          Back to Login
         </button>
       </div>
 
@@ -27,17 +27,26 @@ export function StudentLogin({ onLogin, onBack, onRegisterClick }) {
         <div className="text-center mb-8">
           <div className="w-12 h-12 bg-primary-600 rounded-xl flex items-center justify-center mx-auto mb-5 shadow-md shadow-primary-200">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/>
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/>
             </svg>
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Welcome back</h1>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">Create an account</h1>
           <p className="text-gray-500 text-sm">
-            Log in to view your deadlines and announcements.
+            Join DeadlineHub to manage your academic updates.
           </p>
         </div>
 
         {/* Form */}
-        <form className="space-y-5" onSubmit={(e) => { e.preventDefault(); onLogin(); }}>
+        <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); onRegister(); }}>
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium text-gray-700 block">Full Name</label>
+            <Input 
+              type="text" 
+              placeholder="Enter your full name" 
+              className="w-full"
+            />
+          </div>
+
           <div className="space-y-1.5">
             <label className="text-sm font-medium text-gray-700 block">College Email</label>
             <Input 
@@ -48,16 +57,20 @@ export function StudentLogin({ onLogin, onBack, onRegisterClick }) {
           </div>
 
           <div className="space-y-1.5">
-            <div className="flex items-center justify-between">
-              <label className="text-sm font-medium text-gray-700 block">Password</label>
-              <a href="#" className="text-xs font-medium text-primary-600 hover:text-primary-700">
-                Forgot password?
-              </a>
-            </div>
+            <label className="text-sm font-medium text-gray-700 block">Student Code / Roll Number</label>
+            <Input 
+              type="text" 
+              placeholder="Enter your student code" 
+              className="w-full"
+            />
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium text-gray-700 block">Password</label>
             <div className="relative">
               <Input 
                 type={showPassword ? "text" : "password"} 
-                placeholder="Enter your password" 
+                placeholder="Create a password" 
                 className="w-full pr-10"
               />
               <button 
@@ -74,23 +87,29 @@ export function StudentLogin({ onLogin, onBack, onRegisterClick }) {
             </div>
           </div>
 
-          <Button type="submit" variant="primary" className="w-full justify-center py-2.5 mt-2">
-            Log In
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium text-gray-700 block">Confirm Password</label>
+            <Input 
+              type={showPassword ? "text" : "password"} 
+              placeholder="Confirm your password" 
+              className="w-full"
+            />
+          </div>
+
+          <Button type="submit" variant="primary" className="w-full justify-center py-2.5 mt-4">
+            Create Account
           </Button>
         </form>
 
-        {/* Optional context message */}
+        {/* Login Option */}
         <div className="mt-6 pt-6 border-t border-gray-100 text-center">
-          <p className="text-xs text-gray-400 mb-4">
-            All your academic updates in one place.
-          </p>
           <p className="text-sm text-gray-600">
-            New to DeadlineHub?{' '}
+            Already have an account?{' '}
             <button 
-              onClick={onRegisterClick}
+              onClick={onLoginClick} 
               className="font-medium text-primary-600 hover:text-primary-700 focus:outline-none"
             >
-              Create an account
+              Log in
             </button>
           </p>
         </div>

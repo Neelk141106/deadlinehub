@@ -219,7 +219,7 @@ Create student login interface.
 No real authentication.
 
 ### DH-014 — Student Registration UI
-Status: TODO
+Status: DONE
 
 Fields:
 

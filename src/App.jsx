@@ -4,6 +4,7 @@ import { DeadlinesPage } from './components/DeadlinesPage';
 import { AnnouncementsPage } from './components/AnnouncementsPage';
 import { WelcomeScreen } from './components/WelcomeScreen';
 import { StudentLogin } from './components/StudentLogin';
+import { StudentRegistration } from './components/StudentRegistration';
 
 function App() {
   const [currentView, setCurrentView] = useState('welcome');
@@ -24,7 +25,19 @@ function App() {
   }
 
   if (currentView === 'studentLogin') {
-    return <StudentLogin onLogin={() => setCurrentView('app')} onBack={() => setCurrentView('welcome')} />;
+    return <StudentLogin 
+      onLogin={() => setCurrentView('app')} 
+      onBack={() => setCurrentView('welcome')} 
+      onRegisterClick={() => setCurrentView('studentRegistration')} 
+    />;
+  }
+
+  if (currentView === 'studentRegistration') {
+    return <StudentRegistration 
+      onRegister={() => setCurrentView('app')} 
+      onLoginClick={() => setCurrentView('studentLogin')} 
+      onBack={() => setCurrentView('studentLogin')} 
+    />;
   }
 
   return (
