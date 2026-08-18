@@ -239,7 +239,7 @@ Create separate Teacher/Admin login interface.
 No real authentication.
 
 ### DH-016 — Join Class UI
-Status: TODO
+Status: DONE
 
 Create static class joining flow.
 

@@ -6,6 +6,7 @@ import { WelcomeScreen } from './components/WelcomeScreen';
 import { StudentLogin } from './components/StudentLogin';
 import { StudentRegistration } from './components/StudentRegistration';
 import { TeacherLogin } from './components/TeacherLogin';
+import { JoinClass } from './components/JoinClass';
 
 function App() {
   const [currentView, setCurrentView] = useState('welcome');
@@ -27,7 +28,7 @@ function App() {
 
   if (currentView === 'studentLogin') {
     return <StudentLogin 
-      onLogin={() => setCurrentView('app')} 
+      onLogin={() => setCurrentView('joinClass')} 
       onBack={() => setCurrentView('welcome')} 
       onRegisterClick={() => setCurrentView('studentRegistration')} 
     />;
@@ -42,10 +43,14 @@ function App() {
 
   if (currentView === 'studentRegistration') {
     return <StudentRegistration 
-      onRegister={() => setCurrentView('app')} 
+      onRegister={() => setCurrentView('joinClass')} 
       onLoginClick={() => setCurrentView('studentLogin')} 
       onBack={() => setCurrentView('studentLogin')} 
     />;
+  }
+
+  if (currentView === 'joinClass') {
+    return <JoinClass onBackToHome={() => setCurrentView('app')} />;
   }
 
   return (
