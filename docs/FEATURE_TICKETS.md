@@ -232,7 +232,7 @@ Fields:
 No real registration logic.
 
 ### DH-015 — Teacher/Admin Login UI
-Status: TODO
+Status: DONE
 
 Create separate Teacher/Admin login interface.
 

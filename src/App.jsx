@@ -5,6 +5,7 @@ import { AnnouncementsPage } from './components/AnnouncementsPage';
 import { WelcomeScreen } from './components/WelcomeScreen';
 import { StudentLogin } from './components/StudentLogin';
 import { StudentRegistration } from './components/StudentRegistration';
+import { TeacherLogin } from './components/TeacherLogin';
 
 function App() {
   const [currentView, setCurrentView] = useState('welcome');
@@ -20,7 +21,7 @@ function App() {
   if (currentView === 'welcome') {
     return <WelcomeScreen onSelectRole={(role) => {
       if (role === 'student') setCurrentView('studentLogin');
-      else setCurrentView('app'); // Placeholder for Teacher/Admin for now
+      else if (role === 'teacher') setCurrentView('teacherLogin');
     }} />;
   }
 
@@ -29,6 +30,13 @@ function App() {
       onLogin={() => setCurrentView('app')} 
       onBack={() => setCurrentView('welcome')} 
       onRegisterClick={() => setCurrentView('studentRegistration')} 
+    />;
+  }
+
+  if (currentView === 'teacherLogin') {
+    return <TeacherLogin 
+      onLogin={() => setCurrentView('app')} 
+      onBack={() => setCurrentView('welcome')} 
     />;
   }
 
