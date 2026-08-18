@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { StudentDashboard } from './components/StudentDashboard';
 import { DeadlinesPage } from './components/DeadlinesPage';
+import { AnnouncementsPage } from './components/AnnouncementsPage';
 
 function App() {
   const [activeTab, setActiveTab] = useState('deadlines');
@@ -64,7 +65,7 @@ function App() {
       <main className="flex-1 p-4 md:p-8 pb-24 md:pb-8 overflow-auto">
         {activeTab === 'dashboard' && <StudentDashboard />}
         {activeTab === 'deadlines' && <DeadlinesPage />}
-        {activeTab === 'announcements' && <div className="text-gray-500">Announcements Page (Coming Soon)</div>}
+        {activeTab === 'announcements' && <AnnouncementsPage />}
       </main>
       {/* Mobile Bottom Navigation */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-10">

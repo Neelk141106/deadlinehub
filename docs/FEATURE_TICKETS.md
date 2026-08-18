@@ -186,7 +186,7 @@ Include:
 Filters are visual only during Experiment 1.
 
 ### DH-011 — Announcements Page
-Status: TODO
+Status: DONE
 
 Create static announcement board.
 
