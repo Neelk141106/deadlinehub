@@ -429,7 +429,7 @@ Status: DONE
 - Filter list dynamically based on input
 
 ### EH-004 — Deadline Filters
-Status: TODO
+Status: DONE
 
 - Implement status/priority/type filters for deadlines
 - Update UI to reflect active filters
