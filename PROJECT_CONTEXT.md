@@ -184,14 +184,16 @@ Status: IN PROGRESS
 - EH-005 — Announcement Search
 - EH-006 — Announcement Filters
 - EH-007 — Add/Edit Forms with useState
+- EH-008 — Dashboard Derived Data
+- EH-009 — useEffect-based UI Updates
 
 ### Current Task
 
-EH-008 — Dashboard Derived Data
+EH-010 — Experiment 2 Final Review
 
-### Next After EH-008
+### Next After EH-010
 
-EH-009 — useEffect-based UI Updates
+Experiment 3 — Context API / Redux
 
 ---
 
@@ -209,7 +211,7 @@ EH-009 — useEffect-based UI Updates
 
 The frontend is now a completely static and responsive interface for DeadlineHub, enhanced with Experiment 2 React Hooks functionality.
 
-The application currently contains the Responsive Student Navigation shell, reusable Shared UI Components, the fully integrated and responsive Student Dashboard layout, Deadlines Page (with live search, functional filters, and calculated urgency labels), Announcements Page (with live search and functional filters), Welcome / Role Selection Screen, Student Login UI, Student Registration UI, Teacher/Admin Login UI, Join Class UI, and the complete Teacher/Admin layout including Classes Page, Join Requests, Deadline Management (with Add/Edit/Delete state), and Announcement Management (with Add/Edit/Delete/Pin state).
+The application currently contains the Responsive Student Navigation shell, reusable Shared UI Components, the fully integrated and responsive Student Dashboard (with derived counts, greeting via useEffect, and document title badge), Deadlines Page (with live search, functional filters, and calculated urgency labels), Announcements Page (with live search and functional filters), Welcome / Role Selection Screen, Student Login UI, Student Registration UI, Teacher/Admin Login UI, Join Class UI, and the complete Teacher/Admin layout including Classes Page, Join Requests, Deadline Management (with Add/Edit/Delete state), and Announcement Management (with Add/Edit/Delete/Pin state).
 
 ---
 
@@ -312,6 +314,6 @@ Planned later:
 
 Implement:
 
-**EH-008 — Dashboard Derived Data**
+**EH-010 — Experiment 2 Final Review**
 
-Do not begin EH-009 or any later ticket until EH-008 has been completed and verified.
+Do not begin Experiment 3 or any later work until EH-010 has been completed and verified.

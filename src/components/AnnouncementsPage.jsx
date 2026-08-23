@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { PageHeader } from './ui/PageHeader';
 import { Input } from './ui/Input';
 import { AnnouncementCard } from './AnnouncementCard';
+import { MOCK_ANNOUNCEMENTS } from '../data/mockData';
 
 // Helper: bucket a Date into a filter category
 function getAnnouncementDateBucket(date) {
@@ -18,74 +19,6 @@ function getAnnouncementDateBucket(date) {
   return 'older';
 }
 
-// Mock announcement data — now includes category and postedAt for filters
-const now = new Date();
-const hoursAgo = (h) => new Date(now.getTime() - h * 60 * 60 * 1000);
-const daysAgo  = (d) => new Date(now.getTime() - d * 24 * 60 * 60 * 1000);
-
-const ALL_ANNOUNCEMENTS = [
-  {
-    id: 1,
-    priorityVariant: 'urgent',
-    priorityText: 'URGENT',
-    isPinned: true,
-    category: 'examination',
-    title: 'Exam Schedule Updated',
-    message: 'The final examination schedule for Semester 5 has been updated. Please review the new timetable on the university portal immediately.',
-    postedBy: 'HOD IT',
-    postedTime: '1 hour ago',
-    postedAt: hoursAgo(1),
-  },
-  {
-    id: 2,
-    priorityVariant: 'important',
-    priorityText: 'IMPORTANT',
-    isPinned: true,
-    category: 'academic',
-    title: 'Project Review Schedule Released',
-    message: 'The project review schedule for this week has been published. All groups must present their progress as per the assigned slots.',
-    postedBy: 'Project Coordinator',
-    postedTime: '3 hours ago',
-    postedAt: hoursAgo(3),
-  },
-  {
-    id: 3,
-    priorityVariant: 'urgent',
-    priorityText: 'URGENT',
-    isPinned: false,
-    category: 'practical',
-    title: 'DBMS Practical Room Changed',
-    message: "Tomorrow's practical will be conducted in Lab 405 instead of Lab 301 due to network maintenance.",
-    postedBy: 'CR',
-    postedTime: '5 hours ago',
-    postedAt: hoursAgo(5),
-  },
-  {
-    id: 4,
-    priorityVariant: 'normal',
-    priorityText: 'EVENT',
-    isPinned: false,
-    category: 'event',
-    title: 'Guest Lecture: AI in Healthcare',
-    message: "There will be a guest lecture on 'AI in Healthcare' this Friday at 2:00 PM in the Main Seminar Hall. Attendance is highly recommended.",
-    postedBy: 'Dept. Coordinator',
-    postedTime: 'Yesterday',
-    postedAt: daysAgo(1),
-  },
-  {
-    id: 5,
-    priorityVariant: 'normal',
-    priorityText: 'GENERAL',
-    isPinned: false,
-    category: 'general',
-    title: 'Library Hours Extended',
-    message: 'In view of the upcoming end-semester examinations, the central library will remain open until 10:00 PM starting next Monday.',
-    postedBy: 'Librarian',
-    postedTime: '2 days ago',
-    postedAt: daysAgo(2),
-  },
-];
-
 export function AnnouncementsPage() {
   const [searchQuery, setSearchQuery]       = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
@@ -95,7 +28,7 @@ export function AnnouncementsPage() {
   const filteredAnnouncements = useMemo(() => {
     const query = searchQuery.toLowerCase();
 
-    return ALL_ANNOUNCEMENTS.filter((a) => {
+    return MOCK_ANNOUNCEMENTS.filter((a) => {
       // 1. Search: title or message
       if (query && !a.title.toLowerCase().includes(query) && !a.message.toLowerCase().includes(query)) {
         return false;

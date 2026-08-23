@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { PageHeader } from './ui/PageHeader';
 import { Input } from './ui/Input';
 import { DeadlineCard } from './DeadlineCard';
+import { MOCK_DEADLINES } from '../data/mockData';
 import { getDeadlineStatus } from '../utils/deadlineStatus';
 
 export function DeadlinesPage() {
@@ -12,35 +13,10 @@ export function DeadlinesPage() {
   const [typeFilter, setTypeFilter]       = useState('');
   const [priorityFilter, setPriorityFilter] = useState('');
 
-  // --- Mock dates (relative to today so urgency is always demonstrable) ---
-  const dates = useMemo(() => {
-    const today = new Date();
-    const addDays = (d) => new Date(today.getTime() + d * 24 * 60 * 60 * 1000);
-    return {
-      today:    today.toISOString(),
-      tomorrow: addDays(1).toISOString(),
-      in3Days:  addDays(3).toISOString(),
-      nextWeek: addDays(7).toISOString(),
-      in10Days: addDays(10).toISOString(),
-      past:     addDays(-2).toISOString(),
-    };
-  }, []);
-
-  // --- Mock deadline data (includes type field for Type filter) ---
-  const allDeadlines = useMemo(() => [
-    { id: 1, dueDate: dates.today,    subject: 'Mini Project',             title: 'Project Review',        type: 'project',    priority: 'High' },
-    { id: 2, dueDate: dates.tomorrow, subject: 'Analysis of Algorithms',   title: 'Assignment 2',          type: 'assignment', priority: 'High' },
-    { id: 3, dueDate: dates.in3Days,  subject: 'Full Stack Development',   title: 'Experiment 4',          type: 'experiment', priority: 'Important' },
-    { id: 4, dueDate: dates.nextWeek, subject: 'Data Warehousing',         title: 'Practical Submission',  type: 'practical',  priority: 'Normal' },
-    { id: 5, dueDate: dates.in10Days, subject: 'Cloud Computing',          title: 'Quiz',                  type: 'quiz',       priority: 'Normal' },
-    { id: 6, dueDate: dates.past,     subject: 'Full Stack Development',   title: 'Experiment 3',          type: 'experiment', priority: 'Normal' },
-  ], [dates]);
-
-  // --- Combined filter logic ---
   const filteredDeadlines = useMemo(() => {
     const query = searchQuery.toLowerCase();
 
-    return allDeadlines.filter((deadline) => {
+    return MOCK_DEADLINES.filter((deadline) => {
       // 1. Search: title or subject
       if (query && !deadline.title.toLowerCase().includes(query) && !deadline.subject.toLowerCase().includes(query)) {
         return false;

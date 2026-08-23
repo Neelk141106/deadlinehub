@@ -457,13 +457,13 @@ Status: DONE
 - Add static form validation
 
 ### EH-008 — Dashboard Derived Data
-Status: TODO
+Status: DONE
 
 - Update dashboard to show actual counts (e.g., '2 Due Soon') based on mock data
 - Ensure 'Needs Attention' section updates dynamically
 
 ### EH-009 — useEffect-based UI Updates
-Status: TODO
+Status: DONE
 
 - Use useEffect to handle component mounting or mock data loading
 - Add simple loading states where appropriate
