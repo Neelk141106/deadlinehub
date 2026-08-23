@@ -39,7 +39,7 @@ export function DeadlinesPage() {
 
       return true;
     });
-  }, [allDeadlines, searchQuery, statusFilter, subjectFilter, typeFilter, priorityFilter]);
+  }, [searchQuery, statusFilter, subjectFilter, typeFilter, priorityFilter]);
 
   // --- Render ---
   return (

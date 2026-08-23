@@ -129,9 +129,21 @@ Future experiment functionality must NOT be implemented early.
 
 ## Current Stage
 
+Experiment 1 — Tailwind CSS
+
+Status: COMPLETED
+
+---
+
+## Experiment 2 Status
+
 Experiment 2 — React Hooks
 
-Status: IN PROGRESS
+Status: COMPLETED
+
+All EH-001 through EH-010 tickets are DONE.
+React Hooks functionality verified.
+Temporary Add/Edit state is in-memory only — data does not persist after browser refresh (expected; no localStorage or database implemented).
 
 ---
 
@@ -186,14 +198,18 @@ Status: IN PROGRESS
 - EH-007 — Add/Edit Forms with useState
 - EH-008 — Dashboard Derived Data
 - EH-009 — useEffect-based UI Updates
+- EH-010 — Experiment 2 Final Review
 
-### Current Task
+### Current Stage
 
-EH-010 — Experiment 2 Final Review
+Experiment 1 — COMPLETED
+Experiment 2 — COMPLETED
 
-### Next After EH-010
+### Next Stage
 
 Experiment 3 — Context API / Redux
+
+Do NOT begin Experiment 3 until explicitly instructed.
 
 ---
 
@@ -209,9 +225,9 @@ Experiment 3 — Context API / Redux
 
 ## Current Frontend State
 
-The frontend is now a completely static and responsive interface for DeadlineHub, enhanced with Experiment 2 React Hooks functionality.
+Experiments 1 and 2 are fully complete. The application is a responsive React + Vite + Tailwind CSS frontend with full React Hooks functionality.
 
-The application currently contains the Responsive Student Navigation shell, reusable Shared UI Components, the fully integrated and responsive Student Dashboard (with derived counts, greeting via useEffect, and document title badge), Deadlines Page (with live search, functional filters, and calculated urgency labels), Announcements Page (with live search and functional filters), Welcome / Role Selection Screen, Student Login UI, Student Registration UI, Teacher/Admin Login UI, Join Class UI, and the complete Teacher/Admin layout including Classes Page, Join Requests, Deadline Management (with Add/Edit/Delete state), and Announcement Management (with Add/Edit/Delete/Pin state).
+The application contains: Responsive Student Navigation shell, reusable Shared UI Components, Student Dashboard (counts and sections derived from mock data via useMemo; time-of-day greeting and document title via useEffect), Deadlines Page (live search + status/subject/type/priority filters all functional), Announcements Page (live search + category/priority/date filters all functional), Welcome / Role Selection Screen, Student Login UI, Student Registration UI, Teacher/Admin Login UI, Join Class UI, and the complete Teacher/Admin layout including Classes Page, Join Requests, Deadline Management (Add/Edit/Delete wired to useState), and Announcement Management (Add/Edit/Delete/Pin wired to useState).
 
 ---
 
@@ -310,10 +326,6 @@ Planned later:
 
 ---
 
-## Next Task
+Experiment 1 and Experiment 2 are COMPLETED.
 
-Implement:
-
-**EH-010 — Experiment 2 Final Review**
-
-Do not begin Experiment 3 or any later work until EH-010 has been completed and verified.
+Do NOT begin Experiment 3 — Context API / Redux until explicitly instructed.
