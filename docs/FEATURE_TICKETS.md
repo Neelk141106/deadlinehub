@@ -299,7 +299,7 @@ Static actions:
 No actual approval logic.
 
 ### DH-020 — Deadline Management UI
-Status: TODO
+Status: DONE
 
 Create static Teacher/Admin deadline management interface.
 
@@ -312,7 +312,7 @@ Include:
 No persistence.
 
 ### DH-021 — Announcement Management UI
-Status: TODO
+Status: DONE
 
 Create static announcement management interface.
 

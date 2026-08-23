@@ -171,14 +171,16 @@ Status: IN PROGRESS
 - DH-017 — Teacher/Admin Layout
 - DH-018 — Classes Page
 - DH-019 — Join Requests UI
+- DH-020 — Deadline Management UI
+- DH-021 — Announcement Management UI
 
 ### Current Task
 
-DH-020 — Deadline Management UI
+DH-022 — Responsive Review
 
-### Next After DH-020
+### Next After DH-022
 
-DH-021 — Announcement Management UI
+DH-023 — UI Consistency Review
 
 ---
 
@@ -299,6 +301,6 @@ Planned later:
 
 Implement:
 
-**DH-020 — Deadline Management UI**
+**DH-022 — Responsive Review**
 
-Do not begin DH-021 or any later ticket until DH-020 has been completed and verified.
+Do not begin DH-023 or any later ticket until DH-022 has been completed and verified.
