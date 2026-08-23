@@ -1,9 +1,21 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { PageHeader } from './ui/PageHeader';
 import { Input } from './ui/Input';
 import { DeadlineCard } from './DeadlineCard';
 
 export function DeadlinesPage() {
+  const dates = useMemo(() => {
+    const today = new Date();
+    const addDays = (d) => new Date(today.getTime() + d * 24 * 60 * 60 * 1000);
+    
+    return {
+      today: today.toISOString(),
+      tomorrow: addDays(1).toISOString(),
+      in3Days: addDays(3).toISOString(),
+      nextWeek: addDays(7).toISOString(),
+      in10Days: addDays(10).toISOString(),
+    };
+  }, []);
   return (
     <div className="max-w-6xl mx-auto space-y-6">
       <PageHeader 
@@ -63,43 +75,33 @@ export function DeadlinesPage() {
       {/* Deadlines Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <DeadlineCard
-          urgency="DUE TODAY"
-          urgencyVariant="urgent"
+          dueDate={dates.today}
           subject="Mini Project"
           title="Project Review"
-          dateTime="Today • 4:00 PM"
           priority="High"
         />
         <DeadlineCard
-          urgency="DUE TOMORROW"
-          urgencyVariant="urgent"
+          dueDate={dates.tomorrow}
           subject="Analysis of Algorithms"
           title="Assignment 2"
-          dateTime="18 Aug • 11:59 PM"
           priority="High"
         />
         <DeadlineCard
-          urgency="DUE IN 3 DAYS"
-          urgencyVariant="approaching"
+          dueDate={dates.in3Days}
           subject="Full Stack Development"
           title="Experiment 4"
-          dateTime="20 Aug • 11:59 PM"
           priority="Important"
         />
         <DeadlineCard
-          urgency="UPCOMING"
-          urgencyVariant="normal"
+          dueDate={dates.nextWeek}
           subject="Data Warehousing"
           title="Practical Submission"
-          dateTime="22 Aug • 11:59 PM"
           priority="Normal"
         />
         <DeadlineCard
-          urgency="UPCOMING"
-          urgencyVariant="normal"
+          dueDate={dates.in10Days}
           subject="Cloud Computing"
           title="Quiz"
-          dateTime="24 Aug • 10:00 AM"
           priority="Normal"
         />
       </div>

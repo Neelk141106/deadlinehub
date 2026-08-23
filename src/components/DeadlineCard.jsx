@@ -1,14 +1,18 @@
 import React from 'react';
 import { Badge } from './ui/Badge';
+import { useDeadlineUrgency } from '../hooks/useDeadlineUrgency';
 
 export function DeadlineCard({
-  urgency,
-  urgencyVariant = 'urgent', // 'urgent' | 'approaching' | 'normal' | 'past'
+  dueDate,
   subject,
   title,
-  dateTime,
   priority
 }) {
+  const { text: urgencyText, variant: urgencyVariant } = useDeadlineUrgency(dueDate);
+  
+  const dateObj = new Date(dueDate);
+  const dateTimeDisplay = `${dateObj.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })} • ${dateObj.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}`;
+
   const borderColors = {
     urgent: 'border-l-red-500',
     approaching: 'border-l-amber-400',
@@ -23,7 +27,7 @@ export function DeadlineCard({
       <div className="flex flex-col gap-3">
         {/* 1. Urgency */}
         <div>
-          <Badge variant={urgencyVariant}>{urgency}</Badge>
+          <Badge variant={urgencyVariant}>{urgencyText}</Badge>
         </div>
         
         {/* 2 & 3. Subject and Title */}
@@ -36,7 +40,7 @@ export function DeadlineCard({
           {/* 4. Due date/time */}
           <div className="flex items-center text-sm text-gray-600 font-medium">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-1.5 text-gray-400"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-            {dateTime}
+            {dateTimeDisplay}
           </div>
           
           {/* 5. Priority */}

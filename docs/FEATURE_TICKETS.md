@@ -413,7 +413,7 @@ Status: DONE
 - Establish feature ticket list
 
 ### EH-002 — Deadline Urgency Calculation
-Status: TODO
+Status: DONE
 
 - Create utility to calculate deadline urgency (e.g., 'Due Today', 'Due Tomorrow', 'Past')
 - Replace hardcoded urgency badges with calculated values

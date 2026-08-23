@@ -1,9 +1,20 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { DeadlineCard } from './DeadlineCard';
 import { AnnouncementCard } from './AnnouncementCard';
 import { SectionHeader } from './ui/SectionHeader';
 
 export function StudentDashboard() {
+  const dates = useMemo(() => {
+    const today = new Date();
+    const addDays = (d) => new Date(today.getTime() + d * 24 * 60 * 60 * 1000);
+    
+    return {
+      tomorrow: addDays(1).toISOString(),
+      in3Days: addDays(3).toISOString(),
+      past: addDays(-1).toISOString(),
+      nextWeek: addDays(7).toISOString(),
+    };
+  }, []);
   return (
     <div className="max-w-6xl mx-auto space-y-8">
       {/* Greeting and Class Info */}
@@ -27,19 +38,15 @@ export function StudentDashboard() {
             <SectionHeader title="Needs Attention" />
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <DeadlineCard
-                urgency="DUE TOMORROW"
-                urgencyVariant="urgent"
+                dueDate={dates.tomorrow}
                 subject="Analysis of Algorithms"
                 title="Assignment 2"
-                dateTime="18 Aug • 11:59 PM"
                 priority="High"
               />
               <DeadlineCard
-                urgency="DUE IN 3 DAYS"
-                urgencyVariant="approaching"
+                dueDate={dates.in3Days}
                 subject="Full Stack Development"
                 title="Experiment 4"
-                dateTime="20 Aug • 11:59 PM"
                 priority="Important"
               />
             </div>
@@ -50,35 +57,27 @@ export function StudentDashboard() {
             <SectionHeader title="Upcoming Deadlines" />
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <DeadlineCard
-                urgency="18 AUG"
-                urgencyVariant="normal"
+                dueDate={dates.tomorrow}
                 subject="AOA"
                 title="Assignment 2"
-                dateTime="18 Aug • 11:59 PM"
                 priority="High"
               />
               <DeadlineCard
-                urgency="20 AUG"
-                urgencyVariant="normal"
+                dueDate={dates.in3Days}
                 subject="Full Stack Development"
                 title="Experiment 4"
-                dateTime="20 Aug • 11:59 PM"
                 priority="Important"
               />
               <DeadlineCard
-                urgency="22 AUG"
-                urgencyVariant="normal"
+                dueDate={dates.nextWeek}
                 subject="Data Warehousing"
                 title="Practical Submission"
-                dateTime="22 Aug • 11:59 PM"
                 priority="Normal"
               />
               <DeadlineCard
-                urgency="24 AUG"
-                urgencyVariant="normal"
+                dueDate={dates.past}
                 subject="Cloud Computing"
                 title="Quiz"
-                dateTime="24 Aug • 10:00 AM"
                 priority="Normal"
               />
             </div>

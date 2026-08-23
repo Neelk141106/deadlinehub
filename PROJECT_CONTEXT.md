@@ -177,14 +177,16 @@ Status: IN PROGRESS
 - DH-022 — Responsive Review
 - DH-023 — UI Consistency Review
 - DH-024 — Scope Review
+- EH-001 — Experiment 2 Setup
+- EH-002 — Deadline Urgency Calculation
 
 ### Current Task
 
-EH-001 — Experiment 2 Setup
+EH-003 — Deadline Search
 
-### Next After EH-001
+### Next After EH-003
 
-EH-002 — Deadline Urgency Calculation
+EH-004 — Deadline Filters
 
 ---
 
@@ -307,6 +309,6 @@ Implement:
 
 Implement:
 
-**EH-002 — Deadline Urgency Calculation**
+**EH-003 — Deadline Search**
 
-Do not begin EH-003 or any later ticket until EH-002 has been completed and verified.
+Do not begin EH-004 or any later ticket until EH-003 has been completed and verified.
