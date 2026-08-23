@@ -261,14 +261,14 @@ No real join logic.
 # Phase 6 — Teacher/Admin UI
 
 ### DH-017 — Teacher/Admin Layout
-Status: TODO
+Status: DONE
 
 Create basic administrative navigation/layout.
 
 Keep it simple and consistent with the student interface.
 
 ### DH-018 — Classes Page
-Status: TODO
+Status: DONE
 
 Display hardcoded class cards.
 
@@ -281,7 +281,7 @@ Semester 5
 Class Code: D15C-5IT
 
 ### DH-019 — Join Requests UI
-Status: TODO
+Status: DONE
 
 Display hardcoded join requests.
 

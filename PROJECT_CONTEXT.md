@@ -168,14 +168,17 @@ Status: IN PROGRESS
 - DH-014 — Student Registration UI
 - DH-015 — Teacher/Admin Login UI
 - DH-016 — Join Class UI
+- DH-017 — Teacher/Admin Layout
+- DH-018 — Classes Page
+- DH-019 — Join Requests UI
 
 ### Current Task
 
-DH-017 — Teacher/Admin Layout
+DH-020 — Deadline Management UI
 
-### Next After DH-017
+### Next After DH-020
 
-DH-018 — Classes Page
+DH-021 — Announcement Management UI
 
 ---
 
@@ -296,6 +299,6 @@ Planned later:
 
 Implement:
 
-**DH-017 — Teacher/Admin Layout**
+**DH-020 — Deadline Management UI**
 
-Do not begin DH-018 or any later ticket until DH-017 has been completed and verified.
+Do not begin DH-021 or any later ticket until DH-020 has been completed and verified.
