@@ -1,9 +1,11 @@
-import React, { useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { PageHeader } from './ui/PageHeader';
 import { Input } from './ui/Input';
 import { DeadlineCard } from './DeadlineCard';
 
 export function DeadlinesPage() {
+  const [searchQuery, setSearchQuery] = useState('');
+
   const dates = useMemo(() => {
     const today = new Date();
     const addDays = (d) => new Date(today.getTime() + d * 24 * 60 * 60 * 1000);
@@ -16,6 +18,21 @@ export function DeadlinesPage() {
       in10Days: addDays(10).toISOString(),
     };
   }, []);
+
+  const allDeadlines = useMemo(() => [
+    { id: 1, dueDate: dates.today, subject: "Mini Project", title: "Project Review", priority: "High" },
+    { id: 2, dueDate: dates.tomorrow, subject: "Analysis of Algorithms", title: "Assignment 2", priority: "High" },
+    { id: 3, dueDate: dates.in3Days, subject: "Full Stack Development", title: "Experiment 4", priority: "Important" },
+    { id: 4, dueDate: dates.nextWeek, subject: "Data Warehousing", title: "Practical Submission", priority: "Normal" },
+    { id: 5, dueDate: dates.in10Days, subject: "Cloud Computing", title: "Quiz", priority: "Normal" }
+  ], [dates]);
+
+  const filteredDeadlines = allDeadlines.filter(deadline => {
+    const query = searchQuery.toLowerCase();
+    return deadline.title.toLowerCase().includes(query) || 
+           deadline.subject.toLowerCase().includes(query);
+  });
+
   return (
     <div className="max-w-6xl mx-auto space-y-6">
       <PageHeader 
@@ -34,6 +51,8 @@ export function DeadlinesPage() {
             type="text" 
             placeholder="Search by title or subject..." 
             className="pl-10 bg-gray-50 border-gray-200"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
 
@@ -73,38 +92,27 @@ export function DeadlinesPage() {
       </div>
 
       {/* Deadlines Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <DeadlineCard
-          dueDate={dates.today}
-          subject="Mini Project"
-          title="Project Review"
-          priority="High"
-        />
-        <DeadlineCard
-          dueDate={dates.tomorrow}
-          subject="Analysis of Algorithms"
-          title="Assignment 2"
-          priority="High"
-        />
-        <DeadlineCard
-          dueDate={dates.in3Days}
-          subject="Full Stack Development"
-          title="Experiment 4"
-          priority="Important"
-        />
-        <DeadlineCard
-          dueDate={dates.nextWeek}
-          subject="Data Warehousing"
-          title="Practical Submission"
-          priority="Normal"
-        />
-        <DeadlineCard
-          dueDate={dates.in10Days}
-          subject="Cloud Computing"
-          title="Quiz"
-          priority="Normal"
-        />
-      </div>
+      {filteredDeadlines.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {filteredDeadlines.map(deadline => (
+            <DeadlineCard
+              key={deadline.id}
+              dueDate={deadline.dueDate}
+              subject={deadline.subject}
+              title={deadline.title}
+              priority={deadline.priority}
+            />
+          ))}
+        </div>
+      ) : (
+        <div className="bg-white rounded-xl border border-gray-200 p-12 text-center shadow-sm">
+          <div className="w-12 h-12 bg-gray-50 text-gray-400 rounded-full flex items-center justify-center mx-auto mb-3">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          </div>
+          <h3 className="text-lg font-bold text-gray-900 mb-1">No deadlines found</h3>
+          <p className="text-gray-500 text-sm">Try adjusting your search criteria.</p>
+        </div>
+      )}
     </div>
   );
 }

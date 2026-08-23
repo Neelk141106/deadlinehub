@@ -179,14 +179,15 @@ Status: IN PROGRESS
 - DH-024 — Scope Review
 - EH-001 — Experiment 2 Setup
 - EH-002 — Deadline Urgency Calculation
+- EH-003 — Deadline Search
 
 ### Current Task
 
-EH-003 — Deadline Search
-
-### Next After EH-003
-
 EH-004 — Deadline Filters
+
+### Next After EH-004
+
+EH-005 — Announcement Search
 
 ---
 
@@ -202,9 +203,9 @@ EH-004 — Deadline Filters
 
 ## Current Frontend State
 
-The frontend is now a completely static and responsive interface for DeadlineHub.
+The frontend is now a completely static and responsive interface for DeadlineHub, enhanced with Experiment 2 React Hooks functionality.
 
-The application currently contains the Responsive Student Navigation shell, reusable Shared UI Components, the fully integrated and responsive Student Dashboard layout, Deadlines Page, Announcements Page, Welcome / Role Selection Screen, Student Login UI, Student Registration UI, Teacher/Admin Login UI, Join Class UI, and the complete Teacher/Admin layout including Classes Page, Join Requests, Deadline Management, and Announcement Management UI.
+The application currently contains the Responsive Student Navigation shell, reusable Shared UI Components, the fully integrated and responsive Student Dashboard layout, Deadlines Page (with live search and calculated urgency labels), Announcements Page, Welcome / Role Selection Screen, Student Login UI, Student Registration UI, Teacher/Admin Login UI, Join Class UI, and the complete Teacher/Admin layout including Classes Page, Join Requests, Deadline Management, and Announcement Management UI.
 
 ---
 
@@ -307,8 +308,6 @@ Planned later:
 
 Implement:
 
-Implement:
+**EH-004 — Deadline Filters**
 
-**EH-003 — Deadline Search**
-
-Do not begin EH-004 or any later ticket until EH-003 has been completed and verified.
+Do not begin EH-005 or any later ticket until EH-004 has been completed and verified.

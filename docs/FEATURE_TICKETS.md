@@ -423,7 +423,7 @@ Status: DONE
 ## Phase 2 — Search and Filtering
 
 ### EH-003 — Deadline Search
-Status: TODO
+Status: DONE
 
 - Implement text search for deadlines
 - Filter list dynamically based on input
