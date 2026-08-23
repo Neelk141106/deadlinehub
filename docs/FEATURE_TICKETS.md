@@ -435,7 +435,7 @@ Status: DONE
 - Update UI to reflect active filters
 
 ### EH-005 — Announcement Search
-Status: TODO
+Status: DONE
 
 - Implement text search for announcements
 - Filter list dynamically based on input

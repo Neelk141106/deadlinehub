@@ -181,14 +181,15 @@ Status: IN PROGRESS
 - EH-002 — Deadline Urgency Calculation
 - EH-003 — Deadline Search
 - EH-004 — Deadline Filters
+- EH-005 — Announcement Search
 
 ### Current Task
 
-EH-005 — Announcement Search
-
-### Next After EH-005
-
 EH-006 — Announcement Filters
+
+### Next After EH-006
+
+EH-007 — Add/Edit Forms with useState
 
 ---
 
@@ -206,7 +207,7 @@ EH-006 — Announcement Filters
 
 The frontend is now a completely static and responsive interface for DeadlineHub, enhanced with Experiment 2 React Hooks functionality.
 
-The application currently contains the Responsive Student Navigation shell, reusable Shared UI Components, the fully integrated and responsive Student Dashboard layout, Deadlines Page (with live search, functional filters, and calculated urgency labels), Announcements Page, Welcome / Role Selection Screen, Student Login UI, Student Registration UI, Teacher/Admin Login UI, Join Class UI, and the complete Teacher/Admin layout including Classes Page, Join Requests, Deadline Management, and Announcement Management UI.
+The application currently contains the Responsive Student Navigation shell, reusable Shared UI Components, the fully integrated and responsive Student Dashboard layout, Deadlines Page (with live search, functional filters, and calculated urgency labels), Announcements Page (with live search), Welcome / Role Selection Screen, Student Login UI, Student Registration UI, Teacher/Admin Login UI, Join Class UI, and the complete Teacher/Admin layout including Classes Page, Join Requests, Deadline Management, and Announcement Management UI.
 
 ---
 
@@ -309,6 +310,6 @@ Planned later:
 
 Implement:
 
-**EH-005 — Announcement Search**
+**EH-006 — Announcement Filters**
 
-Do not begin EH-006 or any later ticket until EH-005 has been completed and verified.
+Do not begin EH-007 or any later ticket until EH-006 has been completed and verified.
