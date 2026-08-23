@@ -330,7 +330,7 @@ No persistence.
 # Phase 7 — Final Experiment 1 Quality
 
 ### DH-022 — Responsive Review
-Status: TODO
+Status: DONE
 
 Review all Experiment 1 screens on:
 
@@ -347,7 +347,7 @@ Fix:
 - Inconsistent navigation
 
 ### DH-023 — UI Consistency Review
-Status: TODO
+Status: DONE
 
 Verify consistent:
 
@@ -361,7 +361,7 @@ Verify consistent:
 - Navigation
 
 ### DH-024 — Scope Review
-Status: TODO
+Status: DONE
 
 Confirm Experiment 1 contains NO:
 
