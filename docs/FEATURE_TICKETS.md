@@ -391,3 +391,90 @@ Experiment 1 is complete when:
 - Hardcoded data is used
 - Mobile/tablet/desktop layouts work
 - No future experiment functionality has been implemented
+
+---
+
+# Experiment 2 — React Hooks
+
+## Goal
+
+Introduce state management and dynamic UI behavior to the static frontend using React Hooks (useState, useEffect, useMemo, etc.).
+
+No backend, database, APIs, JWT or Socket.IO should be implemented.
+
+---
+
+## Phase 1 — Setup & Data Calculation
+
+### EH-001 — Experiment 2 Setup
+Status: DONE
+
+- Update project documentation for Experiment 2
+- Establish feature ticket list
+
+### EH-002 — Deadline Urgency Calculation
+Status: TODO
+
+- Create utility to calculate deadline urgency (e.g., 'Due Today', 'Due Tomorrow', 'Past')
+- Replace hardcoded urgency badges with calculated values
+
+---
+
+## Phase 2 — Search and Filtering
+
+### EH-003 — Deadline Search
+Status: TODO
+
+- Implement text search for deadlines
+- Filter list dynamically based on input
+
+### EH-004 — Deadline Filters
+Status: TODO
+
+- Implement status/priority/type filters for deadlines
+- Update UI to reflect active filters
+
+### EH-005 — Announcement Search
+Status: TODO
+
+- Implement text search for announcements
+- Filter list dynamically based on input
+
+### EH-006 — Announcement Filters
+Status: TODO
+
+- Implement category/priority filters for announcements
+- Update UI to reflect active filters
+
+---
+
+## Phase 3 — Forms & Dynamic UI
+
+### EH-007 — Add/Edit Forms with useState
+Status: TODO
+
+- Implement controlled components for forms
+- Add static form validation
+
+### EH-008 — Dashboard Derived Data
+Status: TODO
+
+- Update dashboard to show actual counts (e.g., '2 Due Soon') based on mock data
+- Ensure 'Needs Attention' section updates dynamically
+
+### EH-009 — useEffect-based UI Updates
+Status: TODO
+
+- Use useEffect to handle component mounting or mock data loading
+- Add simple loading states where appropriate
+
+---
+
+## Phase 4 — Final Review
+
+### EH-010 — Experiment 2 Final Review
+Status: TODO
+
+- Review all dynamic behavior
+- Ensure no backend dependencies were introduced
+- Verify performance and UX

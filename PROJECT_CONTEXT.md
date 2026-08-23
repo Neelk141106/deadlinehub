@@ -129,9 +129,9 @@ Future experiment functionality must NOT be implemented early.
 
 ## Current Stage
 
-Experiment 1 — Tailwind CSS
+Experiment 2 — React Hooks
 
-Status: COMPLETED
+Status: IN PROGRESS
 
 ---
 
@@ -180,11 +180,11 @@ Status: COMPLETED
 
 ### Current Task
 
-Experiment 1 Completed.
+EH-001 — Experiment 2 Setup
 
-### Next Development Stage
+### Next After EH-001
 
-Experiment 2 — React Hooks
+EH-002 — Deadline Urgency Calculation
 
 ---
 
@@ -307,6 +307,6 @@ Implement:
 
 Implement:
 
-**Experiment 2 — React Hooks**
+**EH-002 — Deadline Urgency Calculation**
 
-Do not begin Experiment 2 or any later ticket until explicitly instructed.
+Do not begin EH-003 or any later ticket until EH-002 has been completed and verified.
