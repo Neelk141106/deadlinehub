@@ -3,72 +3,116 @@ import { PageHeader } from './ui/PageHeader';
 import { Input } from './ui/Input';
 import { AnnouncementCard } from './AnnouncementCard';
 
-// Mock announcement data
+// Helper: bucket a Date into a filter category
+function getAnnouncementDateBucket(date) {
+  const now = new Date();
+  const today = new Date(now); today.setHours(0, 0, 0, 0);
+  const yesterday = new Date(today); yesterday.setDate(today.getDate() - 1);
+  const weekStart = new Date(today); weekStart.setDate(today.getDate() - 7);
+  const monthStart = new Date(today); monthStart.setDate(today.getDate() - 30);
+
+  if (date >= today)       return 'today';
+  if (date >= yesterday)   return 'yesterday';
+  if (date >= weekStart)   return 'this-week';
+  if (date >= monthStart)  return 'this-month';
+  return 'older';
+}
+
+// Mock announcement data — now includes category and postedAt for filters
+const now = new Date();
+const hoursAgo = (h) => new Date(now.getTime() - h * 60 * 60 * 1000);
+const daysAgo  = (d) => new Date(now.getTime() - d * 24 * 60 * 60 * 1000);
+
 const ALL_ANNOUNCEMENTS = [
   {
     id: 1,
     priorityVariant: 'urgent',
     priorityText: 'URGENT',
     isPinned: true,
+    category: 'examination',
     title: 'Exam Schedule Updated',
     message: 'The final examination schedule for Semester 5 has been updated. Please review the new timetable on the university portal immediately.',
     postedBy: 'HOD IT',
     postedTime: '1 hour ago',
+    postedAt: hoursAgo(1),
   },
   {
     id: 2,
     priorityVariant: 'important',
     priorityText: 'IMPORTANT',
     isPinned: true,
+    category: 'academic',
     title: 'Project Review Schedule Released',
     message: 'The project review schedule for this week has been published. All groups must present their progress as per the assigned slots.',
     postedBy: 'Project Coordinator',
     postedTime: '3 hours ago',
+    postedAt: hoursAgo(3),
   },
   {
     id: 3,
     priorityVariant: 'urgent',
     priorityText: 'URGENT',
     isPinned: false,
+    category: 'practical',
     title: 'DBMS Practical Room Changed',
-    message: 'Tomorrow\'s practical will be conducted in Lab 405 instead of Lab 301 due to network maintenance.',
+    message: "Tomorrow's practical will be conducted in Lab 405 instead of Lab 301 due to network maintenance.",
     postedBy: 'CR',
     postedTime: '5 hours ago',
+    postedAt: hoursAgo(5),
   },
   {
     id: 4,
     priorityVariant: 'normal',
     priorityText: 'EVENT',
     isPinned: false,
+    category: 'event',
     title: 'Guest Lecture: AI in Healthcare',
-    message: 'There will be a guest lecture on \'AI in Healthcare\' this Friday at 2:00 PM in the Main Seminar Hall. Attendance is highly recommended.',
+    message: "There will be a guest lecture on 'AI in Healthcare' this Friday at 2:00 PM in the Main Seminar Hall. Attendance is highly recommended.",
     postedBy: 'Dept. Coordinator',
     postedTime: 'Yesterday',
+    postedAt: daysAgo(1),
   },
   {
     id: 5,
     priorityVariant: 'normal',
     priorityText: 'GENERAL',
     isPinned: false,
+    category: 'general',
     title: 'Library Hours Extended',
     message: 'In view of the upcoming end-semester examinations, the central library will remain open until 10:00 PM starting next Monday.',
     postedBy: 'Librarian',
     postedTime: '2 days ago',
+    postedAt: daysAgo(2),
   },
 ];
 
 export function AnnouncementsPage() {
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery]       = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('');
+  const [priorityFilter, setPriorityFilter] = useState('');
+  const [dateFilter, setDateFilter]         = useState('');
 
   const filteredAnnouncements = useMemo(() => {
     const query = searchQuery.toLowerCase();
-    if (!query) return ALL_ANNOUNCEMENTS;
-    return ALL_ANNOUNCEMENTS.filter(
-      (a) =>
-        a.title.toLowerCase().includes(query) ||
-        a.message.toLowerCase().includes(query)
-    );
-  }, [searchQuery]);
+
+    return ALL_ANNOUNCEMENTS.filter((a) => {
+      // 1. Search: title or message
+      if (query && !a.title.toLowerCase().includes(query) && !a.message.toLowerCase().includes(query)) {
+        return false;
+      }
+
+      // 2. Category filter
+      if (categoryFilter && a.category !== categoryFilter) return false;
+
+      // 3. Priority filter: matches priorityVariant ('urgent' | 'important' | 'normal')
+      if (priorityFilter && a.priorityVariant !== priorityFilter) return false;
+
+      // 4. Date filter
+      if (dateFilter && getAnnouncementDateBucket(a.postedAt) !== dateFilter) return false;
+
+      return true;
+    });
+  }, [searchQuery, categoryFilter, priorityFilter, dateFilter]);
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
@@ -93,9 +137,14 @@ export function AnnouncementsPage() {
           />
         </div>
 
-        {/* Filters — static UI, wired in EH-006 */}
+        {/* Filters */}
         <div className="flex flex-wrap gap-3">
-          <select className="input-field bg-gray-50 border-gray-200 py-2 px-3 text-sm flex-1 min-w-[140px]">
+          {/* Category */}
+          <select
+            className="input-field bg-gray-50 border-gray-200 py-2 px-3 text-sm flex-1 min-w-[140px]"
+            value={categoryFilter}
+            onChange={(e) => setCategoryFilter(e.target.value)}
+          >
             <option value="">Category: All</option>
             <option value="academic">Academic</option>
             <option value="examination">Examination</option>
@@ -105,13 +154,25 @@ export function AnnouncementsPage() {
             <option value="event">Event</option>
             <option value="general">General</option>
           </select>
-          <select className="input-field bg-gray-50 border-gray-200 py-2 px-3 text-sm flex-1 min-w-[140px]">
+
+          {/* Priority */}
+          <select
+            className="input-field bg-gray-50 border-gray-200 py-2 px-3 text-sm flex-1 min-w-[140px]"
+            value={priorityFilter}
+            onChange={(e) => setPriorityFilter(e.target.value)}
+          >
             <option value="">Priority: All</option>
             <option value="urgent">Urgent</option>
             <option value="important">Important</option>
             <option value="normal">Normal</option>
           </select>
-          <select className="input-field bg-gray-50 border-gray-200 py-2 px-3 text-sm flex-1 min-w-[140px]">
+
+          {/* Date */}
+          <select
+            className="input-field bg-gray-50 border-gray-200 py-2 px-3 text-sm flex-1 min-w-[140px]"
+            value={dateFilter}
+            onChange={(e) => setDateFilter(e.target.value)}
+          >
             <option value="">Date: Any time</option>
             <option value="today">Today</option>
             <option value="yesterday">Yesterday</option>
@@ -144,7 +205,7 @@ export function AnnouncementsPage() {
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
           </div>
           <h3 className="text-lg font-bold text-gray-900 mb-1">No announcements found</h3>
-          <p className="text-gray-500 text-sm">Try adjusting your search criteria.</p>
+          <p className="text-gray-500 text-sm">Try adjusting your search or filters.</p>
         </div>
       )}
     </div>

@@ -441,7 +441,7 @@ Status: DONE
 - Filter list dynamically based on input
 
 ### EH-006 — Announcement Filters
-Status: TODO
+Status: DONE
 
 - Implement category/priority filters for announcements
 - Update UI to reflect active filters
@@ -451,7 +451,7 @@ Status: TODO
 ## Phase 3 — Forms & Dynamic UI
 
 ### EH-007 — Add/Edit Forms with useState
-Status: TODO
+Status: DONE
 
 - Implement controlled components for forms
 - Add static form validation
