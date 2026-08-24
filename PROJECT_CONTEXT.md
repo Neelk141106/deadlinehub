@@ -147,6 +147,17 @@ Temporary Add/Edit state is in-memory only — data does not persist after brows
 
 ---
 
+## Landing Page (UI Enhancement)
+
+A simple public Landing Page was added as a UI enhancement after Experiment 2.
+
+- `src/components/LandingPage.jsx` — new hero-style intro page
+- Application now starts at: Landing Page → Role Selection → Student / Teacher-Admin flow
+- Experiment 1 and Experiment 2 functionality remain fully unchanged
+- No backend, database, authentication, or new dependencies were introduced
+
+---
+
 ## Completed Foundation
 
 - GitHub repository created
@@ -225,9 +236,11 @@ Do NOT begin Experiment 3 until explicitly instructed.
 
 ## Current Frontend State
 
-Experiments 1 and 2 are fully complete. The application is a responsive React + Vite + Tailwind CSS frontend with full React Hooks functionality.
+Experiments 1 and 2 are fully complete. A simple public Landing Page was added as a UI enhancement. The application is a responsive React + Vite + Tailwind CSS frontend with full React Hooks functionality.
 
-The application contains: Responsive Student Navigation shell, reusable Shared UI Components, Student Dashboard (counts and sections derived from mock data via useMemo; time-of-day greeting and document title via useEffect), Deadlines Page (live search + status/subject/type/priority filters all functional), Announcements Page (live search + category/priority/date filters all functional), Welcome / Role Selection Screen, Student Login UI, Student Registration UI, Teacher/Admin Login UI, Join Class UI, and the complete Teacher/Admin layout including Classes Page, Join Requests, Deadline Management (Add/Edit/Delete wired to useState), and Announcement Management (Add/Edit/Delete/Pin wired to useState).
+Page flow: Landing Page → Role Selection → Student / Teacher-Admin flow.
+
+The application contains: Public Landing Page (hero-style intro, minimal navbar, decorative visual panel), Responsive Student Navigation shell, reusable Shared UI Components, Student Dashboard (counts and sections derived from mock data via useMemo; time-of-day greeting and document title via useEffect), Deadlines Page (live search + status/subject/type/priority filters all functional), Announcements Page (live search + category/priority/date filters all functional), Welcome / Role Selection Screen, Student Login UI, Student Registration UI, Teacher/Admin Login UI, Join Class UI, and the complete Teacher/Admin layout including Classes Page, Join Requests, Deadline Management (Add/Edit/Delete wired to useState), and Announcement Management (Add/Edit/Delete/Pin wired to useState).
 
 ---
 

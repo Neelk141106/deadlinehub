@@ -478,3 +478,18 @@ Status: DONE
 - Review all dynamic behavior
 - Ensure no backend dependencies were introduced
 - Verify performance and UX
+
+---
+
+# UI Enhancements (Post-Experiment 2)
+
+### UI-ENH-001 — Public Landing Page
+Status: DONE
+
+- Add clean, modern, minimal hero-style intro landing page before Role Selection
+- Navbar with logo, Home, About, Log In, and Get Started CTAs
+- Hero section with badge ("Smart Academic Deadline & Announcement Board"), heading ("Never miss what matters."), supporting text, and CTAs ("Get Started", "Log In")
+- Right-side academic decorative visual panel with floating cards and subtle SVG icons
+- Light background with subtle violet gradient blobs, dot patterns, and wave accent strip
+- Responsive 2-column desktop / stacked mobile layout
+- Full preservation of downstream Role Selection, Student, and Teacher/Admin application flows

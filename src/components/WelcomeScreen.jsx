@@ -1,8 +1,19 @@
 import React from 'react';
 
-export function WelcomeScreen({ onSelectRole }) {
+export function WelcomeScreen({ onSelectRole, onBack }) {
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
+    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4 relative">
+      {onBack && (
+        <button
+          onClick={onBack}
+          className="absolute top-6 left-6 inline-flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-indigo-600 transition-colors"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+          </svg>
+          Back to Home
+        </button>
+      )}
       <div className="w-full max-w-3xl flex flex-col items-center">
         {/* Brand & Header */}
         <div className="text-center mb-12">

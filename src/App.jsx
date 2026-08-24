@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { LandingPage } from './components/LandingPage';
 import { StudentDashboard } from './components/StudentDashboard';
 import { DeadlinesPage } from './components/DeadlinesPage';
 import { AnnouncementsPage } from './components/AnnouncementsPage';
@@ -11,7 +12,7 @@ import { ClassesPage } from './components/ClassesPage';
 import { JoinRequestsPage } from './components/JoinRequestsPage';
 
 function App() {
-  const [currentView, setCurrentView] = useState('welcome');
+  const [currentView, setCurrentView] = useState('landing');
   const [activeTab, setActiveTab] = useState('deadlines');
   const [userRole, setUserRole] = useState('student');
 
@@ -22,11 +23,23 @@ function App() {
         : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
     }`;
 
+  if (currentView === 'landing') {
+    return (
+      <LandingPage
+        onGetStarted={() => setCurrentView('welcome')}
+        onLogin={() => setCurrentView('welcome')}
+      />
+    );
+  }
+
   if (currentView === 'welcome') {
-    return <WelcomeScreen onSelectRole={(role) => {
-      if (role === 'student') setCurrentView('studentLogin');
-      else if (role === 'teacher') setCurrentView('teacherLogin');
-    }} />;
+    return <WelcomeScreen 
+      onSelectRole={(role) => {
+        if (role === 'student') setCurrentView('studentLogin');
+        else if (role === 'teacher') setCurrentView('teacherLogin');
+      }}
+      onBack={() => setCurrentView('landing')}
+    />;
   }
 
   if (currentView === 'studentLogin') {

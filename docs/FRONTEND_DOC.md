@@ -94,11 +94,14 @@ Do not compress the desktop sidebar into an unusable mobile layout.
 
 ---
 
-# 4. Welcome / Role Selection
+# 4. Public Landing Page & Welcome / Role Selection
 
-The first screen should clearly distinguish between the two user types.
+The application starts with a clean, modern, minimal hero-style public Intro Landing Page before the Role Selection screen.
 
-Actions:
+Page Flow:
+Landing Page → Get Started / Log In → Role Selection → Student / Teacher-Admin flow.
+
+Welcome / Role Selection actions:
 
 - I'm a Student
 - I'm a Teacher / Admin
