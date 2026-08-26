@@ -2,7 +2,8 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { DeadlineCard } from './DeadlineCard';
 import { AnnouncementCard } from './AnnouncementCard';
 import { SectionHeader } from './ui/SectionHeader';
-import { MOCK_DEADLINES, MOCK_ANNOUNCEMENTS } from '../data/mockData';
+import { useDeadlines } from '../context/DeadlineContext';
+import { MOCK_ANNOUNCEMENTS } from '../data/mockData';
 import { getDeadlineStatus } from '../utils/deadlineStatus';
 
 // ── EH-009: greeting based on current hour ────────────────────────────────────
@@ -14,26 +15,16 @@ function getGreeting() {
 }
 
 export function StudentDashboard() {
+  const { deadlines } = useDeadlines();
+
   // ── EH-009: useEffect — live greeting & document title ─────────────────────
-  //
-  // WHY useEffect?
-  //   Reading the clock and setting document.title are SIDE EFFECTS: they
-  //   interact with things outside React's render tree (the system clock and
-  //   the browser tab). The correct place for side effects in React is
-  //   useEffect.
-  //
-  // DEPENDENCY ARRAY: []
-  //   Runs once on mount. We set the greeting and document title when the
-  //   dashboard first loads. The cleanup resets the tab title when the user
-  //   navigates away.
-  //
   const [greeting, setGreeting] = useState(getGreeting());
 
   useEffect(() => {
-    // Update greeting and document title on mount
+    // Update greeting and document title on mount or when deadlines change
     setGreeting(getGreeting());
 
-    const urgentCount = MOCK_DEADLINES.filter((d) => {
+    const urgentCount = deadlines.filter((d) => {
       const s = getDeadlineStatus(d.dueDate);
       return s === 'today' || s === 'tomorrow';
     }).length;
@@ -46,22 +37,22 @@ export function StudentDashboard() {
     return () => {
       document.title = 'DeadlineHub';
     };
-  }, []); // runs once on mount; greeting and title are time-of-day values
+  }, [deadlines]);
 
-  // ── EH-008: derived deadline counts & sections ────────────────────────────
+  // ── EH-008 & E3-003: derived deadline counts & sections from DeadlineContext ──────
   const deadlineStats = useMemo(() => {
-    const dueSoon  = MOCK_DEADLINES.filter((d) => {
+    const dueSoon  = deadlines.filter((d) => {
       const s = getDeadlineStatus(d.dueDate);
       return s === 'today' || s === 'tomorrow';
     });
 
-    const thisWeek = MOCK_DEADLINES.filter((d) => {
+    const thisWeek = deadlines.filter((d) => {
       const s = getDeadlineStatus(d.dueDate);
       return s === 'today' || s === 'tomorrow' || s === 'this-week';
     });
 
     // Needs Attention: today, tomorrow, or high-priority approaching
-    const needsAttention = MOCK_DEADLINES.filter((d) => {
+    const needsAttention = deadlines.filter((d) => {
       const s = getDeadlineStatus(d.dueDate);
       if (s === 'past') return false;
       if (s === 'today' || s === 'tomorrow') return true;
@@ -70,12 +61,13 @@ export function StudentDashboard() {
     });
 
     // Upcoming: everything not past, sorted by dueDate ascending
-    const upcoming = MOCK_DEADLINES
+    const upcoming = [...deadlines]
       .filter((d) => getDeadlineStatus(d.dueDate) !== 'past')
       .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate));
 
     return { dueSoonCount: dueSoon.length, thisWeekCount: thisWeek.length, needsAttention, upcoming };
-  }, []); // MOCK_DEADLINES is module-level constant; no deps change
+  }, [deadlines]);
+
 
   // ── EH-008: derived announcements — latest 3 (pinned first, then by time) ─
   const latestAnnouncements = useMemo(() => {

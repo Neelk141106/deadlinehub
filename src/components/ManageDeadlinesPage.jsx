@@ -1,34 +1,5 @@
 import React, { useState } from 'react';
-
-// Initial seed data
-const INITIAL_DEADLINES = [
-  {
-    id: 1,
-    subject: 'Full Stack Development',
-    title: 'Experiment 4',
-    type: 'Practical',
-    priority: 'Important',
-    dueDate: '',
-    dueTime: '23:59',
-    branch: 'Information Technology',
-    semester: 'Semester 5',
-    division: 'D15C',
-    description: '',
-  },
-  {
-    id: 2,
-    subject: 'Analysis of Algorithms',
-    title: 'Assignment 2',
-    type: 'Assignment',
-    priority: 'Urgent',
-    dueDate: '',
-    dueTime: '23:59',
-    branch: 'Information Technology',
-    semester: 'Semester 5',
-    division: 'All Divisions',
-    description: '',
-  },
-];
+import { useDeadlines } from '../context/DeadlineContext';
 
 const EMPTY_FORM = {
   subject: '',
@@ -186,7 +157,7 @@ function DeadlineForm({ heading, subheading, form, onChange, onSubmit, onCancel,
 
 // ── Main page ─────────────────────────────────────────────────────────────────
 export function ManageDeadlinesPage() {
-  const [deadlines, setDeadlines] = useState(INITIAL_DEADLINES);
+  const { deadlines, addDeadline, updateDeadline, deleteDeadline } = useDeadlines();
   const [view, setView] = useState('list'); // 'list' | 'add' | 'edit'
   const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState(EMPTY_FORM);
@@ -203,7 +174,16 @@ export function ManageDeadlinesPage() {
 
   const openEdit = (deadline) => {
     setEditingId(deadline.id);
-    setForm({ ...EMPTY_FORM, ...deadline });
+    let dateStr = '';
+    if (deadline.dueDate) {
+      dateStr = deadline.dueDate.includes('T') ? deadline.dueDate.split('T')[0] : deadline.dueDate;
+    }
+    setForm({
+      ...EMPTY_FORM,
+      ...deadline,
+      dueDate: dateStr,
+      dueTime: deadline.dueTime || '23:59',
+    });
     setView('edit');
   };
 
@@ -214,23 +194,35 @@ export function ManageDeadlinesPage() {
 
   const handleAdd = (e) => {
     e.preventDefault();
-    const newDeadline = { ...form, id: Date.now() };
-    setDeadlines((prev) => [newDeadline, ...prev]);
+    const formattedDueDate = form.dueDate
+      ? (form.dueDate.includes('T') ? form.dueDate : new Date(`${form.dueDate}T${form.dueTime || '23:59'}`).toISOString())
+      : new Date().toISOString();
+
+    addDeadline({
+      ...form,
+      dueDate: formattedDueDate,
+    });
     setView('list');
   };
 
   const handleEdit = (e) => {
     e.preventDefault();
-    setDeadlines((prev) =>
-      prev.map((d) => (d.id === editingId ? { ...form, id: editingId } : d))
-    );
+    const formattedDueDate = form.dueDate
+      ? (form.dueDate.includes('T') ? form.dueDate : new Date(`${form.dueDate}T${form.dueTime || '23:59'}`).toISOString())
+      : new Date().toISOString();
+
+    updateDeadline(editingId, {
+      ...form,
+      dueDate: formattedDueDate,
+    });
     setView('list');
     setEditingId(null);
   };
 
   const handleDelete = (id) => {
-    setDeadlines((prev) => prev.filter((d) => d.id !== id));
+    deleteDeadline(id);
   };
+
 
   // ── Form views ──
   if (view === 'add') {

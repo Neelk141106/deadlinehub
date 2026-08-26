@@ -2,10 +2,12 @@ import React, { useState, useMemo } from 'react';
 import { PageHeader } from './ui/PageHeader';
 import { Input } from './ui/Input';
 import { DeadlineCard } from './DeadlineCard';
-import { MOCK_DEADLINES } from '../data/mockData';
+import { useDeadlines } from '../context/DeadlineContext';
 import { getDeadlineStatus } from '../utils/deadlineStatus';
 
 export function DeadlinesPage() {
+  const { deadlines } = useDeadlines();
+
   // --- State ---
   const [searchQuery, setSearchQuery]     = useState('');
   const [statusFilter, setStatusFilter]   = useState('');
@@ -16,7 +18,7 @@ export function DeadlinesPage() {
   const filteredDeadlines = useMemo(() => {
     const query = searchQuery.toLowerCase();
 
-    return MOCK_DEADLINES.filter((deadline) => {
+    return deadlines.filter((deadline) => {
       // 1. Search: title or subject
       if (query && !deadline.title.toLowerCase().includes(query) && !deadline.subject.toLowerCase().includes(query)) {
         return false;
@@ -39,7 +41,8 @@ export function DeadlinesPage() {
 
       return true;
     });
-  }, [searchQuery, statusFilter, subjectFilter, typeFilter, priorityFilter]);
+  }, [deadlines, searchQuery, statusFilter, subjectFilter, typeFilter, priorityFilter]);
+
 
   // --- Render ---
   return (
