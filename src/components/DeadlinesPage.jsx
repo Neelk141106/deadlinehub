@@ -16,12 +16,14 @@ export function DeadlinesPage() {
   const [priorityFilter, setPriorityFilter] = useState('');
 
   const filteredDeadlines = useMemo(() => {
-    const query = searchQuery.toLowerCase();
+    const query = searchQuery.toLowerCase().trim();
 
     return deadlines.filter((deadline) => {
       // 1. Search: title or subject
-      if (query && !deadline.title.toLowerCase().includes(query) && !deadline.subject.toLowerCase().includes(query)) {
-        return false;
+      if (query) {
+        const titleMatch = deadline.title ? deadline.title.toLowerCase().includes(query) : false;
+        const subjectMatch = deadline.subject ? deadline.subject.toLowerCase().includes(query) : false;
+        if (!titleMatch && !subjectMatch) return false;
       }
 
       // 2. Status filter: compare against calculated status string
@@ -31,13 +33,13 @@ export function DeadlinesPage() {
       }
 
       // 3. Subject filter
-      if (subjectFilter && deadline.subject !== subjectFilter) return false;
+      if (subjectFilter && deadline.subject?.toLowerCase() !== subjectFilter.toLowerCase()) return false;
 
-      // 4. Type filter
-      if (typeFilter && deadline.type !== typeFilter) return false;
+      // 4. Type filter (case-insensitive)
+      if (typeFilter && deadline.type?.toLowerCase() !== typeFilter.toLowerCase()) return false;
 
-      // 5. Priority filter (case-insensitive comparison)
-      if (priorityFilter && deadline.priority.toLowerCase() !== priorityFilter.toLowerCase()) return false;
+      // 5. Priority filter (case-insensitive)
+      if (priorityFilter && deadline.priority?.toLowerCase() !== priorityFilter.toLowerCase()) return false;
 
       return true;
     });
@@ -105,11 +107,14 @@ export function DeadlinesPage() {
             onChange={(e) => setTypeFilter(e.target.value)}
           >
             <option value="">Type: All</option>
-            <option value="assignment">Assignment</option>
-            <option value="experiment">Experiment</option>
-            <option value="practical">Practical</option>
-            <option value="quiz">Quiz</option>
-            <option value="project">Project</option>
+            <option value="Assignment">Assignment</option>
+            <option value="Experiment">Experiment</option>
+            <option value="Practical">Practical</option>
+            <option value="Quiz">Quiz</option>
+            <option value="Exam">Exam</option>
+            <option value="Viva">Viva</option>
+            <option value="Project">Project</option>
+            <option value="Other">Other</option>
           </select>
 
           {/* Priority */}
@@ -125,6 +130,7 @@ export function DeadlinesPage() {
           </select>
         </div>
       </div>
+
 
       {/* Deadlines Grid */}
       {filteredDeadlines.length > 0 ? (
