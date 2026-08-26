@@ -3,7 +3,7 @@ import { DeadlineCard } from './DeadlineCard';
 import { AnnouncementCard } from './AnnouncementCard';
 import { SectionHeader } from './ui/SectionHeader';
 import { useDeadlines } from '../context/DeadlineContext';
-import { MOCK_ANNOUNCEMENTS } from '../data/mockData';
+import { useAnnouncements } from '../context/AnnouncementContext';
 import { getDeadlineStatus } from '../utils/deadlineStatus';
 
 // ── EH-009: greeting based on current hour ────────────────────────────────────
@@ -16,6 +16,7 @@ function getGreeting() {
 
 export function StudentDashboard() {
   const { deadlines } = useDeadlines();
+  const { announcements } = useAnnouncements();
 
   // ── EH-009: useEffect — live greeting & document title ─────────────────────
   const [greeting, setGreeting] = useState(getGreeting());
@@ -68,16 +69,17 @@ export function StudentDashboard() {
     return { dueSoonCount: dueSoon.length, thisWeekCount: thisWeek.length, needsAttention, upcoming };
   }, [deadlines]);
 
-
-  // ── EH-008: derived announcements — latest 3 (pinned first, then by time) ─
+  // ── EH-008 & E3-006: derived announcements from AnnouncementContext — latest 3 ─
   const latestAnnouncements = useMemo(() => {
-    return [...MOCK_ANNOUNCEMENTS]
+    return [...announcements]
       .sort((a, b) => {
         if (a.isPinned !== b.isPinned) return a.isPinned ? -1 : 1;
-        return b.postedAt - a.postedAt;
+        const timeA = a.postedAt ? new Date(a.postedAt).getTime() : 0;
+        const timeB = b.postedAt ? new Date(b.postedAt).getTime() : 0;
+        return timeB - timeA;
       })
       .slice(0, 3);
-  }, []);
+  }, [announcements]);
 
   return (
     <div className="max-w-6xl mx-auto space-y-8">
@@ -106,10 +108,11 @@ export function StudentDashboard() {
           <span className="text-xs font-medium text-gray-500 mt-1 uppercase tracking-wide">This Week</span>
         </div>
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex flex-col items-center text-center col-span-2 sm:col-span-1">
-          <span className="text-3xl font-bold text-primary-600">{MOCK_ANNOUNCEMENTS.length}</span>
+          <span className="text-3xl font-bold text-primary-600">{announcements.length}</span>
           <span className="text-xs font-medium text-gray-500 mt-1 uppercase tracking-wide">Announcements</span>
         </div>
       </div>
+
 
       {/* Main Grid Layout for Desktop/Tablet */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

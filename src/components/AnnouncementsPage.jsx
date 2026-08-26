@@ -2,24 +2,28 @@ import React, { useState, useMemo } from 'react';
 import { PageHeader } from './ui/PageHeader';
 import { Input } from './ui/Input';
 import { AnnouncementCard } from './AnnouncementCard';
-import { MOCK_ANNOUNCEMENTS } from '../data/mockData';
+import { useAnnouncements } from '../context/AnnouncementContext';
 
 // Helper: bucket a Date into a filter category
 function getAnnouncementDateBucket(date) {
+  if (!date) return 'older';
+  const d = new Date(date);
   const now = new Date();
   const today = new Date(now); today.setHours(0, 0, 0, 0);
   const yesterday = new Date(today); yesterday.setDate(today.getDate() - 1);
   const weekStart = new Date(today); weekStart.setDate(today.getDate() - 7);
   const monthStart = new Date(today); monthStart.setDate(today.getDate() - 30);
 
-  if (date >= today)       return 'today';
-  if (date >= yesterday)   return 'yesterday';
-  if (date >= weekStart)   return 'this-week';
-  if (date >= monthStart)  return 'this-month';
+  if (d >= today)       return 'today';
+  if (d >= yesterday)   return 'yesterday';
+  if (d >= weekStart)   return 'this-week';
+  if (d >= monthStart)  return 'this-month';
   return 'older';
 }
 
 export function AnnouncementsPage() {
+  const { announcements } = useAnnouncements();
+
   const [searchQuery, setSearchQuery]       = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
   const [priorityFilter, setPriorityFilter] = useState('');
@@ -28,24 +32,28 @@ export function AnnouncementsPage() {
   const filteredAnnouncements = useMemo(() => {
     const query = searchQuery.toLowerCase();
 
-    return MOCK_ANNOUNCEMENTS.filter((a) => {
+    return announcements.filter((a) => {
       // 1. Search: title or message
       if (query && !a.title.toLowerCase().includes(query) && !a.message.toLowerCase().includes(query)) {
         return false;
       }
 
       // 2. Category filter
-      if (categoryFilter && a.category !== categoryFilter) return false;
+      if (categoryFilter && a.category.toLowerCase() !== categoryFilter.toLowerCase()) return false;
 
-      // 3. Priority filter: matches priorityVariant ('urgent' | 'important' | 'normal')
-      if (priorityFilter && a.priorityVariant !== priorityFilter) return false;
+      // 3. Priority filter: matches priorityVariant or priority
+      if (priorityFilter) {
+        const variant = a.priorityVariant || (a.priority ? a.priority.toLowerCase() : 'normal');
+        if (variant.toLowerCase() !== priorityFilter.toLowerCase()) return false;
+      }
 
       // 4. Date filter
       if (dateFilter && getAnnouncementDateBucket(a.postedAt) !== dateFilter) return false;
 
       return true;
     });
-  }, [searchQuery, categoryFilter, priorityFilter, dateFilter]);
+  }, [announcements, searchQuery, categoryFilter, priorityFilter, dateFilter]);
+
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">

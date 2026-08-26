@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState } from 'react';
 import { MOCK_DEADLINES } from '../data/mockData';
+import { AnnouncementProvider } from './AnnouncementContext';
 
 const DeadlineContext = createContext();
 
@@ -38,10 +39,13 @@ export function DeadlineProvider({ children }) {
         removeDeadline,
       }}
     >
-      {children}
+      <AnnouncementProvider>
+        {children}
+      </AnnouncementProvider>
     </DeadlineContext.Provider>
   );
 }
+
 
 export function useDeadlines() {
   const context = useContext(DeadlineContext);

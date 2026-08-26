@@ -1,32 +1,5 @@
 import React, { useState } from 'react';
-
-// Initial seed data
-const INITIAL_ANNOUNCEMENTS = [
-  {
-    id: 1,
-    title: 'DBMS Practical Room Changed',
-    message: "Tomorrow's practical will be conducted in Lab 405 instead of Lab 301 due to network maintenance.",
-    category: 'Practical',
-    priority: 'Urgent',
-    isPinned: true,
-    branch: 'Information Technology',
-    semester: 'Semester 5',
-    division: 'D15C',
-    time: '2 hours ago',
-  },
-  {
-    id: 2,
-    title: 'Guest Lecture on AI',
-    message: "There will be a guest lecture on 'AI in Healthcare' this Friday at 2:00 PM in the Main Seminar Hall.",
-    category: 'Event',
-    priority: 'Normal',
-    isPinned: false,
-    branch: 'Information Technology',
-    semester: 'Semester 5',
-    division: 'All Divisions',
-    time: '1 day ago',
-  },
-];
+import { useAnnouncements } from '../context/AnnouncementContext';
 
 const EMPTY_FORM = {
   title: '',
@@ -170,7 +143,7 @@ function AnnouncementForm({ heading, subheading, form, onChange, onSubmit, onCan
 
 // ── Main page ─────────────────────────────────────────────────────────────────
 export function ManageAnnouncementsPage() {
-  const [announcements, setAnnouncements] = useState(INITIAL_ANNOUNCEMENTS);
+  const { announcements, addAnnouncement, updateAnnouncement, deleteAnnouncement, togglePin } = useAnnouncements();
   const [view, setView] = useState('list'); // 'list' | 'add' | 'edit'
   const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState(EMPTY_FORM);
@@ -198,29 +171,31 @@ export function ManageAnnouncementsPage() {
 
   const handleAdd = (e) => {
     e.preventDefault();
-    const newAnnouncement = { ...form, id: Date.now(), time: 'Just now' };
-    setAnnouncements((prev) => [newAnnouncement, ...prev]);
+    addAnnouncement({
+      ...form,
+      postedTime: 'Just now',
+      postedAt: new Date(),
+    });
     setView('list');
   };
 
   const handleEdit = (e) => {
     e.preventDefault();
-    setAnnouncements((prev) =>
-      prev.map((a) => (a.id === editingId ? { ...form, id: editingId, time: a.time } : a))
-    );
+    updateAnnouncement(editingId, {
+      ...form,
+    });
     setView('list');
     setEditingId(null);
   };
 
   const handleDelete = (id) => {
-    setAnnouncements((prev) => prev.filter((a) => a.id !== id));
+    deleteAnnouncement(id);
   };
 
   const handleTogglePin = (id) => {
-    setAnnouncements((prev) =>
-      prev.map((a) => (a.id === id ? { ...a, isPinned: !a.isPinned } : a))
-    );
+    togglePin(id);
   };
+
 
   // ── Form views ──
   if (view === 'add') {
