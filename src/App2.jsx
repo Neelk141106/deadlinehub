@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { LandingPage } from './components/LandingPage';
+import { AppWelcome } from './components/AppWelcome';
 import { StudentDashboard } from './components/StudentDashboard';
 import { DeadlinesPage } from './components/DeadlinesPage';
 import { AnnouncementsPage } from './components/AnnouncementsPage';
@@ -27,9 +27,8 @@ function App() {
 
   if (currentView === 'landing') {
     return (
-      <LandingPage
+      <AppWelcome
         onGetStarted={() => setCurrentView('welcome')}
-        onLogin={() => setCurrentView('welcome')}
       />
     );
   }

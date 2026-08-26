@@ -55,6 +55,25 @@ function BookIcon({ className = 'w-6 h-6' }) {
   );
 }
 
+function UserGroupIcon({ className = 'w-6 h-6' }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M17 21V19A4 4 0 0 0 13 15H5A4 4 0 0 0 1 19V21" stroke="#4F46E5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      <circle cx="9" cy="7" r="4" fill="#EEF2FF" stroke="#4F46E5" strokeWidth="2" />
+      <path d="M23 21V19A4 4 0 0 0 19 15.13" stroke="#7C3AED" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M16 3.13A4 4 0 0 1 16 11" stroke="#7C3AED" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function SparklesIcon({ className = 'w-6 h-6' }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z" fill="#F5F3FF" stroke="#7C3AED" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 // ─── Student Desk & Laptop Graphic (Pure SVG Illustration) ─────────────────
 
 function StudentLaptopIllustration({ className = '' }) {
@@ -74,7 +93,7 @@ function StudentLaptopIllustration({ className = '' }) {
       <rect x="90" y="90" width="140" height="74" rx="6" fill="#1E1B4B" stroke="#4338CA" strokeWidth="3" />
       {/* Screen Display Content */}
       <rect x="98" y="98" width="124" height="58" rx="3" fill="#312E81" />
-      {/* Academic code / lines on screen */}
+      {/* Academic lines on screen */}
       <rect x="106" y="106" width="50" height="5" rx="2.5" fill="#818CF8" />
       <rect x="106" y="116" width="75" height="5" rx="2.5" fill="#A5B4FC" />
       <rect x="106" y="126" width="60" height="5" rx="2.5" fill="#C7D2FE" />
@@ -97,28 +116,94 @@ function StudentLaptopIllustration({ className = '' }) {
   );
 }
 
-// ─── Decorative Floating Card Component ─────────────────────────────────────
+// ─── Shared Academic Overview Visual ────────────────────────────────────────
 
-function FloatingCard({ icon, title, subtitle, badgeText, badgeColor = 'bg-indigo-50 text-indigo-700', delay = '0s' }) {
+function AcademicOverviewVisual() {
   return (
-    <div
-      className="flex items-center gap-3.5 bg-white/95 backdrop-blur rounded-2xl p-4 shadow-lg shadow-indigo-100/50 border border-indigo-100/80 transition-all hover:scale-[1.02]"
-      style={{ animation: `dhFloat 4.5s ease-in-out ${delay} infinite` }}
-    >
-      <div className="flex-shrink-0">
-        {icon}
-      </div>
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center justify-between gap-2 mb-1">
-          <p className="text-sm font-bold text-gray-900 truncate leading-tight">{title}</p>
-          {badgeText && (
-            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full flex-shrink-0 ${badgeColor}`}>
-              {badgeText}
-            </span>
-          )}
+    <div className="relative w-full max-w-lg lg:max-w-xl bg-gradient-to-br from-indigo-50/70 via-white to-violet-50/70 rounded-3xl p-6 sm:p-8 border border-indigo-100/80 shadow-xl shadow-indigo-100/40">
+      
+      {/* Decorative Glass Header Bar */}
+      <div className="flex items-center justify-between pb-4 mb-4 border-b border-indigo-100/60">
+        <div className="flex items-center gap-2">
+          <span className="w-3 h-3 rounded-full bg-red-400 opacity-80" />
+          <span className="w-3 h-3 rounded-full bg-amber-400 opacity-80" />
+          <span className="w-3 h-3 rounded-full bg-emerald-400 opacity-80" />
         </div>
-        <p className="text-xs text-gray-500 truncate font-medium">{subtitle}</p>
+        <span className="text-xs font-semibold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-100">
+          Academic Overview
+        </span>
       </div>
+
+      {/* Center Student & Desk Graphic */}
+      <div className="flex justify-center my-2">
+        <StudentLaptopIllustration className="w-full h-auto max-h-44 drop-shadow-sm" />
+      </div>
+
+      {/* Decorative Tabs Ribbon */}
+      <div className="flex items-center justify-around py-3 my-3 bg-white/90 rounded-2xl border border-indigo-50 shadow-xs">
+        <div className="flex items-center gap-1.5 text-xs font-semibold text-gray-800">
+          <ClockIcon className="w-4 h-4 text-indigo-600" />
+          <span>Deadlines</span>
+        </div>
+        <div className="flex items-center gap-1.5 text-xs font-semibold text-gray-800">
+          <BellIcon className="w-4 h-4 text-violet-600" />
+          <span>Alerts</span>
+        </div>
+        <div className="flex items-center gap-1.5 text-xs font-semibold text-gray-800">
+          <CalendarIcon className="w-4 h-4 text-indigo-600" />
+          <span>Schedule</span>
+        </div>
+        <div className="flex items-center gap-1.5 text-xs font-semibold text-gray-800">
+          <BookIcon className="w-4 h-4 text-indigo-600" />
+          <span>Subjects</span>
+        </div>
+      </div>
+
+      {/* Sample Floating Academic Cards */}
+      <div className="space-y-3 mt-4">
+        {/* Card 1: Assignment */}
+        <div className="flex items-center gap-3.5 bg-white/95 backdrop-blur rounded-2xl p-3.5 shadow-md shadow-indigo-100/40 border border-indigo-100/80">
+          <ClockIcon className="w-6 h-6 flex-shrink-0 text-indigo-600" />
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center justify-between gap-2 mb-0.5">
+              <p className="text-xs sm:text-sm font-bold text-gray-900 truncate">Assignment Due — Tomorrow</p>
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-red-50 text-red-700 border border-red-100 flex-shrink-0">
+                Due Tomorrow
+              </span>
+            </div>
+            <p className="text-[11px] text-gray-500 truncate font-medium">Analysis of Algorithms • High Priority</p>
+          </div>
+        </div>
+
+        {/* Card 2: Announcement */}
+        <div className="flex items-center gap-3.5 bg-white/95 backdrop-blur rounded-2xl p-3.5 shadow-md shadow-indigo-100/40 border border-indigo-100/80">
+          <BellIcon className="w-6 h-6 flex-shrink-0 text-violet-600" />
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center justify-between gap-2 mb-0.5">
+              <p className="text-xs sm:text-sm font-bold text-gray-900 truncate">DBMS Practical Room Changed</p>
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-violet-50 text-violet-700 border border-violet-100 flex-shrink-0">
+                Urgent
+              </span>
+            </div>
+            <p className="text-[11px] text-gray-500 truncate font-medium">Lab 405 instead of Lab 301 • Urgent</p>
+          </div>
+        </div>
+
+        {/* Card 3: Project Review */}
+        <div className="flex items-center gap-3.5 bg-white/95 backdrop-blur rounded-2xl p-3.5 shadow-md shadow-indigo-100/40 border border-indigo-100/80">
+          <CheckIcon className="w-6 h-6 flex-shrink-0 text-emerald-600" />
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center justify-between gap-2 mb-0.5">
+              <p className="text-xs sm:text-sm font-bold text-gray-900 truncate">Project Review Scheduled</p>
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-100 flex-shrink-0">
+                Confirmed
+              </span>
+            </div>
+            <p className="text-[11px] text-gray-500 truncate font-medium">Full Stack Development • 24 Aug • 10:00 AM</p>
+          </div>
+        </div>
+      </div>
+
     </div>
   );
 }
@@ -143,11 +228,18 @@ function HamburgerIcon({ open }) {
 // ─── Main LandingPage Component ──────────────────────────────────────────────
 
 export function LandingPage({ onGetStarted, onLogin }) {
+  const [activeTab, setActiveTab] = useState('home'); // 'home' | 'about'
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
-    document.title = 'DeadlineHub — Smart Academic Deadline & Announcement Board';
+    document.title = activeTab === 'about'
+      ? 'About DeadlineHub — Smart Academic Platform'
+      : 'DeadlineHub — Smart Academic Deadline & Announcement Board';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [activeTab]);
+
+  useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
@@ -156,22 +248,18 @@ export function LandingPage({ onGetStarted, onLogin }) {
   return (
     <>
       <style>{`
-        @keyframes dhFloat {
-          0%, 100% { transform: translateY(0px); }
-          50% { transform: translateY(-7px); }
-        }
         @keyframes dhFadeUp {
-          from { opacity: 0; transform: translateY(22px); }
+          from { opacity: 0; transform: translateY(18px); }
           to   { opacity: 1; transform: translateY(0); }
         }
         @keyframes dhBlob {
           0%, 100% { border-radius: 60% 40% 55% 45% / 55% 45% 60% 40%; }
           50%       { border-radius: 45% 55% 40% 60% / 40% 60% 45% 55%; }
         }
-        .dh-fade-up   { animation: dhFadeUp 0.6s 0.0s cubic-bezier(0.16, 1, 0.3, 1) both; }
-        .dh-fade-up-1 { animation: dhFadeUp 0.6s 0.1s cubic-bezier(0.16, 1, 0.3, 1) both; }
-        .dh-fade-up-2 { animation: dhFadeUp 0.6s 0.2s cubic-bezier(0.16, 1, 0.3, 1) both; }
-        .dh-fade-up-3 { animation: dhFadeUp 0.6s 0.3s cubic-bezier(0.16, 1, 0.3, 1) both; }
+        .dh-fade-up   { animation: dhFadeUp 0.5s 0.0s cubic-bezier(0.16, 1, 0.3, 1) both; }
+        .dh-fade-up-1 { animation: dhFadeUp 0.5s 0.08s cubic-bezier(0.16, 1, 0.3, 1) both; }
+        .dh-fade-up-2 { animation: dhFadeUp 0.5s 0.16s cubic-bezier(0.16, 1, 0.3, 1) both; }
+        .dh-fade-up-3 { animation: dhFadeUp 0.5s 0.24s cubic-bezier(0.16, 1, 0.3, 1) both; }
         .dh-blob      { animation: dhBlob 10s ease-in-out infinite; }
         .dh-blob-slow { animation: dhBlob 14s ease-in-out infinite reverse; }
       `}</style>
@@ -180,17 +268,14 @@ export function LandingPage({ onGetStarted, onLogin }) {
 
         {/* ── Background Decorative Elements ─────────────────────────────── */}
         <div aria-hidden="true" className="pointer-events-none select-none">
-          {/* Top right gradient blob */}
           <div
             className="dh-blob absolute -top-40 -right-40 w-[600px] h-[600px] opacity-10"
             style={{ background: 'radial-gradient(circle, #4F46E5 0%, #7C3AED 70%, transparent 100%)' }}
           />
-          {/* Mid-left gradient blob */}
           <div
             className="dh-blob-slow absolute top-[35%] -left-32 w-[420px] h-[420px] opacity-[0.07]"
             style={{ background: 'radial-gradient(circle, #818CF8 0%, #C7D2FE 100%)' }}
           />
-          {/* Dot grid pattern top left */}
           <svg className="absolute top-20 left-10 opacity-[0.14]" width="180" height="180" fill="none">
             {Array.from({ length: 6 }).map((_, r) =>
               Array.from({ length: 6 }).map((_, c) => (
@@ -198,47 +283,63 @@ export function LandingPage({ onGetStarted, onLogin }) {
               ))
             )}
           </svg>
-          {/* Dot grid pattern bottom right */}
-          <svg className="absolute bottom-24 right-12 opacity-[0.10]" width="150" height="150" fill="none">
-            {Array.from({ length: 5 }).map((_, r) =>
-              Array.from({ length: 5 }).map((_, c) => (
-                <circle key={`b-${r}-${c}`} cx={c * 30 + 6} cy={r * 30 + 6} r="2.5" fill="#7C3AED"/>
-              ))
-            )}
-          </svg>
         </div>
 
         {/* ═══════════════════════════════════════════════════════════════════
-            PROMINENT NAVBAR
+            NAVBAR WITH LARGER BRANDING & NAV LINKS
         ════════════════════════════════════════════════════════════════════ */}
         <header
           id="landing-navbar"
           className={`sticky top-0 z-50 transition-all duration-300 ${
-            scrolled ? 'bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-xs py-3' : 'bg-transparent py-5'
+            scrolled ? 'bg-white/95 backdrop-blur-md border-b border-gray-100 shadow-xs py-3' : 'bg-transparent py-4'
           }`}
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between">
 
-              {/* Noticeably Larger Brand / Logo */}
-              <div className="flex items-center gap-3.5 flex-shrink-0 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-                <div className="w-11 h-11 rounded-xl bg-indigo-600 flex items-center justify-center shadow-md shadow-indigo-200">
+              {/* Noticeably BIGGER DeadlineHub Branding */}
+              <div 
+                className="flex items-center gap-3.5 cursor-pointer group" 
+                onClick={() => setActiveTab('home')}
+              >
+                <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-indigo-600 flex items-center justify-center shadow-md shadow-indigo-200 group-hover:scale-105 transition-transform">
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                     <circle cx="12" cy="12" r="10"/>
                     <polyline points="12 6 12 16 14"/>
                   </svg>
                 </div>
-                <span className="text-2xl font-extrabold text-gray-900 tracking-tight">DeadlineHub</span>
+                <span className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+                  <span className="text-slate-900">Deadline</span>
+                  <span className="text-indigo-600">Hub</span>
+                </span>
               </div>
 
-              {/* Minimal Desktop Nav Links */}
-              <nav className="hidden md:flex items-center gap-8 text-sm font-semibold">
-                <a href="#" className="text-indigo-600 bg-indigo-50/80 px-3.5 py-1.5 rounded-lg font-bold transition-colors">Home</a>
-                <a href="#about" className="text-gray-600 hover:text-indigo-600 transition-colors">About</a>
+              {/* Minimal Desktop Nav Links with Active State */}
+              <nav className="hidden md:flex items-center gap-2 text-sm font-semibold">
+                <button
+                  onClick={() => setActiveTab('home')}
+                  className={`px-4 py-2 rounded-xl transition-colors ${
+                    activeTab === 'home'
+                      ? 'text-indigo-600 bg-indigo-50 font-bold'
+                      : 'text-gray-600 hover:text-indigo-600 hover:bg-gray-50'
+                  }`}
+                >
+                  Home
+                </button>
+                <button
+                  onClick={() => setActiveTab('about')}
+                  className={`px-4 py-2 rounded-xl transition-colors ${
+                    activeTab === 'about'
+                      ? 'text-indigo-600 bg-indigo-50 font-bold'
+                      : 'text-gray-600 hover:text-indigo-600 hover:bg-gray-50'
+                  }`}
+                >
+                  About
+                </button>
               </nav>
 
               {/* Desktop CTA Buttons */}
-              <div className="hidden md:flex items-center gap-4">
+              <div className="hidden md:flex items-center gap-3">
                 <button
                   id="landing-login-btn"
                   onClick={onLogin}
@@ -272,10 +373,24 @@ export function LandingPage({ onGetStarted, onLogin }) {
 
           {/* Mobile Dropdown Menu */}
           {mobileMenuOpen && (
-            <div className="md:hidden bg-white border-b border-gray-100 shadow-xl animate-fadeIn">
-              <div className="flex flex-col px-5 py-5 gap-3.5 text-base font-semibold">
-                <a href="#" className="text-indigo-600 bg-indigo-50 px-3.5 py-2 rounded-lg font-bold" onClick={() => setMobileMenuOpen(false)}>Home</a>
-                <a href="#about" className="text-gray-700 hover:text-indigo-600 px-3.5 py-2 rounded-lg" onClick={() => setMobileMenuOpen(false)}>About</a>
+            <div className="md:hidden bg-white border-b border-gray-100 shadow-xl">
+              <div className="flex flex-col px-5 py-4 gap-2 text-base font-semibold">
+                <button
+                  onClick={() => { setActiveTab('home'); setMobileMenuOpen(false); }}
+                  className={`text-left px-3.5 py-2 rounded-lg ${
+                    activeTab === 'home' ? 'text-indigo-600 bg-indigo-50 font-bold' : 'text-gray-700'
+                  }`}
+                >
+                  Home
+                </button>
+                <button
+                  onClick={() => { setActiveTab('about'); setMobileMenuOpen(false); }}
+                  className={`text-left px-3.5 py-2 rounded-lg ${
+                    activeTab === 'about' ? 'text-indigo-600 bg-indigo-50 font-bold' : 'text-gray-700'
+                  }`}
+                >
+                  About
+                </button>
                 <hr className="border-gray-100 my-1"/>
                 <button
                   id="landing-login-mobile"
@@ -297,156 +412,224 @@ export function LandingPage({ onGetStarted, onLogin }) {
         </header>
 
         {/* ═══════════════════════════════════════════════════════════════════
-            WELL-BALANCED TWO-COLUMN HERO SECTION
+            TAB 1: HOME VIEW (INTRO HERO ONLY)
         ════════════════════════════════════════════════════════════════════ */}
-        <main className="flex-1 flex items-center max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12 w-full">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center w-full">
+        {activeTab === 'home' && (
+          <main className="flex-1 flex items-center max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12 w-full">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center w-full">
 
-            {/* ── LEFT COLUMN: Hero Content ────────────────────────────────── */}
-            <div className="lg:col-span-6 text-center lg:text-left flex flex-col justify-center">
+              {/* ── LEFT COLUMN: Home Hero Content ─────────────────────────── */}
+              <div className="lg:col-span-6 text-center lg:text-left flex flex-col justify-center">
 
-              {/* Badge */}
-              <div className="dh-fade-up inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-700 text-xs sm:text-sm font-semibold mb-6 mx-auto lg:mx-0 w-fit shadow-xs">
-                <span className="w-2 h-2 rounded-full bg-indigo-600 animate-pulse inline-block" />
-                Smart Academic Deadline &amp; Announcement Board
-              </div>
-
-              {/* Larger, Bold Heading */}
-              <h1 className="dh-fade-up-1 text-4xl sm:text-6xl lg:text-[4rem] font-extrabold text-gray-900 leading-[1.06] tracking-tight mb-6">
-                Never miss<br />
-                what{' '}
-                <span className="relative inline-block text-indigo-600">
-                  matters.
-                  <span
-                    aria-hidden="true"
-                    className="absolute left-0 bottom-1.5 w-full h-3 bg-indigo-100/90 rounded -z-10"
-                  />
-                </span>
-              </h1>
-
-              {/* Supporting Paragraph */}
-              <p className="dh-fade-up-2 text-base sm:text-xl text-gray-600 leading-relaxed max-w-xl mx-auto lg:mx-0 mb-8">
-                Deadlines, announcements and important academic updates&nbsp;—&nbsp;organized in one place.
-              </p>
-
-              {/* Primary & Secondary CTA Buttons */}
-              <div className="dh-fade-up-3 flex flex-col sm:flex-row gap-3.5 justify-center lg:justify-start">
-                <button
-                  id="landing-getstarted-hero"
-                  onClick={onGetStarted}
-                  className="inline-flex items-center justify-center gap-2.5 px-8 py-4 text-base font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-md hover:shadow-lg transition-all active:scale-95"
-                >
-                  Get Started
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M5 12h14M12 5l7 7-7 7"/>
-                  </svg>
-                </button>
-                <button
-                  id="landing-login-hero"
-                  onClick={onLogin}
-                  className="inline-flex items-center justify-center gap-2 px-8 py-4 text-base font-semibold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200/80 rounded-xl transition-all active:scale-95"
-                >
-                  Log In
-                </button>
-              </div>
-
-              {/* Subtle Trust/Benefit Row */}
-              <div className="dh-fade-up-3 flex flex-wrap items-center justify-center lg:justify-start gap-x-6 gap-y-2 mt-8 text-xs sm:text-sm text-gray-500 font-medium border-t border-gray-100 pt-6">
-                <div className="flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                  Free to use
+                {/* Badge */}
+                <div className="dh-fade-up inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-700 text-xs sm:text-sm font-semibold mb-6 mx-auto lg:mx-0 w-fit shadow-xs">
+                  <span className="w-2 h-2 rounded-full bg-indigo-600 animate-pulse inline-block" />
+                  Smart Academic Deadline &amp; Announcement Board
                 </div>
-                <div className="flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
-                  Student-friendly
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-violet-500" />
-                  All updates in one place
-                </div>
-              </div>
 
-            </div>
-
-            {/* ── RIGHT COLUMN: Enhanced Academic Composition ────────────── */}
-            <div id="about" className="lg:col-span-6 flex justify-center lg:justify-end">
-              <div className="relative w-full max-w-lg lg:max-w-xl bg-gradient-to-br from-indigo-50/70 via-white to-violet-50/70 rounded-3xl p-6 sm:p-8 border border-indigo-100/80 shadow-xl shadow-indigo-100/40">
-                
-                {/* Decorative Glass Header Bar */}
-                <div className="flex items-center justify-between pb-4 mb-4 border-b border-indigo-100/60">
-                  <div className="flex items-center gap-2">
-                    <span className="w-3 h-3 rounded-full bg-red-400 opacity-80" />
-                    <span className="w-3 h-3 rounded-full bg-amber-400 opacity-80" />
-                    <span className="w-3 h-3 rounded-full bg-emerald-400 opacity-80" />
-                  </div>
-                  <span className="text-xs font-semibold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-100">
-                    Academic Overview
+                {/* Large Bold Heading */}
+                <h1 className="dh-fade-up-1 text-4xl sm:text-6xl lg:text-[4rem] font-extrabold text-slate-900 leading-[1.06] tracking-tight mb-3">
+                  Never miss<br />
+                  what{' '}
+                  <span className="relative inline-block text-indigo-600">
+                    matters.
+                    <span
+                      aria-hidden="true"
+                      className="absolute left-0 bottom-1.5 w-full h-3 bg-indigo-100/90 rounded -z-10"
+                    />
                   </span>
+                </h1>
+
+                {/* Quote directly below heading */}
+                <div className="dh-fade-up-1 inline-flex items-center gap-1.5 justify-center lg:justify-start my-3 text-slate-600 italic font-medium text-base sm:text-lg">
+                  <span className="text-indigo-500 font-serif text-2xl font-bold leading-none">“</span>
+                  <span>Plan today, achieve tomorrow.</span>
+                  <span className="text-indigo-500 font-serif text-2xl font-bold leading-none">”</span>
                 </div>
 
-                {/* Center Student & Desk Graphic */}
-                <div className="flex justify-center my-2">
-                  <StudentLaptopIllustration className="w-full h-auto max-h-48 drop-shadow-sm" />
+                {/* Supporting Text */}
+                <p className="dh-fade-up-2 text-base sm:text-xl text-gray-600 leading-relaxed max-w-xl mx-auto lg:mx-0 mb-8 mt-2">
+                  Deadlines, announcements and important academic updates&nbsp;—&nbsp;organized in one place.
+                </p>
+
+                {/* CTA Buttons */}
+                <div className="dh-fade-up-3 flex flex-col sm:flex-row gap-3.5 justify-center lg:justify-start">
+                  <button
+                    id="landing-getstarted-hero"
+                    onClick={onGetStarted}
+                    className="inline-flex items-center justify-center gap-2.5 px-8 py-4 text-base font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-md hover:shadow-lg transition-all active:scale-95"
+                  >
+                    Get Started
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                  </button>
+                  <button
+                    id="landing-login-hero"
+                    onClick={onLogin}
+                    className="inline-flex items-center justify-center gap-2 px-8 py-4 text-base font-semibold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200/80 rounded-xl transition-all active:scale-95"
+                  >
+                    Log In
+                  </button>
                 </div>
 
-                {/* Decorative Icon Ribbon */}
-                <div className="flex items-center justify-around py-3 my-3 bg-white/80 rounded-2xl border border-indigo-50 shadow-xs">
-                  <div className="flex items-center gap-1.5 text-xs font-semibold text-gray-700">
-                    <ClockIcon className="w-5 h-5 text-indigo-600" />
-                    <span>Deadlines</span>
+                {/* Benefit Row with Checkmarks */}
+                <div className="dh-fade-up-3 flex flex-wrap items-center justify-center lg:justify-start gap-x-6 gap-y-2 mt-8 text-xs sm:text-sm text-gray-600 font-semibold border-t border-gray-100 pt-6">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-emerald-600 font-bold">✓</span>
+                    <span>Free to use</span>
                   </div>
-                  <div className="flex items-center gap-1.5 text-xs font-semibold text-gray-700">
-                    <BellIcon className="w-5 h-5 text-violet-600" />
-                    <span>Alerts</span>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-indigo-600 font-bold">✓</span>
+                    <span>Student-friendly</span>
                   </div>
-                  <div className="flex items-center gap-1.5 text-xs font-semibold text-gray-700">
-                    <CalendarIcon className="w-5 h-5 text-indigo-600" />
-                    <span>Schedule</span>
-                  </div>
-                  <div className="flex items-center gap-1.5 text-xs font-semibold text-gray-700">
-                    <BookIcon className="w-5 h-5 text-indigo-600" />
-                    <span>Subjects</span>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-violet-600 font-bold">✓</span>
+                    <span>All updates in one place</span>
                   </div>
                 </div>
 
-                {/* Sample Floating Academic Cards */}
-                <div className="space-y-3.5 mt-4">
-                  {/* Card 1: Urgent Assignment */}
-                  <FloatingCard
-                    delay="0s"
-                    icon={<ClockIcon className="w-6 h-6" />}
-                    title="Assignment Due — Tomorrow"
-                    subtitle="Analysis of Algorithms • High Priority"
-                    badgeText="Due Tomorrow"
-                    badgeColor="bg-red-50 text-red-700 border border-red-100"
-                  />
+              </div>
 
-                  {/* Card 2: Announcement */}
-                  <FloatingCard
-                    delay="1.5s"
-                    icon={<BellIcon className="w-6 h-6" />}
-                    title="DBMS Practical Room Changed"
-                    subtitle="Lab 405 instead of Lab 301 • Urgent"
-                    badgeText="Notice"
-                    badgeColor="bg-violet-50 text-violet-700 border border-violet-100"
-                  />
+              {/* ── RIGHT COLUMN: Academic Overview Visual ────────────────── */}
+              <div className="lg:col-span-6 flex justify-center lg:justify-end">
+                <AcademicOverviewVisual />
+              </div>
 
-                  {/* Card 3: Project Review */}
-                  <FloatingCard
-                    delay="3s"
-                    icon={<CheckIcon className="w-6 h-6" />}
-                    title="Project Review Scheduled"
-                    subtitle="Full Stack Development • 24 Aug • 10:00 AM"
-                    badgeText="Confirmed"
-                    badgeColor="bg-emerald-50 text-emerald-700 border border-emerald-100"
-                  />
+            </div>
+          </main>
+        )}
+
+        {/* ═══════════════════════════════════════════════════════════════════
+            TAB 2: DEDICATED ABOUT PAGE VIEW
+        ════════════════════════════════════════════════════════════════════ */}
+        {activeTab === 'about' && (
+          <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12 w-full space-y-16">
+            
+            {/* ── About Introduction (Two Column) ─────────────────────────── */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+              
+              {/* Left Side: About Text & Mission */}
+              <div className="lg:col-span-6 text-center lg:text-left flex flex-col justify-center">
+                <div className="dh-fade-up inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-700 text-xs sm:text-sm font-semibold mb-6 mx-auto lg:mx-0 w-fit shadow-xs">
+                  <span className="w-2 h-2 rounded-full bg-indigo-600 animate-pulse inline-block" />
+                  Smart Academic Deadline &amp; Announcement Board
+                </div>
+
+                <h1 className="dh-fade-up-1 text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 leading-tight tracking-tight mb-6">
+                  About<br />
+                  <span className="text-slate-900">Deadline</span><span className="text-indigo-600">Hub</span>
+                </h1>
+
+                <p className="dh-fade-up-2 text-base sm:text-lg text-gray-600 leading-relaxed max-w-xl mx-auto lg:mx-0 mb-6">
+                  DeadlineHub is a smart academic management platform designed to help students and teachers stay updated with deadlines, announcements and important academic information&nbsp;—&nbsp;all in one place.
+                </p>
+
+                {/* Mission Callout */}
+                <div className="dh-fade-up-2 bg-gradient-to-r from-indigo-50/90 to-violet-50/50 border-l-4 border-indigo-600 p-4 sm:p-5 rounded-r-2xl text-left my-2 shadow-xs">
+                  <p className="text-sm sm:text-base text-indigo-950 font-medium leading-relaxed">
+                    <strong className="text-indigo-700 font-bold block mb-1">Our Mission</strong>
+                    Our mission is to help students stay organized, never miss important updates and manage their academic responsibilities more easily.
+                  </p>
+                </div>
+
+                {/* CTA Buttons */}
+                <div className="dh-fade-up-3 flex flex-col sm:flex-row gap-3.5 justify-center lg:justify-start mt-6">
+                  <button
+                    id="landing-getstarted-about"
+                    onClick={onGetStarted}
+                    className="inline-flex items-center justify-center gap-2.5 px-7 py-3.5 text-sm sm:text-base font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-md hover:shadow-lg transition-all active:scale-95"
+                  >
+                    Get Started →
+                  </button>
+                  <button
+                    id="landing-login-about"
+                    onClick={onLogin}
+                    className="inline-flex items-center justify-center gap-2 px-7 py-3.5 text-sm sm:text-base font-semibold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200/80 rounded-xl transition-all active:scale-95"
+                  >
+                    Log In
+                  </button>
+                </div>
+              </div>
+
+              {/* Right Side: Reused Academic Overview Visual */}
+              <div className="lg:col-span-6 flex justify-center lg:justify-end">
+                <AcademicOverviewVisual />
+              </div>
+
+            </div>
+
+            {/* ── What DeadlineHub Helps You With Section ────────────────── */}
+            <div className="border-t border-gray-100 pt-12">
+              <div className="text-center max-w-3xl mx-auto mb-10">
+                <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight mb-3">
+                  What DeadlineHub helps you with
+                </h2>
+                <p className="text-sm sm:text-base text-gray-500 font-medium">
+                  Designed specifically to solve scattered class updates and missed deadlines.
+                </p>
+              </div>
+
+              {/* 4 Clean Compact Cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                
+                {/* Card 1 */}
+                <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between">
+                  <div>
+                    <div className="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center mb-4">
+                      <ClockIcon className="w-6 h-6" />
+                    </div>
+                    <h3 className="text-lg font-bold text-slate-900 mb-2">1. Never Miss a Deadline</h3>
+                    <p className="text-xs sm:text-sm text-gray-600 leading-relaxed font-normal">
+                      Stay aware of assignments, practicals, exams, project reviews and other important academic deadlines.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Card 2 */}
+                <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between">
+                  <div>
+                    <div className="w-12 h-12 rounded-xl bg-violet-50 text-violet-600 flex items-center justify-center mb-4">
+                      <BellIcon className="w-6 h-6" />
+                    </div>
+                    <h3 className="text-lg font-bold text-slate-900 mb-2">2. Instant Announcements</h3>
+                    <p className="text-xs sm:text-sm text-gray-600 leading-relaxed font-normal">
+                      Keep important class and academic announcements organized in one place.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Card 3 */}
+                <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between">
+                  <div>
+                    <div className="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-4">
+                      <CheckIcon className="w-6 h-6" />
+                    </div>
+                    <h3 className="text-lg font-bold text-slate-900 mb-2">3. Organized &amp; Simple</h3>
+                    <p className="text-xs sm:text-sm text-gray-600 leading-relaxed font-normal">
+                      Deadlines and announcements are presented clearly so students can quickly understand what needs attention.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Card 4 */}
+                <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between">
+                  <div>
+                    <div className="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center mb-4">
+                      <UserGroupIcon className="w-6 h-6" />
+                    </div>
+                    <h3 className="text-lg font-bold text-slate-900 mb-2">4. Built for Students</h3>
+                    <p className="text-xs sm:text-sm text-gray-600 leading-relaxed font-normal">
+                      A simple student-friendly interface designed to make academic information easier to manage.
+                    </p>
+                  </div>
                 </div>
 
               </div>
             </div>
 
-          </div>
-        </main>
+          </main>
+        )}
 
         {/* ═══════════════════════════════════════════════════════════════════
             SUBTLE BOTTOM WAVE DECORATIVE ACCENT
@@ -477,3 +660,4 @@ export function LandingPage({ onGetStarted, onLogin }) {
     </>
   );
 }
+

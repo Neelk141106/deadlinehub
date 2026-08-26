@@ -493,3 +493,69 @@ Status: DONE
 - Light background with subtle violet gradient blobs, dot patterns, and wave accent strip
 - Responsive 2-column desktop / stacked mobile layout
 - Full preservation of downstream Role Selection, Student, and Teacher/Admin application flows
+
+---
+
+# Experiment 3 — Context API
+
+## Goal
+
+Centralize shared DeadlineHub application data using React Context API so multiple screens/components can use the same state instead of maintaining separate duplicated local state.
+
+No Redux, backend, database, REST APIs, JWT, or WebSockets should be introduced.
+
+---
+
+### E3-001 — Experiment 3 Setup
+Status: DONE
+
+- Update PROJECT_CONTEXT.md to show Experiment 3 in progress
+- Add Experiment 3 ticket list to docs/FEATURE_TICKETS.md
+
+### E3-002 — Global Deadline Context
+Status: DONE
+
+- Create DeadlineContext foundation (createContext, useContext, useState)
+- Initialize context state with existing MOCK_DEADLINES data
+- Expose deadlines, addDeadline, updateDeadline, and deleteDeadline / removeDeadline functions
+- Wrap application with DeadlineProvider
+
+### E3-003 — Connect Deadline Views to Context
+Status: TODO
+
+- Connect Deadlines page to DeadlineContext
+
+### E3-004 — Global Deadline Add/Edit
+Status: TODO
+
+- Connect Teacher/Admin Deadline Management to DeadlineContext
+
+### E3-005 — Global Announcement Context
+Status: TODO
+
+- Create AnnouncementContext foundation
+
+### E3-006 — Connect Announcement Views to Context
+Status: TODO
+
+- Connect Announcements page to AnnouncementContext
+
+### E3-007 — Global Announcement Add/Edit
+Status: TODO
+
+- Connect Teacher/Admin Announcement Management to AnnouncementContext
+
+### E3-008 — Connect Dashboard to Global State
+Status: TODO
+
+- Connect Student Dashboard to consume global deadline and announcement contexts
+
+### E3-009 — Remove Duplicate Local Data
+Status: TODO
+
+- Clean up isolated local states and unused duplicate initial mock data in individual components
+
+### E3-010 — Experiment 3 Final Review
+Status: TODO
+
+- Conduct complete verification of global state management across all roles and screens

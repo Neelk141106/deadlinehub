@@ -129,9 +129,13 @@ Future experiment functionality must NOT be implemented early.
 
 ## Current Stage
 
-Experiment 1 — Tailwind CSS
+Experiment 1 — COMPLETED
+Experiment 2 — COMPLETED
+Experiment 3 — Context API — IN PROGRESS
 
-Status: COMPLETED
+### Experiment 3 Goal
+
+Centralize shared DeadlineHub application data using React Context API so multiple screens/components can use the same state instead of maintaining separate duplicated local state.
 
 ---
 
@@ -147,12 +151,23 @@ Temporary Add/Edit state is in-memory only — data does not persist after brows
 
 ---
 
-## Landing Page (UI Enhancement)
+## Experiment 3 Status
 
-A simple public Landing Page was added as a UI enhancement after Experiment 2.
+Experiment 3 — Context API
 
-- `src/components/LandingPage.jsx` — new hero-style intro page
-- Application now starts at: Landing Page → Role Selection → Student / Teacher-Admin flow
+Status: IN PROGRESS
+
+E3-001 and E3-002 completed. Global Deadline Context foundation established.
+
+---
+
+## Full-Screen App Welcome Screen (UI Enhancement)
+
+A full-screen application Welcome Screen was added as a UI enhancement after Experiment 2.
+
+- `src/components/AppWelcome.jsx` — application-style full viewport Welcome Screen (top-left DeadlineHub branding, single primary "Get Started →" CTA, compact right-side academic visual, 3 subtle benefits, zero SaaS marketing layout/links)
+- Application starts at: App Welcome Screen → Role Selection → Student / Teacher-Admin flow
+- Primary action: "Get Started →" opens existing Role Selection screen
 - Experiment 1 and Experiment 2 functionality remain fully unchanged
 - No backend, database, authentication, or new dependencies were introduced
 
@@ -170,14 +185,13 @@ A simple public Landing Page was added as a UI enhancement after Experiment 2.
 
 ---
 
-## Experiment 1 Progress
+## Experiment Progress
 
 ### Completed
 
 - DH-001 — Tailwind CSS configured and verified
 - DH-002 — Default Vite starter cleaned
 - DH-003 — Establish DeadlineHub Design System
-
 - DH-004 — Responsive Student Navigation
 - DH-005 — Shared UI Components
 - DH-006 — Deadline Card
@@ -196,7 +210,6 @@ A simple public Landing Page was added as a UI enhancement after Experiment 2.
 - DH-019 — Join Requests UI
 - DH-020 — Deadline Management UI
 - DH-021 — Announcement Management UI
-
 - DH-022 — Responsive Review
 - DH-023 — UI Consistency Review
 - DH-024 — Scope Review
@@ -210,17 +223,19 @@ A simple public Landing Page was added as a UI enhancement after Experiment 2.
 - EH-008 — Dashboard Derived Data
 - EH-009 — useEffect-based UI Updates
 - EH-010 — Experiment 2 Final Review
+- E3-001 — Experiment 3 Setup
+- E3-002 — Global Deadline Context
 
 ### Current Stage
 
 Experiment 1 — COMPLETED
 Experiment 2 — COMPLETED
+Experiment 3 — Context API — IN PROGRESS (E3-001 & E3-002 completed)
 
-### Next Stage
+### Next Task
 
-Experiment 3 — Context API / Redux
+E3-003 — Connect Deadline Views to Context
 
-Do NOT begin Experiment 3 until explicitly instructed.
 
 ---
 
@@ -340,5 +355,6 @@ Planned later:
 ---
 
 Experiment 1 and Experiment 2 are COMPLETED.
+Experiment 3 — Context API is IN PROGRESS (E3-001 and E3-002 completed).
 
-Do NOT begin Experiment 3 — Context API / Redux until explicitly instructed.
+Next task: E3-003 — Connect Deadline Views to Context. Do NOT begin E3-003 until explicitly instructed.
