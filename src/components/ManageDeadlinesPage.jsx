@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { useDeadlines } from '../context/DeadlineContext';
+import { DemoRoleSwitcher } from './DemoRoleSwitcher';
+
 
 const EMPTY_FORM = {
   subject: '',
@@ -268,9 +270,12 @@ export function ManageDeadlinesPage() {
 
   return (
     <div className="max-w-5xl mx-auto">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4 border-b border-gray-200 pb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Manage Deadlines</h1>
+          <div className="flex items-center gap-3 mb-2 flex-wrap">
+            <h1 className="text-2xl font-bold text-gray-900">Manage Deadlines</h1>
+            <DemoRoleSwitcher />
+          </div>
           <p className="text-gray-600">Create and manage academic deadline reminders.</p>
         </div>
         <button
@@ -281,6 +286,7 @@ export function ManageDeadlinesPage() {
           Add Deadline
         </button>
       </div>
+
 
       {deadlines.length === 0 ? (
         <div className="bg-white rounded-xl border border-gray-200 p-12 text-center shadow-sm">

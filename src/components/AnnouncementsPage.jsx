@@ -3,6 +3,7 @@ import { PageHeader } from './ui/PageHeader';
 import { Input } from './ui/Input';
 import { AnnouncementCard } from './AnnouncementCard';
 import { useAnnouncements } from '../context/AnnouncementContext';
+import { DemoRoleSwitcher } from './DemoRoleSwitcher';
 
 // Helper: bucket a Date into a filter category
 function getAnnouncementDateBucket(date) {
@@ -57,10 +58,14 @@ export function AnnouncementsPage() {
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
-      <PageHeader
-        title="Announcements"
-        description="Stay updated with your class."
-      />
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-gray-200 pb-4 gap-4">
+        <PageHeader
+          title="Announcements"
+          description="Stay updated with your class."
+        />
+        <DemoRoleSwitcher />
+      </div>
+
 
       {/* Search and Filters */}
       <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm space-y-4">
