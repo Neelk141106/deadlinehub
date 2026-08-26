@@ -171,8 +171,13 @@ export function ManageAnnouncementsPage() {
 
   const handleAdd = (e) => {
     e.preventDefault();
+    const pLower = form.priority ? form.priority.toLowerCase() : 'normal';
+    const pUpper = form.priority ? form.priority.toUpperCase() : 'NORMAL';
     addAnnouncement({
       ...form,
+      priorityVariant: pLower,
+      priorityText: pUpper,
+      postedBy: 'Teacher / Admin',
       postedTime: 'Just now',
       postedAt: new Date(),
     });
@@ -181,12 +186,17 @@ export function ManageAnnouncementsPage() {
 
   const handleEdit = (e) => {
     e.preventDefault();
+    const pLower = form.priority ? form.priority.toLowerCase() : 'normal';
+    const pUpper = form.priority ? form.priority.toUpperCase() : 'NORMAL';
     updateAnnouncement(editingId, {
       ...form,
+      priorityVariant: pLower,
+      priorityText: pUpper,
     });
     setView('list');
     setEditingId(null);
   };
+
 
   const handleDelete = (id) => {
     deleteAnnouncement(id);

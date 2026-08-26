@@ -130,16 +130,17 @@ export function AnnouncementsPage() {
           {filteredAnnouncements.map((a) => (
             <AnnouncementCard
               key={a.id}
-              priorityVariant={a.priorityVariant}
-              priorityText={a.priorityText}
+              priorityVariant={a.priorityVariant || (a.priority ? a.priority.toLowerCase() : 'normal')}
+              priorityText={a.priorityText || (a.priority ? a.priority.toUpperCase() : (a.category ? a.category.toUpperCase() : 'GENERAL'))}
               isPinned={a.isPinned}
               title={a.title}
               message={a.message}
-              postedBy={a.postedBy}
-              postedTime={a.postedTime}
+              postedBy={a.postedBy || 'Teacher / Admin'}
+              postedTime={a.postedTime || a.time || 'Just now'}
             />
           ))}
         </div>
+
       ) : (
         <div className="bg-white rounded-xl border border-gray-200 p-12 text-center shadow-sm">
           <div className="w-12 h-12 bg-gray-50 text-gray-400 rounded-full flex items-center justify-center mx-auto mb-3">

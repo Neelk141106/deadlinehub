@@ -165,15 +165,16 @@ export function StudentDashboard() {
             {latestAnnouncements.map((a) => (
               <AnnouncementCard
                 key={a.id}
-                priorityText={a.priorityText}
-                priorityVariant={a.priorityVariant}
+                priorityVariant={a.priorityVariant || (a.priority ? a.priority.toLowerCase() : 'normal')}
+                priorityText={a.priorityText || (a.priority ? a.priority.toUpperCase() : (a.category ? a.category.toUpperCase() : 'GENERAL'))}
                 isPinned={a.isPinned}
                 title={a.title}
                 message={a.message}
-                postedBy={a.postedBy}
-                postedTime={a.postedTime}
+                postedBy={a.postedBy || 'Teacher / Admin'}
+                postedTime={a.postedTime || a.time || 'Just now'}
               />
             ))}
+
           </div>
         </div>
 
