@@ -132,33 +132,55 @@ Future experiment functionality must NOT be implemented early.
 Experiment 1 — COMPLETED
 Experiment 2 — COMPLETED
 Experiment 3 — COMPLETED
-Experiment 4 — MongoDB + Mongoose Integration — IN PROGRESS (E4-001 through E4-006 completed)
+Experiment 4 — MongoDB + Mongoose Integration — COMPLETED
 
-### Experiment 4 Goal
+### Experiment 4 Summary
 
-REST API Design with MongoDB + Mongoose Integration. Persist deadline and announcement records to MongoDB Atlas via Express REST APIs while maintaining React Context API as the global state layer.
-
----
-
-## Experiment 2 Status
-
-Experiment 2 — React Hooks
-
-Status: COMPLETED
-
-All EH-001 through EH-010 tickets are DONE.
-React Hooks functionality verified.
-Temporary Add/Edit state is in-memory only — data does not persist after browser refresh (expected; no localStorage or database implemented).
+REST API Design with MongoDB + Mongoose Integration.
+- Node.js & Express backend configured in `server/` on port 5000.
+- MongoDB Atlas cluster connected via Mongoose ODM with explicit DNS resolution (`8.8.8.8`, `1.1.1.1`).
+- Mongoose models created: `Deadline` and `Announcement` with timestamps and schema validations.
+- Express REST API routes implemented: `/api/deadlines` and `/api/announcements` with full CRUD support (`GET`, `POST`, `PUT`, `DELETE`).
+- Frontend React Context (`DeadlineContext`, `AnnouncementContext`) connected to REST APIs via native `fetch` service (`src/api/api.js`).
+- Database persistence verified across browser refreshes and role navigation.
+- Fixed `dueDate` ISO parsing and added past-date validation for new deadlines.
+- Safe error handling across all mutations (failed API calls do not corrupt Context state).
 
 ---
 
-## Experiment 3 Status
+## Architecture
 
-Experiment 3 — Context API
+```
+React Components (Dashboard, Pages, Cards, Forms)
+       │
+       ▼
+Context API (useDeadlines, useAnnouncements)
+       │
+       ▼
+Frontend API Service (src/api/api.js using native fetch)
+       │
+       ▼
+Express.js REST API (localhost:5000/api/...)
+       │
+       ▼
+Mongoose ODM (Models with Validation & Timestamps)
+       │
+       ▼
+MongoDB Atlas (Cloud Database)
+```
 
-Status: IN PROGRESS
+---
 
-E3-001 and E3-002 completed. Global Deadline Context foundation established.
+## Known Limitations
+
+- Login/Session persistence: Refreshing requires entering role/login again (expected for Experiment 4; persistent authentication and JWT will be implemented in Experiment 6).
+
+---
+
+## Next Stage
+
+Experiment 5 — Secure REST APIs
+
 
 ---
 
@@ -231,51 +253,56 @@ A full-screen application Welcome Screen was added as a UI enhancement after Exp
 - E4-004 — Announcement Model & REST API
 - E4-005 — Connect Deadline Context to REST API
 - E4-006 — Connect Announcement Context to REST API
+- E4-007 — Persistence & Error Handling
+- E4-008 — Experiment 4 Final Review
 
 ### Current Stage
 
 Experiment 1 — COMPLETED
 Experiment 2 — COMPLETED
 Experiment 3 — COMPLETED
-Experiment 4 — MongoDB + Mongoose Integration — IN PROGRESS (E4-001 to E4-006 completed)
+Experiment 4 — MongoDB + Mongoose Integration — COMPLETED
 
 ### Next Task
 
-E4-007 — API Integration Testing & Refinement
-
+Experiment 5 — Secure REST APIs
 
 ---
 
 ## Current Technologies
 
-- React
-- Vite
-- Tailwind CSS
-- Git
-- GitHub
+- React (Frontend UI)
+- Vite (Frontend Build Tool)
+- Tailwind CSS (Styling)
+- Node.js & Express (Backend REST API)
+- MongoDB Atlas (Cloud Database)
+- Mongoose (ODM / Schema & Models)
+- Git & GitHub (Version Control)
 
 ---
 
-## Current Frontend State
+## Current Frontend & Backend State
 
-Experiments 1 and 2 are fully complete. A simple public Landing Page was added as a UI enhancement. The application is a responsive React + Vite + Tailwind CSS frontend with full React Hooks functionality.
-
-Page flow: Landing Page → Role Selection → Student / Teacher-Admin flow.
-
-The application contains: Public Landing Page (hero-style intro, minimal navbar, decorative visual panel), Responsive Student Navigation shell, reusable Shared UI Components, Student Dashboard (counts and sections derived from mock data via useMemo; time-of-day greeting and document title via useEffect), Deadlines Page (live search + status/subject/type/priority filters all functional), Announcements Page (live search + category/priority/date filters all functional), Welcome / Role Selection Screen, Student Login UI, Student Registration UI, Teacher/Admin Login UI, Join Class UI, and the complete Teacher/Admin layout including Classes Page, Join Requests, Deadline Management (Add/Edit/Delete wired to useState), and Announcement Management (Add/Edit/Delete/Pin wired to useState).
+Experiments 1, 2, 3, and 4 are fully complete.
+The application is a full stack web application featuring:
+- React + Vite frontend with Tailwind CSS.
+- React Context API (`DeadlineContext`, `AnnouncementContext`) managing global state.
+- Native `fetch` client (`src/api/api.js`) communicating with Express REST API on `http://localhost:5000/api`.
+- Node.js / Express backend with CORS and JSON body parser.
+- Mongoose models (`Deadline`, `Announcement`) persisting to MongoDB Atlas with timestamps and validation.
+- Dynamic date calculation, status filters, live search, past-date prevention for new deadlines, and pinned announcements.
+- All CRUD actions (`add`, `update`, `delete`, `togglePin`) synchronized between React state and MongoDB.
 
 ---
 
 ## Not Implemented Yet
 
-- Teacher/Admin dashboard
-- React application logic
-- Backend
-- Database
-- Authentication
-- Authorization
-- APIs
-- JWT
+- Teacher/Admin dashboard analytics
+- Real JWT Authentication & Password Hashing (Experiment 6)
+- Role-based route authorization & security middleware (Experiment 5/6)
+- WebSockets / Socket.IO (Experiment 8)
+- CI/CD & Docker (Experiments 9/10)
+
 - WebSockets
 
 ---
@@ -359,10 +386,8 @@ Planned later:
 
 17. Git is the source of detailed implementation history.
 
----
+Experiment 1, Experiment 2, Experiment 3, and Experiment 4 are COMPLETED.
 
-Experiment 1, Experiment 2, and Experiment 3 are COMPLETED.
-Experiment 4 — MongoDB + Mongoose Integration is IN PROGRESS (E4-001 through E4-006 completed).
+Next stage: Experiment 5 — Secure REST APIs. Do NOT begin Experiment 5 until explicitly instructed.
 
-Next task: E4-007 — API Integration Testing & Refinement. Do NOT begin E4-007 until explicitly instructed.
 

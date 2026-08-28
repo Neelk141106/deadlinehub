@@ -613,4 +613,20 @@ Status: DONE
 - Connect AnnouncementContext to backend REST API endpoints
 - Persist add, update, delete, and togglePin operations to MongoDB
 - Re-sort announcements dynamically (pinned first, then chronological)
+
+### E4-007 — Persistence & Error Handling
+Status: DONE
+
+- Robust error handling across DeadlineContext, AnnouncementContext, and native fetch API service
+- Safe state preservation on failed POST/PUT/DELETE operations
+- Standardized REST response codes across Express routes (200, 201, 400, 404, 500)
+- Single source of truth in MongoDB without duplicate storage or localStorage
+
+### E4-008 — Experiment 4 Final Review
+Status: DONE
+
+- Comprehensive review of complete Experiment 4 architecture
+- Verified end-to-end data flow: React Components → Context API → REST API → Express → Mongoose → MongoDB Atlas
+- Verified complete CRUD operations, persistence, date formatting, and input validation
+
 
