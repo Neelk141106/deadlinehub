@@ -1,6 +1,14 @@
 import React, { useState } from 'react';
 import { useDeadlines } from '../context/DeadlineContext';
 
+const getTodayDateString = () => {
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth() + 1).padStart(2, '0');
+  const dd = String(today.getDate()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd}`;
+};
+
 const EMPTY_FORM = {
   subject: '',
   title: '',
@@ -15,12 +23,13 @@ const EMPTY_FORM = {
 };
 
 // ── Reusable form view ────────────────────────────────────────────────────────
-function DeadlineForm({ heading, subheading, form, onChange, onSubmit, onCancel, submitLabel }) {
+function DeadlineForm({ heading, subheading, form, onChange, onSubmit, onCancel, submitLabel, error, minDate }) {
   return (
     <div className="max-w-3xl mx-auto">
       <div className="mb-6 flex items-center gap-4">
         <button
           onClick={onCancel}
+          type="button"
           className="p-2 hover:bg-gray-100 rounded-lg transition-colors text-gray-600"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
@@ -30,6 +39,13 @@ function DeadlineForm({ heading, subheading, form, onChange, onSubmit, onCancel,
           <p className="text-gray-600">{subheading}</p>
         </div>
       </div>
+
+      {error && (
+        <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl flex items-center gap-2.5">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 text-red-500"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <span>{error}</span>
+        </div>
+      )}
 
       <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
         <form className="space-y-6" onSubmit={onSubmit}>
@@ -102,11 +118,25 @@ function DeadlineForm({ heading, subheading, form, onChange, onSubmit, onCancel,
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <label className="block text-sm font-medium text-gray-700">Due Date</label>
-                <input type="date" name="dueDate" value={form.dueDate} onChange={onChange} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500" />
+                <input
+                  type="date"
+                  name="dueDate"
+                  min={minDate}
+                  value={form.dueDate}
+                  onChange={onChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  required
+                />
               </div>
               <div className="space-y-1.5">
                 <label className="block text-sm font-medium text-gray-700">Due Time</label>
-                <input type="time" name="dueTime" value={form.dueTime} onChange={onChange} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500" />
+                <input
+                  type="time"
+                  name="dueTime"
+                  value={form.dueTime}
+                  onChange={onChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                />
               </div>
             </div>
           </div>
@@ -161,22 +191,35 @@ export function ManageDeadlinesPage() {
   const [view, setView] = useState('list'); // 'list' | 'add' | 'edit'
   const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState(EMPTY_FORM);
+  const [formError, setFormError] = useState(null);
+
+  const todayStr = getTodayDateString();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
+    if (formError) setFormError(null);
   };
 
   const openAdd = () => {
     setForm(EMPTY_FORM);
+    setFormError(null);
     setView('add');
   };
 
   const openEdit = (deadline) => {
-    setEditingId(deadline.id);
+    setEditingId(deadline.id || deadline._id);
     let dateStr = '';
     if (deadline.dueDate) {
-      dateStr = deadline.dueDate.includes('T') ? deadline.dueDate.split('T')[0] : deadline.dueDate;
+      const d = new Date(deadline.dueDate);
+      if (!isNaN(d.getTime())) {
+        const yyyy = d.getFullYear();
+        const mm = String(d.getMonth() + 1).padStart(2, '0');
+        const dd = String(d.getDate()).padStart(2, '0');
+        dateStr = `${yyyy}-${mm}-${dd}`;
+      } else if (typeof deadline.dueDate === 'string') {
+        dateStr = deadline.dueDate.includes('T') ? deadline.dueDate.split('T')[0] : deadline.dueDate;
+      }
     }
     setForm({
       ...EMPTY_FORM,
@@ -184,45 +227,78 @@ export function ManageDeadlinesPage() {
       dueDate: dateStr,
       dueTime: deadline.dueTime || '23:59',
     });
+    setFormError(null);
     setView('edit');
   };
 
   const handleCancel = () => {
     setView('list');
     setEditingId(null);
+    setFormError(null);
   };
 
-  const handleAdd = (e) => {
+  const handleAdd = async (e) => {
     e.preventDefault();
-    const formattedDueDate = form.dueDate
-      ? (form.dueDate.includes('T') ? form.dueDate : new Date(`${form.dueDate}T${form.dueTime || '23:59'}`).toISOString())
-      : new Date().toISOString();
+    if (!form.dueDate) {
+      setFormError('Please select a due date.');
+      return;
+    }
+    if (form.dueDate < todayStr) {
+      setFormError('Due date cannot be in the past. Please select today or a future date.');
+      return;
+    }
 
-    addDeadline({
-      ...form,
-      dueDate: formattedDueDate,
-    });
-    setView('list');
+    try {
+      const [yyyy, mm, dd] = form.dueDate.split('-').map(Number);
+      const [hours, mins] = (form.dueTime || '23:59').split(':').map(Number);
+      const deadlineDate = new Date(yyyy, mm - 1, dd, hours, mins, 0);
+
+      await addDeadline({
+        ...form,
+        dueDate: deadlineDate.toISOString(),
+      });
+      setView('list');
+      setFormError(null);
+    } catch (err) {
+      setFormError(err.message || 'Failed to save deadline');
+    }
   };
 
-  const handleEdit = (e) => {
+  const handleEdit = async (e) => {
     e.preventDefault();
-    const formattedDueDate = form.dueDate
-      ? (form.dueDate.includes('T') ? form.dueDate : new Date(`${form.dueDate}T${form.dueTime || '23:59'}`).toISOString())
-      : new Date().toISOString();
+    if (!form.dueDate) {
+      setFormError('Please select a due date.');
+      return;
+    }
+    if (form.dueDate < todayStr) {
+      setFormError('Due date cannot be in the past. Please select today or a future date.');
+      return;
+    }
 
-    updateDeadline(editingId, {
-      ...form,
-      dueDate: formattedDueDate,
-    });
-    setView('list');
-    setEditingId(null);
+    try {
+      const [yyyy, mm, dd] = form.dueDate.split('-').map(Number);
+      const [hours, mins] = (form.dueTime || '23:59').split(':').map(Number);
+      const deadlineDate = new Date(yyyy, mm - 1, dd, hours, mins, 0);
+
+      await updateDeadline(editingId, {
+        ...form,
+        dueDate: deadlineDate.toISOString(),
+      });
+      setView('list');
+      setEditingId(null);
+      setFormError(null);
+    } catch (err) {
+      setFormError(err.message || 'Failed to update deadline');
+    }
   };
 
-  const handleDelete = (id) => {
-    deleteDeadline(id);
+  const handleDelete = async (id) => {
+    try {
+      await deleteDeadline(id);
+    } catch (err) {
+      console.error('Delete deadline error:', err);
+    }
   };
-
 
   // ── Form views ──
   if (view === 'add') {
@@ -235,6 +311,8 @@ export function ManageDeadlinesPage() {
         onSubmit={handleAdd}
         onCancel={handleCancel}
         submitLabel="Save Deadline"
+        error={formError}
+        minDate={todayStr}
       />
     );
   }
@@ -249,6 +327,8 @@ export function ManageDeadlinesPage() {
         onSubmit={handleEdit}
         onCancel={handleCancel}
         submitLabel="Update Deadline"
+        error={formError}
+        minDate={todayStr}
       />
     );
   }
@@ -256,9 +336,20 @@ export function ManageDeadlinesPage() {
   // ── List view ──
   const formatDue = (d) => {
     if (!d.dueDate) return '—';
-    const date = new Date(d.dueDate + 'T' + (d.dueTime || '23:59'));
-    return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) +
-      ' • ' + date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+    const date = new Date(d.dueDate);
+    if (isNaN(date.getTime())) return '—';
+    const datePart = date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+    
+    let timePart = '';
+    if (d.dueTime && d.dueTime.includes(':')) {
+      const [hours, minutes] = d.dueTime.split(':');
+      const dummyDate = new Date();
+      dummyDate.setHours(parseInt(hours, 10), parseInt(minutes, 10), 0, 0);
+      timePart = dummyDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+    } else {
+      timePart = date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+    }
+    return `${datePart} • ${timePart}`;
   };
 
   const formatTarget = (d) =>
@@ -277,7 +368,7 @@ export function ManageDeadlinesPage() {
           onClick={openAdd}
           className="flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white font-medium py-2.5 px-4 rounded-lg transition-colors"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="12"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           Add Deadline
         </button>
       </div>

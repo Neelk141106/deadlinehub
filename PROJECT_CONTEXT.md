@@ -131,11 +131,12 @@ Future experiment functionality must NOT be implemented early.
 
 Experiment 1 — COMPLETED
 Experiment 2 — COMPLETED
-Experiment 3 — Context API — IN PROGRESS
+Experiment 3 — COMPLETED
+Experiment 4 — MongoDB + Mongoose Integration — IN PROGRESS (E4-001 through E4-006 completed)
 
-### Experiment 3 Goal
+### Experiment 4 Goal
 
-Centralize shared DeadlineHub application data using React Context API so multiple screens/components can use the same state instead of maintaining separate duplicated local state.
+REST API Design with MongoDB + Mongoose Integration. Persist deadline and announcement records to MongoDB Atlas via Express REST APIs while maintaining React Context API as the global state layer.
 
 ---
 
@@ -223,18 +224,24 @@ A full-screen application Welcome Screen was added as a UI enhancement after Exp
 - EH-008 — Dashboard Derived Data
 - EH-009 — useEffect-based UI Updates
 - EH-010 — Experiment 2 Final Review
-- E3-001 — Experiment 3 Setup
-- E3-002 — Global Deadline Context
+- E3-001 through E3-010 — Experiment 3 Complete
+- E4-001 — Backend + Express Setup
+- E4-002 — MongoDB + Mongoose Connection
+- E4-003 — Deadline Model & REST API
+- E4-004 — Announcement Model & REST API
+- E4-005 — Connect Deadline Context to REST API
+- E4-006 — Connect Announcement Context to REST API
 
 ### Current Stage
 
 Experiment 1 — COMPLETED
 Experiment 2 — COMPLETED
-Experiment 3 — Context API — IN PROGRESS (E3-001 & E3-002 completed)
+Experiment 3 — COMPLETED
+Experiment 4 — MongoDB + Mongoose Integration — IN PROGRESS (E4-001 to E4-006 completed)
 
 ### Next Task
 
-E3-003 — Connect Deadline Views to Context
+E4-007 — API Integration Testing & Refinement
 
 
 ---
@@ -354,7 +361,8 @@ Planned later:
 
 ---
 
-Experiment 1 and Experiment 2 are COMPLETED.
-Experiment 3 — Context API is IN PROGRESS (E3-001 and E3-002 completed).
+Experiment 1, Experiment 2, and Experiment 3 are COMPLETED.
+Experiment 4 — MongoDB + Mongoose Integration is IN PROGRESS (E4-001 through E4-006 completed).
 
-Next task: E3-003 — Connect Deadline Views to Context. Do NOT begin E3-003 until explicitly instructed.
+Next task: E4-007 — API Integration Testing & Refinement. Do NOT begin E4-007 until explicitly instructed.
+

@@ -1,48 +1,93 @@
-import React, { createContext, useContext, useState } from 'react';
-import { MOCK_ANNOUNCEMENTS } from '../data/mockData';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { announcementApi } from '../api/api';
 
 const AnnouncementContext = createContext();
 
 export function AnnouncementProvider({ children }) {
-  const [announcements, setAnnouncements] = useState(MOCK_ANNOUNCEMENTS);
+  const [announcements, setAnnouncements] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const addAnnouncement = (newAnnouncement) => {
-    const announcementWithId = {
-      id: Date.now(),
-      postedTime: newAnnouncement.postedTime || 'Just now',
-      postedAt: newAnnouncement.postedAt || new Date(),
-      isPinned: newAnnouncement.isPinned || false,
-      priorityVariant: newAnnouncement.priorityVariant || (newAnnouncement.priority ? newAnnouncement.priority.toLowerCase() : 'normal'),
-      priorityText: newAnnouncement.priorityText || (newAnnouncement.priority ? newAnnouncement.priority.toUpperCase() : 'NORMAL'),
-      ...newAnnouncement,
-    };
-    setAnnouncements((prev) => [announcementWithId, ...prev]);
+  const fetchAnnouncements = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const data = await announcementApi.getAll();
+      setAnnouncements(data);
+    } catch (err) {
+      console.error('Failed to fetch announcements:', err);
+      setError(err.message || 'Failed to load announcements');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const updateAnnouncement = (id, updatedFields) => {
-    setAnnouncements((prev) =>
-      prev.map((a) => (a.id === id ? { ...a, ...updatedFields } : a))
-    );
+  useEffect(() => {
+    fetchAnnouncements();
+  }, []);
+
+  const addAnnouncement = async (newAnnouncement) => {
+    try {
+      const created = await announcementApi.create(newAnnouncement);
+      setAnnouncements((prev) => [created, ...prev]);
+      return created;
+    } catch (err) {
+      console.error('Failed to add announcement:', err);
+      setError(err.message);
+      throw err;
+    }
   };
 
-  const deleteAnnouncement = (id) => {
-    setAnnouncements((prev) => prev.filter((a) => a.id !== id));
+  const updateAnnouncement = async (id, updatedFields) => {
+    try {
+      const updated = await announcementApi.update(id, updatedFields);
+      setAnnouncements((prev) =>
+        prev.map((a) => (a.id === id || a._id === id ? updated : a))
+      );
+      return updated;
+    } catch (err) {
+      console.error('Failed to update announcement:', err);
+      setError(err.message);
+      throw err;
+    }
+  };
+
+  const deleteAnnouncement = async (id) => {
+    try {
+      await announcementApi.delete(id);
+      setAnnouncements((prev) => prev.filter((a) => a.id !== id && a._id !== id));
+    } catch (err) {
+      console.error('Failed to delete announcement:', err);
+      setError(err.message);
+      throw err;
+    }
   };
 
   const removeAnnouncement = (id) => {
-    deleteAnnouncement(id);
+    return deleteAnnouncement(id);
   };
 
-  const togglePin = (id) => {
-    setAnnouncements((prev) =>
-      prev.map((a) => (a.id === id ? { ...a, isPinned: !a.isPinned } : a))
-    );
+  const togglePin = async (id) => {
+    try {
+      const target = announcements.find((a) => a.id === id || a._id === id);
+      if (!target) return;
+      const updated = await announcementApi.update(id, { isPinned: !target.isPinned });
+      setAnnouncements((prev) =>
+        prev.map((a) => (a.id === id || a._id === id ? updated : a))
+      );
+    } catch (err) {
+      console.error('Failed to toggle pin:', err);
+      setError(err.message);
+    }
   };
 
   return (
     <AnnouncementContext.Provider
       value={{
         announcements,
+        loading,
+        error,
+        fetchAnnouncements,
         addAnnouncement,
         updateAnnouncement,
         deleteAnnouncement,

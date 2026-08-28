@@ -13,12 +13,13 @@ const EMPTY_FORM = {
 };
 
 // ── Reusable form view ────────────────────────────────────────────────────────
-function AnnouncementForm({ heading, subheading, form, onChange, onSubmit, onCancel, submitLabel }) {
+function AnnouncementForm({ heading, subheading, form, onChange, onSubmit, onCancel, submitLabel, error }) {
   return (
     <div className="max-w-3xl mx-auto">
       <div className="mb-6 flex items-center gap-4">
         <button
           onClick={onCancel}
+          type="button"
           className="p-2 hover:bg-gray-100 rounded-lg transition-colors text-gray-600"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
@@ -28,6 +29,13 @@ function AnnouncementForm({ heading, subheading, form, onChange, onSubmit, onCan
           <p className="text-gray-600">{subheading}</p>
         </div>
       </div>
+
+      {error && (
+        <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl flex items-center gap-2.5">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 text-red-500"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <span>{error}</span>
+        </div>
+      )}
 
       <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
         <form className="space-y-6" onSubmit={onSubmit}>
@@ -147,65 +155,106 @@ export function ManageAnnouncementsPage() {
   const [view, setView] = useState('list'); // 'list' | 'add' | 'edit'
   const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState(EMPTY_FORM);
+  const [formError, setFormError] = useState(null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
+    if (formError) setFormError(null);
   };
 
   const openAdd = () => {
     setForm(EMPTY_FORM);
+    setFormError(null);
     setView('add');
   };
 
   const openEdit = (announcement) => {
-    setEditingId(announcement.id);
+    setEditingId(announcement.id || announcement._id);
     setForm({ ...EMPTY_FORM, ...announcement });
+    setFormError(null);
     setView('edit');
   };
 
   const handleCancel = () => {
     setView('list');
     setEditingId(null);
+    setFormError(null);
   };
 
-  const handleAdd = (e) => {
+  const handleAdd = async (e) => {
     e.preventDefault();
+    if (!form.title || !form.title.trim()) {
+      setFormError('Title is required');
+      return;
+    }
+    if (!form.message || !form.message.trim()) {
+      setFormError('Message is required');
+      return;
+    }
+
     const pLower = form.priority ? form.priority.toLowerCase() : 'normal';
     const pUpper = form.priority ? form.priority.toUpperCase() : 'NORMAL';
-    addAnnouncement({
-      ...form,
-      priorityVariant: pLower,
-      priorityText: pUpper,
-      postedBy: 'Teacher / Admin',
-      postedTime: 'Just now',
-      postedAt: new Date(),
-    });
-    setView('list');
+
+    try {
+      await addAnnouncement({
+        ...form,
+        priorityVariant: pLower,
+        priorityText: pUpper,
+        postedBy: 'Teacher / Admin',
+        postedTime: 'Just now',
+        postedAt: new Date(),
+      });
+      setView('list');
+      setFormError(null);
+    } catch (err) {
+      setFormError(err.message || 'Failed to save announcement');
+    }
   };
 
-  const handleEdit = (e) => {
+  const handleEdit = async (e) => {
     e.preventDefault();
+    if (!form.title || !form.title.trim()) {
+      setFormError('Title is required');
+      return;
+    }
+    if (!form.message || !form.message.trim()) {
+      setFormError('Message is required');
+      return;
+    }
+
     const pLower = form.priority ? form.priority.toLowerCase() : 'normal';
     const pUpper = form.priority ? form.priority.toUpperCase() : 'NORMAL';
-    updateAnnouncement(editingId, {
-      ...form,
-      priorityVariant: pLower,
-      priorityText: pUpper,
-    });
-    setView('list');
-    setEditingId(null);
+
+    try {
+      await updateAnnouncement(editingId, {
+        ...form,
+        priorityVariant: pLower,
+        priorityText: pUpper,
+      });
+      setView('list');
+      setEditingId(null);
+      setFormError(null);
+    } catch (err) {
+      setFormError(err.message || 'Failed to update announcement');
+    }
   };
 
-
-  const handleDelete = (id) => {
-    deleteAnnouncement(id);
+  const handleDelete = async (id) => {
+    try {
+      await deleteAnnouncement(id);
+    } catch (err) {
+      console.error('Delete announcement error:', err);
+    }
   };
 
-  const handleTogglePin = (id) => {
-    togglePin(id);
+  const handleTogglePin = async (id) => {
+    try {
+      await togglePin(id);
+    } catch (err) {
+      console.error('Toggle pin error:', err);
+    }
   };
-
 
   // ── Form views ──
   if (view === 'add') {
@@ -218,6 +267,7 @@ export function ManageAnnouncementsPage() {
         onSubmit={handleAdd}
         onCancel={handleCancel}
         submitLabel="Publish Announcement"
+        error={formError}
       />
     );
   }
@@ -232,6 +282,7 @@ export function ManageAnnouncementsPage() {
         onSubmit={handleEdit}
         onCancel={handleCancel}
         submitLabel="Update Announcement"
+        error={formError}
       />
     );
   }
@@ -248,7 +299,7 @@ export function ManageAnnouncementsPage() {
           onClick={openAdd}
           className="flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white font-medium py-2.5 px-4 rounded-lg transition-colors"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="12"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           Add Announcement
         </button>
       </div>
@@ -298,7 +349,7 @@ export function ManageAnnouncementsPage() {
                       <p className="text-sm text-gray-600">{announcement.division}</p>
                     </td>
                     <td className="p-4">
-                      <p className="text-sm text-gray-500">{announcement.time}</p>
+                      <p className="text-sm text-gray-500">{announcement.postedTime || 'Just now'}</p>
                     </td>
                     <td className="p-4 text-right">
                       <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">

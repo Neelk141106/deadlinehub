@@ -1,4 +1,8 @@
+const dns = require('dns');
 const mongoose = require('mongoose');
+
+// Explicit DNS resolvers configured because local Node.js resolver cannot resolve MongoDB Atlas SRV records correctly
+dns.setServers(['8.8.8.8', '1.1.1.1']);
 
 const connectDB = async () => {
   try {

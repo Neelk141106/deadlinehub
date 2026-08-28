@@ -556,6 +556,61 @@ Status: TODO
 - Clean up isolated local states and unused duplicate initial mock data in individual components
 
 ### E3-010 — Experiment 3 Final Review
-Status: TODO
+Status: DONE
 
-- Conduct complete verification of global state management across all roles and screens
+- Conduct complete verification of global state management across all roles and screens
+
+---
+
+# Experiment 4 — MongoDB + Mongoose Integration
+
+## Goal
+
+REST API Design with MongoDB + Mongoose Integration. Replace in-memory mock data with real MongoDB persistence while keeping Context API as the frontend global state layer.
+
+---
+
+### E4-001 — Backend + Express Setup
+Status: DONE
+
+- Configure minimal Express backend in server/
+- Environment variable configuration (.env, PORT=5000)
+- Core middleware (cors, express.json)
+- Base routes: GET / and GET /api/health
+
+### E4-002 — MongoDB + Mongoose Connection
+Status: DONE
+
+- Mongoose connection utility (server/src/config/db.js)
+- Explicit DNS resolvers for MongoDB Atlas SRV record resolution
+- Clean error handling and server startup integration
+
+### E4-003 — Deadline Model & REST API
+Status: DONE
+
+- Deadline Mongoose schema with timestamps and required validation
+- REST endpoints: GET, POST, GET /:id, PUT /:id, DELETE /:id
+- Appropriate HTTP status codes (200, 201, 400, 404, 500)
+
+### E4-004 — Announcement Model & REST API
+Status: DONE
+
+- Announcement Mongoose schema with timestamps and required validation
+- REST endpoints: GET, POST, GET /:id, PUT /:id, DELETE /:id
+- Appropriate HTTP status codes (200, 201, 400, 404, 500)
+
+### E4-005 — Connect Deadline Context to REST API
+Status: DONE
+
+- Connect DeadlineContext to backend REST API endpoints
+- Persist add, update, and delete operations to MongoDB
+- Fix "Invalid Date" bug by standardizing dueDate ISO parsing
+- Implement dynamic minDate and past-date validation for new deadlines
+
+### E4-006 — Connect Announcement Context to REST API
+Status: DONE
+
+- Connect AnnouncementContext to backend REST API endpoints
+- Persist add, update, delete, and togglePin operations to MongoDB
+- Re-sort announcements dynamically (pinned first, then chronological)
+
