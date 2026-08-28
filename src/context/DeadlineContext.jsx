@@ -6,7 +6,6 @@ const DeadlineContext = createContext();
 
 export function DeadlineProvider({ children }) {
   const [deadlines, setDeadlines] = useState(MOCK_DEADLINES);
-  const [userRole, setUserRole] = useState('student'); // 'student' | 'teacher'
 
   const addDeadline = (newDeadline) => {
     const deadlineWithId = {
@@ -38,8 +37,6 @@ export function DeadlineProvider({ children }) {
         updateDeadline,
         deleteDeadline,
         removeDeadline,
-        userRole,
-        setUserRole,
       }}
     >
       <AnnouncementProvider>
@@ -48,7 +45,6 @@ export function DeadlineProvider({ children }) {
     </DeadlineContext.Provider>
   );
 }
-
 
 
 export function useDeadlines() {

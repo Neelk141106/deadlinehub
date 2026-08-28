@@ -4,7 +4,6 @@ import { Input } from './ui/Input';
 import { DeadlineCard } from './DeadlineCard';
 import { useDeadlines } from '../context/DeadlineContext';
 import { getDeadlineStatus } from '../utils/deadlineStatus';
-import { DemoRoleSwitcher } from './DemoRoleSwitcher';
 
 export function DeadlinesPage() {
   const { deadlines } = useDeadlines();
@@ -50,14 +49,10 @@ export function DeadlinesPage() {
   // --- Render ---
   return (
     <div className="max-w-6xl mx-auto space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-gray-200 pb-4 gap-4">
-        <PageHeader
-          title="Deadlines"
-          description="Keep track of everything that's coming up."
-        />
-        <DemoRoleSwitcher />
-      </div>
-
+      <PageHeader
+        title="Deadlines"
+        description="Keep track of everything that's coming up."
+      />
 
       {/* Search and Filters */}
       <div className="bg-white p-4 rounded-xl border border-gray-200 shadow-sm space-y-4">

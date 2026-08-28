@@ -5,7 +5,6 @@ import { SectionHeader } from './ui/SectionHeader';
 import { useDeadlines } from '../context/DeadlineContext';
 import { useAnnouncements } from '../context/AnnouncementContext';
 import { getDeadlineStatus } from '../utils/deadlineStatus';
-import { DemoRoleSwitcher } from './DemoRoleSwitcher';
 
 // ── EH-009: greeting based on current hour ────────────────────────────────────
 function getGreeting() {
@@ -87,19 +86,16 @@ export function StudentDashboard() {
       {/* Greeting and Class Info */}
       <header className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-gray-200 pb-6">
         <div>
-          <div className="flex items-center gap-3 flex-wrap mb-1">
-            <h1 className="text-3xl font-bold text-gray-900 tracking-tight">
-              {greeting}, Neel 👋
-            </h1>
-            <DemoRoleSwitcher />
-          </div>
-          <p className="text-gray-500">Here's what you need to know today.</p>
+          {/* EH-009: greeting is derived from current time via useEffect + useState */}
+          <h1 className="text-3xl font-bold text-gray-900 tracking-tight">
+            {greeting}, Neel 👋
+          </h1>
+          <p className="text-gray-500 mt-1">Here's what you need to know today.</p>
         </div>
         <div className="bg-primary-50 text-primary-700 px-4 py-2 rounded-lg font-medium text-sm inline-flex items-center w-fit">
           IT • Semester 5 • D15C
         </div>
       </header>
-
 
       {/* EH-008: Summary overview cards — counts are DERIVED, not hardcoded */}
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">

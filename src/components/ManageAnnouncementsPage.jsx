@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useAnnouncements } from '../context/AnnouncementContext';
-import { DemoRoleSwitcher } from './DemoRoleSwitcher';
 
 const EMPTY_FORM = {
   title: '',
@@ -240,12 +239,9 @@ export function ManageAnnouncementsPage() {
   // ── List view ──
   return (
     <div className="max-w-5xl mx-auto">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4 border-b border-gray-200 pb-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
         <div>
-          <div className="flex items-center gap-3 mb-2 flex-wrap">
-            <h1 className="text-2xl font-bold text-gray-900">Manage Announcements</h1>
-            <DemoRoleSwitcher />
-          </div>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">Manage Announcements</h1>
           <p className="text-gray-600">Publish important academic updates for your students.</p>
         </div>
         <button
@@ -256,7 +252,6 @@ export function ManageAnnouncementsPage() {
           Add Announcement
         </button>
       </div>
-
 
       {announcements.length === 0 ? (
         <div className="bg-white rounded-xl border border-gray-200 p-12 text-center shadow-sm">
