@@ -1,21 +1,22 @@
 const express = require('express');
-const mongoose = require('mongoose');
 const Announcement = require('../models/Announcement');
+const AppError = require('../utils/AppError');
+const { validateObjectId, validateAnnouncement } = require('../middleware/validate');
 
 const router = express.Router();
 
 // GET /api/announcements - Get all announcements
-router.get('/', async (req, res) => {
+router.get('/', async (req, res, next) => {
   try {
     const announcements = await Announcement.find().sort({ isPinned: -1, postedAt: -1, createdAt: -1 });
     res.status(200).json(announcements);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    next(error);
   }
 });
 
 // POST /api/announcements - Create a new announcement
-router.post('/', async (req, res) => {
+router.post('/', validateAnnouncement(false), async (req, res, next) => {
   try {
     const {
       title,
@@ -32,14 +33,6 @@ router.post('/', async (req, res) => {
       semester,
       division,
     } = req.body;
-
-    if (!title || !title.trim()) {
-      return res.status(400).json({ error: 'Title is required' });
-    }
-
-    if (!message || !message.trim()) {
-      return res.status(400).json({ error: 'Message is required' });
-    }
 
     const priorityVal = priority || 'Normal';
     const computedVariant = priorityVariant || priorityVal.toLowerCase();
@@ -64,41 +57,30 @@ router.post('/', async (req, res) => {
     const savedAnnouncement = await announcement.save();
     res.status(201).json(savedAnnouncement);
   } catch (error) {
-    if (error.name === 'ValidationError') {
-      return res.status(400).json({ error: error.message });
-    }
-    res.status(500).json({ error: error.message });
+    next(error);
   }
 });
 
 // GET /api/announcements/:id - Get a single announcement by ID
-router.get('/:id', async (req, res) => {
+router.get('/:id', validateObjectId, async (req, res, next) => {
   try {
     const { id } = req.params;
-
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ error: 'Invalid ID format' });
-    }
-
     const announcement = await Announcement.findById(id);
+
     if (!announcement) {
-      return res.status(404).json({ error: 'Announcement not found' });
+      return next(new AppError('Announcement not found', 404));
     }
 
     res.status(200).json(announcement);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    next(error);
   }
 });
 
 // PUT /api/announcements/:id - Update an announcement by ID
-router.put('/:id', async (req, res) => {
+router.put('/:id', validateObjectId, validateAnnouncement(true), async (req, res, next) => {
   try {
     const { id } = req.params;
-
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ error: 'Invalid ID format' });
-    }
 
     const updateData = { ...req.body };
     if (updateData.priority && !updateData.priorityVariant) {
@@ -115,30 +97,23 @@ router.put('/:id', async (req, res) => {
     );
 
     if (!updatedAnnouncement) {
-      return res.status(404).json({ error: 'Announcement not found' });
+      return next(new AppError('Announcement not found', 404));
     }
 
     res.status(200).json(updatedAnnouncement);
   } catch (error) {
-    if (error.name === 'ValidationError') {
-      return res.status(400).json({ error: error.message });
-    }
-    res.status(500).json({ error: error.message });
+    next(error);
   }
 });
 
 // DELETE /api/announcements/:id - Delete an announcement by ID
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', validateObjectId, async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ error: 'Invalid ID format' });
-    }
-
     const deletedAnnouncement = await Announcement.findByIdAndDelete(id);
     if (!deletedAnnouncement) {
-      return res.status(404).json({ error: 'Announcement not found' });
+      return next(new AppError('Announcement not found', 404));
     }
 
     res.status(200).json({
@@ -146,7 +121,7 @@ router.delete('/:id', async (req, res) => {
       deletedAnnouncement,
     });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    next(error);
   }
 });
 

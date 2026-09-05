@@ -629,4 +629,33 @@ Status: DONE
 - Verified end-to-end data flow: React Components → Context API → REST API → Express → Mongoose → MongoDB Atlas
 - Verified complete CRUD operations, persistence, date formatting, and input validation
 
+---
+
+# Experiment 5 — Secure REST APIs
+
+## Goal
+
+Strengthen backend REST APIs with input validation, centralized error handling, and robust security middleware. Establish the foundational Light/Dark design system in the frontend.
+
+---
+
+### E5-001 — Request Validation
+Status: DONE
+
+- Validate Deadline payloads (title required/non-empty, dueDate valid date format, preserve model defaults)
+- Validate Announcement payloads (title required/non-empty, message required/non-empty)
+- Validate MongoDB ObjectId parameters (return 400 on malformed IDs)
+- Malformed payloads and invalid inputs return structured 400 Bad Request
+- Existing overdue deadlines are not invalidated
+
+### E5-002 — Centralized Error Handling
+Status: DONE
+
+- Centralized error handling middleware catching Mongoose ValidationErrors, CastErrors, JSON SyntaxErrors, and custom AppErrors
+- Safe catch-all 404 middleware replacing Express 5 incompatible wildcard `app.all('*')`
+- Uniform JSON error response format: `{ "success": false, "message": "..." }`
+- Zero exposure of internal stack traces, DB details, or environment secrets
+- Backend remains stable and running across all error conditions
+
+
 

@@ -1,31 +1,35 @@
 const express = require('express');
-const mongoose = require('mongoose');
 const Deadline = require('../models/Deadline');
+const AppError = require('../utils/AppError');
+const { validateObjectId, validateDeadline } = require('../middleware/validate');
 
 const router = express.Router();
 
 // GET /api/deadlines - Get all deadlines
-router.get('/', async (req, res) => {
+router.get('/', async (req, res, next) => {
   try {
     const deadlines = await Deadline.find().sort({ dueDate: 1, createdAt: -1 });
     res.status(200).json(deadlines);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    next(error);
   }
 });
 
 // POST /api/deadlines - Create a new deadline
-router.post('/', async (req, res) => {
+router.post('/', validateDeadline(false), async (req, res, next) => {
   try {
-    const { title, subject, description, type, priority, dueDate, dueTime, branch, semester, division } = req.body;
-
-    if (!title || !title.trim()) {
-      return res.status(400).json({ error: 'Title is required' });
-    }
-
-    if (!dueDate) {
-      return res.status(400).json({ error: 'Due date is required' });
-    }
+    const {
+      title,
+      subject,
+      description,
+      type,
+      priority,
+      dueDate,
+      dueTime,
+      branch,
+      semester,
+      division,
+    } = req.body;
 
     const deadline = new Deadline({
       title: title.trim(),
@@ -43,41 +47,30 @@ router.post('/', async (req, res) => {
     const savedDeadline = await deadline.save();
     res.status(201).json(savedDeadline);
   } catch (error) {
-    if (error.name === 'ValidationError') {
-      return res.status(400).json({ error: error.message });
-    }
-    res.status(500).json({ error: error.message });
+    next(error);
   }
 });
 
 // GET /api/deadlines/:id - Get a single deadline by ID
-router.get('/:id', async (req, res) => {
+router.get('/:id', validateObjectId, async (req, res, next) => {
   try {
     const { id } = req.params;
-
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ error: 'Invalid ID format' });
-    }
-
     const deadline = await Deadline.findById(id);
+
     if (!deadline) {
-      return res.status(404).json({ error: 'Deadline not found' });
+      return next(new AppError('Deadline not found', 404));
     }
 
     res.status(200).json(deadline);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    next(error);
   }
 });
 
 // PUT /api/deadlines/:id - Update a deadline by ID
-router.put('/:id', async (req, res) => {
+router.put('/:id', validateObjectId, validateDeadline(true), async (req, res, next) => {
   try {
     const { id } = req.params;
-
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ error: 'Invalid ID format' });
-    }
 
     const updatedDeadline = await Deadline.findByIdAndUpdate(
       id,
@@ -86,30 +79,23 @@ router.put('/:id', async (req, res) => {
     );
 
     if (!updatedDeadline) {
-      return res.status(404).json({ error: 'Deadline not found' });
+      return next(new AppError('Deadline not found', 404));
     }
 
     res.status(200).json(updatedDeadline);
   } catch (error) {
-    if (error.name === 'ValidationError') {
-      return res.status(400).json({ error: error.message });
-    }
-    res.status(500).json({ error: error.message });
+    next(error);
   }
 });
 
 // DELETE /api/deadlines/:id - Delete a deadline by ID
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', validateObjectId, async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ error: 'Invalid ID format' });
-    }
-
     const deletedDeadline = await Deadline.findByIdAndDelete(id);
     if (!deletedDeadline) {
-      return res.status(404).json({ error: 'Deadline not found' });
+      return next(new AppError('Deadline not found', 404));
     }
 
     res.status(200).json({
@@ -117,7 +103,7 @@ router.delete('/:id', async (req, res) => {
       deletedDeadline,
     });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    next(error);
   }
 });
 

@@ -1,100 +1,107 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
-  --color-primary-50: var(--color-indigo-50);
-  --color-primary-100: var(--color-indigo-100);
-  --color-primary-200: var(--color-indigo-200);
-  --color-primary-300: var(--color-indigo-300);
-  --color-primary-400: var(--color-indigo-400);
-  --color-primary-500: var(--color-indigo-500);
-  --color-primary-600: var(--color-indigo-600);
-  --color-primary-700: var(--color-indigo-700);
-  --color-primary-800: var(--color-indigo-800);
-  --color-primary-900: var(--color-indigo-900);
-  --color-primary-950: var(--color-indigo-950);
+  /* Purple Brand Palette */
+  --color-primary-50: #f5f3ff;
+  --color-primary-100: #ede9fe;
+  --color-primary-200: #ddd6fe;
+  --color-primary-300: #c4b5fd;
+  --color-primary-400: #a78bfa;
+  --color-primary-500: #8b5cf6;
+  --color-primary-600: #7c3aed;
+  --color-primary-700: #6d28d9;
+  --color-primary-800: #5b21b6;
+  --color-primary-900: #4c1d95;
+  --color-primary-950: #2e1065;
 
-  /* Status Colors */
-  --color-status-urgent: var(--color-red-600);
-  --color-status-urgent-bg: var(--color-red-50);
-  --color-status-urgent-text: var(--color-red-700);
+  /* Semantic Status Colors */
+  --color-status-urgent: #ef4444;
+  --color-status-urgent-bg: #fef2f2;
+  --color-status-urgent-text: #b91c1c;
 
-  --color-status-approaching: var(--color-amber-500);
-  --color-status-approaching-bg: var(--color-amber-50);
-  --color-status-approaching-text: var(--color-amber-700);
+  --color-status-approaching: #f59e0b;
+  --color-status-approaching-bg: #fffbeb;
+  --color-status-approaching-text: #b45309;
 
-  --color-status-normal: var(--color-indigo-600);
-  --color-status-normal-bg: var(--color-indigo-50);
-  --color-status-normal-text: var(--color-indigo-700);
+  --color-status-normal: #7c3aed;
+  --color-status-normal-bg: #f5f3ff;
+  --color-status-normal-text: #6d28d9;
 
-  --color-status-past: var(--color-gray-500);
-  --color-status-past-bg: var(--color-gray-50);
-  --color-status-past-text: var(--color-gray-700);
+  --color-status-past: #64748b;
+  --color-status-past-bg: #f8fafc;
+  --color-status-past-text: #475569;
 }
 
 @layer base {
+  html {
+    color-scheme: light dark;
+  }
+
   body {
-    @apply bg-gray-50 text-gray-900 antialiased;
+    @apply bg-slate-50 text-slate-900 antialiased selection:bg-purple-500 selection:text-white dark:bg-[#0B0F19] dark:text-slate-100 transition-colors duration-200;
   }
   
   h1, h2, h3, h4, h5, h6 {
-    @apply font-semibold text-gray-900 tracking-tight;
+    @apply font-semibold text-slate-900 dark:text-slate-100 tracking-tight;
   }
 }
 
 @layer components {
   /* Buttons */
   .btn {
-    @apply inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply inline-flex items-center justify-center px-4 py-2 text-sm font-semibold rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer;
   }
   
   .btn-primary {
-    @apply inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500 shadow-sm;
+    @apply inline-flex items-center justify-center px-4 py-2 text-sm font-semibold rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white shadow-sm hover:shadow-md hover:shadow-primary-500/20 active:scale-[0.98] cursor-pointer;
   }
   
   .btn-secondary {
-    @apply inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 focus:ring-primary-500 shadow-sm;
+    @apply inline-flex items-center justify-center px-4 py-2 text-sm font-semibold rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/80 shadow-sm cursor-pointer;
   }
   
   .btn-danger {
-    @apply inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed bg-red-600 text-white hover:bg-red-700 focus:ring-red-500 shadow-sm;
+    @apply inline-flex items-center justify-center px-4 py-2 text-sm font-semibold rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed bg-red-600 hover:bg-red-700 text-white shadow-sm hover:shadow-red-500/20 active:scale-[0.98] cursor-pointer;
   }
 
   /* Cards */
   .card {
-    @apply bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden;
+    @apply bg-white dark:bg-[#151C2C] rounded-2xl shadow-sm border border-slate-200/80 dark:border-slate-800/80 overflow-hidden transition-colors duration-200;
   }
   
   .card-hover {
-    @apply bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden transition-shadow hover:shadow-md;
+    @apply bg-white dark:bg-[#151C2C] rounded-2xl shadow-sm border border-slate-200/80 dark:border-slate-800/80 overflow-hidden transition-all duration-200 hover:shadow-md hover:shadow-slate-200/50 dark:hover:shadow-black/40 hover:border-primary-200 dark:hover:border-primary-900/60;
   }
 
   /* Badges */
   .badge {
-    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold tracking-wide transition-colors;
   }
   
   .badge-urgent {
-    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-status-urgent-bg text-status-urgent-text border border-red-200;
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-400 border border-red-200/80 dark:border-red-900/40;
   }
   
   .badge-approaching {
-    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-status-approaching-bg text-status-approaching-text border border-amber-200;
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 border border-amber-200/80 dark:border-amber-900/40;
   }
   
   .badge-normal {
-    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-status-normal-bg text-status-normal-text border border-indigo-200;
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-primary-50 dark:bg-primary-950/40 text-primary-700 dark:text-primary-300 border border-primary-200/80 dark:border-primary-900/40;
   }
   
   .badge-past {
-    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-status-past-bg text-status-past-text border border-gray-200;
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700;
   }
 
   /* Inputs */
   .input-field {
-    @apply block w-full rounded-lg border border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm px-3 py-2 outline-none transition-colors bg-white;
+    @apply block w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900/90 text-slate-900 dark:text-slate-100 shadow-sm placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 sm:text-sm px-3.5 py-2.5 outline-none transition-all duration-200;
   }
   
   .label-text {
-    @apply block text-sm font-medium text-gray-700 mb-1;
+    @apply block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1.5;
   }
 }

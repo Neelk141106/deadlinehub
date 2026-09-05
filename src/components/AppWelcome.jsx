@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { ThemeToggle } from './ui/ThemeToggle';
 
 // ─── Pure SVG Decorative Icons ──────────────────────────────────────────────
 
@@ -215,19 +216,19 @@ export function AppWelcome({ onGetStarted }) {
         .dh-blob-slow { animation: dhBlob 14s ease-in-out infinite reverse; }
       `}</style>
 
-      <div className="min-h-screen bg-white relative flex flex-col justify-between overflow-x-hidden selection:bg-indigo-100 selection:text-indigo-900">
+      <div className="min-h-screen bg-white dark:bg-[#0B0F19] text-slate-900 dark:text-slate-100 relative flex flex-col justify-between overflow-x-hidden selection:bg-indigo-100 selection:text-indigo-900 transition-colors duration-200">
 
         {/* ── Background Decorative Elements ─────────────────────────────── */}
         <div aria-hidden="true" className="pointer-events-none select-none">
           <div
-            className="dh-blob absolute -top-36 -right-36 w-[550px] h-[550px] opacity-10"
+            className="dh-blob absolute -top-36 -right-36 w-[550px] h-[550px] opacity-10 dark:opacity-20"
             style={{ background: 'radial-gradient(circle, #4F46E5 0%, #7C3AED 70%, transparent 100%)' }}
           />
           <div
-            className="dh-blob-slow absolute top-[30%] -left-32 w-[400px] h-[400px] opacity-[0.07]"
+            className="dh-blob-slow absolute top-[30%] -left-32 w-[400px] h-[400px] opacity-[0.07] dark:opacity-[0.12]"
             style={{ background: 'radial-gradient(circle, #818CF8 0%, #C7D2FE 100%)' }}
           />
-          <svg className="absolute top-16 left-8 opacity-[0.14]" width="160" height="160" fill="none">
+          <svg className="absolute top-16 left-8 opacity-[0.14] dark:opacity-[0.08]" width="160" height="160" fill="none">
             {Array.from({ length: 5 }).map((_, r) =>
               Array.from({ length: 5 }).map((_, c) => (
                 <circle key={`t-${r}-${c}`} cx={c * 30 + 6} cy={r * 30 + 6} r="2.5" fill="#4F46E5"/>
@@ -241,17 +242,18 @@ export function AppWelcome({ onGetStarted }) {
         ════════════════════════════════════════════════════════════════════ */}
         <header className="w-full max-w-7xl mx-auto px-6 lg:px-10 pt-6 sm:pt-8 flex items-center justify-between">
           <div className="flex items-center gap-3.5 cursor-pointer">
-            <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-indigo-600 flex items-center justify-center shadow-md shadow-indigo-200">
+            <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-indigo-600 flex items-center justify-center shadow-md shadow-indigo-200 dark:shadow-none">
               <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <circle cx="12" cy="12" r="10"/>
                 <polyline points="12 6 12 16 14"/>
               </svg>
             </div>
             <span className="text-2xl sm:text-3xl font-extrabold tracking-tight">
-              <span className="text-slate-900">Deadline</span>
-              <span className="text-indigo-600">Hub</span>
+              <span className="text-slate-900 dark:text-slate-100">Deadline</span>
+              <span className="text-indigo-600 dark:text-primary-400">Hub</span>
             </span>
           </div>
+          <ThemeToggle />
         </header>
 
         {/* ═══════════════════════════════════════════════════════════════════
