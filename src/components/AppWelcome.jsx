@@ -101,17 +101,17 @@ function StudentLaptopIllustration({ className = '' }) {
 
 function AppStyleAcademicVisual() {
   return (
-    <div className="relative w-full max-w-lg bg-gradient-to-br from-indigo-50/70 via-white to-violet-50/70 rounded-3xl p-6 border border-indigo-100/80 shadow-xl shadow-indigo-100/30">
+    <div className="relative w-full max-w-lg bg-gradient-to-br from-indigo-50/70 via-white to-violet-50/70 dark:from-[#151C2C] dark:via-[#1A2234] dark:to-[#151C2C] rounded-3xl p-6 border border-indigo-100/80 dark:border-slate-800 shadow-xl shadow-indigo-100/30 dark:shadow-black/40">
       
       {/* App Window Header Bar */}
-      <div className="flex items-center justify-between pb-3.5 mb-3.5 border-b border-indigo-100/60">
+      <div className="flex items-center justify-between pb-3.5 mb-3.5 border-b border-indigo-100/60 dark:border-slate-800">
         <div className="flex items-center gap-2">
           <span className="w-3 h-3 rounded-full bg-red-400 opacity-80" />
           <span className="w-3 h-3 rounded-full bg-amber-400 opacity-80" />
           <span className="w-3 h-3 rounded-full bg-emerald-400 opacity-80" />
         </div>
-        <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-100 text-[11px] font-bold text-indigo-700">
-          <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 animate-pulse" />
+        <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-100 dark:border-indigo-900/50 text-[11px] font-bold text-indigo-700 dark:text-indigo-300">
+          <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 dark:bg-indigo-400 animate-pulse" />
           Academic Overview
         </div>
       </div>
@@ -122,21 +122,21 @@ function AppStyleAcademicVisual() {
       </div>
 
       {/* Decorative Ribbon Icons */}
-      <div className="flex items-center justify-around py-2.5 my-3 bg-white/90 rounded-2xl border border-indigo-50 shadow-xs">
-        <div className="flex items-center gap-1.5 text-xs font-semibold text-gray-800">
-          <ClockIcon className="w-4 h-4 text-indigo-600" />
+      <div className="flex items-center justify-around py-2.5 my-3 bg-white/90 dark:bg-slate-900/80 rounded-2xl border border-indigo-50 dark:border-slate-800 shadow-xs">
+        <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-800 dark:text-slate-200">
+          <ClockIcon className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
           <span>Deadlines</span>
         </div>
-        <div className="flex items-center gap-1.5 text-xs font-semibold text-gray-800">
-          <BellIcon className="w-4 h-4 text-violet-600" />
+        <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-800 dark:text-slate-200">
+          <BellIcon className="w-4 h-4 text-violet-600 dark:text-violet-400" />
           <span>Alerts</span>
         </div>
-        <div className="flex items-center gap-1.5 text-xs font-semibold text-gray-800">
-          <CalendarIcon className="w-4 h-4 text-indigo-600" />
+        <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-800 dark:text-slate-200">
+          <CalendarIcon className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
           <span>Schedule</span>
         </div>
-        <div className="flex items-center gap-1.5 text-xs font-semibold text-gray-800">
-          <BookIcon className="w-4 h-4 text-indigo-600" />
+        <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-800 dark:text-slate-200">
+          <BookIcon className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
           <span>Subjects</span>
         </div>
       </div>
@@ -144,44 +144,44 @@ function AppStyleAcademicVisual() {
       {/* Compact Preview Cards */}
       <div className="space-y-3 mt-3">
         {/* Deadline Card */}
-        <div className="flex items-center gap-3 bg-white/95 backdrop-blur rounded-2xl p-3 shadow-sm border border-indigo-100/80">
-          <ClockIcon className="w-5 h-5 flex-shrink-0 text-indigo-600" />
+        <div className="flex items-center gap-3 bg-white/95 dark:bg-slate-900/90 backdrop-blur rounded-2xl p-3 shadow-sm border border-indigo-100/80 dark:border-slate-800">
+          <ClockIcon className="w-5 h-5 flex-shrink-0 text-indigo-600 dark:text-indigo-400" />
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between gap-2 mb-0.5">
-              <p className="text-xs font-bold text-gray-900 truncate">Assignment Due — Tomorrow</p>
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-red-50 text-red-700 border border-red-100 flex-shrink-0">
+              <p className="text-xs font-bold text-slate-900 dark:text-slate-100 truncate">Assignment Due — Tomorrow</p>
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-red-50 dark:bg-red-950/50 text-red-700 dark:text-red-300 border border-red-100 dark:border-red-900/40 flex-shrink-0">
                 Due Tomorrow
               </span>
             </div>
-            <p className="text-[11px] text-gray-500 truncate font-medium">Analysis of Algorithms • High Priority</p>
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate font-medium">Analysis of Algorithms • High Priority</p>
           </div>
         </div>
 
         {/* Announcement Alert Card */}
-        <div className="flex items-center gap-3 bg-white/95 backdrop-blur rounded-2xl p-3 shadow-sm border border-indigo-100/80">
-          <BellIcon className="w-5 h-5 flex-shrink-0 text-violet-600" />
+        <div className="flex items-center gap-3 bg-white/95 dark:bg-slate-900/90 backdrop-blur rounded-2xl p-3 shadow-sm border border-indigo-100/80 dark:border-slate-800">
+          <BellIcon className="w-5 h-5 flex-shrink-0 text-violet-600 dark:text-violet-400" />
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between gap-2 mb-0.5">
-              <p className="text-xs font-bold text-gray-900 truncate">DBMS Practical Room Changed</p>
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-violet-50 text-violet-700 border border-violet-100 flex-shrink-0">
+              <p className="text-xs font-bold text-slate-900 dark:text-slate-100 truncate">DBMS Practical Room Changed</p>
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-violet-50 dark:bg-violet-950/50 text-violet-700 dark:text-violet-300 border border-violet-100 dark:border-violet-900/40 flex-shrink-0">
                 Notice
               </span>
             </div>
-            <p className="text-[11px] text-gray-500 truncate font-medium">Lab 405 instead of Lab 301 • Urgent</p>
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate font-medium">Lab 405 instead of Lab 301 • Urgent</p>
           </div>
         </div>
 
         {/* Schedule Task Card */}
-        <div className="flex items-center gap-3 bg-white/95 backdrop-blur rounded-2xl p-3 shadow-sm border border-indigo-100/80">
-          <CheckIcon className="w-5 h-5 flex-shrink-0 text-emerald-600" />
+        <div className="flex items-center gap-3 bg-white/95 dark:bg-slate-900/90 backdrop-blur rounded-2xl p-3 shadow-sm border border-indigo-100/80 dark:border-slate-800">
+          <CheckIcon className="w-5 h-5 flex-shrink-0 text-emerald-600 dark:text-emerald-400" />
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between gap-2 mb-0.5">
-              <p className="text-xs font-bold text-gray-900 truncate">Project Review Scheduled</p>
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-100 flex-shrink-0">
+              <p className="text-xs font-bold text-slate-900 dark:text-slate-100 truncate">Project Review Scheduled</p>
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border border-emerald-100 dark:border-emerald-900/40 flex-shrink-0">
                 Confirmed
               </span>
             </div>
-            <p className="text-[11px] text-gray-500 truncate font-medium">Full Stack Development • 24 Aug • 10:00 AM</p>
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate font-medium">Full Stack Development • 24 Aug • 10:00 AM</p>
           </div>
         </div>
       </div>
@@ -266,20 +266,20 @@ export function AppWelcome({ onGetStarted }) {
             <div className="lg:col-span-6 text-center lg:text-left flex flex-col justify-center">
 
               {/* Large Bold Heading */}
-              <h1 className="dh-fade-up-1 text-4xl sm:text-6xl lg:text-[4.2rem] font-extrabold text-slate-900 leading-[1.08] tracking-tight mb-6">
+              <h1 className="dh-fade-up-1 text-4xl sm:text-6xl lg:text-[4.2rem] font-extrabold text-slate-900 dark:text-slate-100 leading-[1.08] tracking-tight mb-6">
                 Never miss<br />
                 what{' '}
-                <span className="relative inline-block text-indigo-600">
+                <span className="relative inline-block text-indigo-600 dark:text-primary-400">
                   matters.
                   <span
                     aria-hidden="true"
-                    className="absolute left-0 bottom-1.5 w-full h-3 bg-indigo-100/90 rounded -z-10"
+                    className="absolute left-0 bottom-1.5 w-full h-3 bg-indigo-100/90 dark:bg-primary-950/60 rounded -z-10"
                   />
                 </span>
               </h1>
 
               {/* Supporting Text */}
-              <p className="dh-fade-up-2 text-base sm:text-xl text-gray-600 leading-relaxed max-w-xl mx-auto lg:mx-0 mb-8 font-medium">
+              <p className="dh-fade-up-2 text-base sm:text-xl text-slate-600 dark:text-slate-300 leading-relaxed max-w-xl mx-auto lg:mx-0 mb-8 font-medium">
                 Your class deadlines, announcements and important academic updates&nbsp;—&nbsp;organized in one place.
               </p>
 
@@ -288,7 +288,7 @@ export function AppWelcome({ onGetStarted }) {
                 <button
                   id="landing-getstarted-hero"
                   onClick={onGetStarted}
-                  className="inline-flex items-center justify-center gap-3 px-9 py-4 text-lg font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-2xl shadow-lg shadow-indigo-200 hover:shadow-xl transition-all active:scale-95 cursor-pointer"
+                  className="inline-flex items-center justify-center gap-3 px-9 py-4 text-lg font-bold text-white bg-indigo-600 hover:bg-indigo-700 dark:bg-primary-600 dark:hover:bg-primary-500 rounded-2xl shadow-lg shadow-indigo-200 dark:shadow-none hover:shadow-xl transition-all active:scale-95 cursor-pointer"
                 >
                   Get Started
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -299,15 +299,15 @@ export function AppWelcome({ onGetStarted }) {
 
               {/* 3 Subtle Benefit Badges */}
               <div className="dh-fade-up-3 flex flex-wrap items-center justify-center lg:justify-start gap-3 mt-10">
-                <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-slate-100 text-slate-700 text-xs sm:text-sm font-semibold border border-slate-200/60">
+                <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800/80 text-slate-700 dark:text-slate-200 text-xs sm:text-sm font-semibold border border-slate-200/60 dark:border-slate-700">
                   <span className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
                   Simple
                 </span>
-                <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-slate-100 text-slate-700 text-xs sm:text-sm font-semibold border border-slate-200/60">
+                <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800/80 text-slate-700 dark:text-slate-200 text-xs sm:text-sm font-semibold border border-slate-200/60 dark:border-slate-700">
                   <span className="w-1.5 h-1.5 rounded-full bg-violet-500" />
                   Organized
                 </span>
-                <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-slate-100 text-slate-700 text-xs sm:text-sm font-semibold border border-slate-200/60">
+                <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800/80 text-slate-700 dark:text-slate-200 text-xs sm:text-sm font-semibold border border-slate-200/60 dark:border-slate-700">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                   Student-friendly
                 </span>

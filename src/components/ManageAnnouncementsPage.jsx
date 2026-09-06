@@ -20,48 +20,48 @@ function AnnouncementForm({ heading, subheading, form, onChange, onSubmit, onCan
         <button
           onClick={onCancel}
           type="button"
-          className="p-2 hover:bg-gray-100 rounded-lg transition-colors text-gray-600"
+          className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors text-slate-600 dark:text-slate-400 cursor-pointer"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m15 18-6-6 6-6"/></svg>
         </button>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">{heading}</h1>
-          <p className="text-gray-600">{subheading}</p>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">{heading}</h1>
+          <p className="text-slate-500 dark:text-slate-400 text-sm">{subheading}</p>
         </div>
       </div>
 
       {error && (
-        <div className="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 text-sm rounded-xl flex items-center gap-2.5">
+        <div className="mb-6 p-4 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/40 text-red-700 dark:text-red-400 text-sm rounded-xl flex items-center gap-2.5">
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0 text-red-500"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
           <span>{error}</span>
         </div>
       )}
 
-      <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
+      <div className="card p-6 sm:p-8">
         <form className="space-y-6" onSubmit={onSubmit}>
           <div className="space-y-4">
-            <h2 className="text-lg font-semibold text-gray-900 border-b border-gray-100 pb-2">Announcement Details</h2>
+            <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100 border-b border-slate-100 dark:border-slate-800/80 pb-2">Announcement Details</h2>
 
             <div className="space-y-1.5">
-              <label className="block text-sm font-medium text-gray-700">Title</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Title</label>
               <input
                 type="text"
                 name="title"
                 value={form.title}
                 onChange={onChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                className="input-field"
                 placeholder="e.g., Room change for practicals"
                 required
               />
             </div>
 
             <div className="space-y-1.5">
-              <label className="block text-sm font-medium text-gray-700">Message</label>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Message</label>
               <textarea
                 name="message"
                 value={form.message}
                 onChange={onChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 min-h-[120px]"
+                className="input-field min-h-[120px]"
                 placeholder="Write the announcement details here..."
                 required
               />
@@ -69,8 +69,8 @@ function AnnouncementForm({ heading, subheading, form, onChange, onSubmit, onCan
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <label className="block text-sm font-medium text-gray-700">Category</label>
-                <select name="category" value={form.category} onChange={onChange} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white">
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Category</label>
+                <select name="category" value={form.category} onChange={onChange} className="input-field cursor-pointer">
                   <option>Academic</option>
                   <option>Examination</option>
                   <option>Lecture</option>
@@ -81,8 +81,8 @@ function AnnouncementForm({ heading, subheading, form, onChange, onSubmit, onCan
                 </select>
               </div>
               <div className="space-y-1.5">
-                <label className="block text-sm font-medium text-gray-700">Priority</label>
-                <select name="priority" value={form.priority} onChange={onChange} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white">
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Priority</label>
+                <select name="priority" value={form.priority} onChange={onChange} className="input-field cursor-pointer">
                   <option>Normal</option>
                   <option>Important</option>
                   <option>Urgent</option>
@@ -97,34 +97,34 @@ function AnnouncementForm({ heading, subheading, form, onChange, onSubmit, onCan
                 name="isPinned"
                 checked={form.isPinned}
                 onChange={(e) => onChange({ target: { name: 'isPinned', value: e.target.checked } })}
-                className="w-4 h-4 text-primary-600 rounded border-gray-300 focus:ring-primary-500"
+                className="w-4 h-4 text-primary-600 rounded border-slate-300 dark:border-slate-700 focus:ring-primary-500 cursor-pointer"
               />
-              <label htmlFor="pin-announcement" className="text-sm font-medium text-gray-700 cursor-pointer">
+              <label htmlFor="pin-announcement" className="text-sm font-medium text-slate-700 dark:text-slate-300 cursor-pointer">
                 Pin this announcement to the top
               </label>
             </div>
           </div>
 
           <div className="space-y-4">
-            <h2 className="text-lg font-semibold text-gray-900 border-b border-gray-100 pb-2 mt-6">Target Students</h2>
+            <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100 border-b border-slate-100 dark:border-slate-800/80 pb-2 mt-6">Target Students</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-1.5">
-                <label className="block text-sm font-medium text-gray-700">Branch</label>
-                <select name="branch" value={form.branch} onChange={onChange} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white">
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Branch</label>
+                <select name="branch" value={form.branch} onChange={onChange} className="input-field cursor-pointer">
                   <option>Information Technology</option>
                   <option>Computer Science</option>
                   <option>Electronics</option>
                 </select>
               </div>
               <div className="space-y-1.5">
-                <label className="block text-sm font-medium text-gray-700">Semester</label>
-                <select name="semester" value={form.semester} onChange={onChange} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white">
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Semester</label>
+                <select name="semester" value={form.semester} onChange={onChange} className="input-field cursor-pointer">
                   {['Semester 1','Semester 2','Semester 3','Semester 4','Semester 5','Semester 6','Semester 7','Semester 8'].map(s => <option key={s}>{s}</option>)}
                 </select>
               </div>
               <div className="space-y-1.5">
-                <label className="block text-sm font-medium text-gray-700">Division(s)</label>
-                <select name="division" value={form.division} onChange={onChange} className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 bg-white">
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Division(s)</label>
+                <select name="division" value={form.division} onChange={onChange} className="input-field cursor-pointer">
                   <option>All Divisions</option>
                   <option>D15A</option>
                   <option>D15B</option>
@@ -134,12 +134,12 @@ function AnnouncementForm({ heading, subheading, form, onChange, onSubmit, onCan
             </div>
           </div>
 
-          <div className="pt-4 flex items-center justify-end gap-3 border-t border-gray-100">
-            <button type="button" onClick={onCancel} className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 border border-gray-300 rounded-lg transition-colors">
+          <div className="pt-4 flex items-center justify-end gap-3 border-t border-slate-100 dark:border-slate-800/80">
+            <button type="button" onClick={onCancel} className="btn-secondary">
               Cancel
             </button>
-            <button type="submit" className="px-4 py-2 text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 rounded-lg transition-colors flex items-center gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            <button type="submit" className="btn-primary gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
               {submitLabel}
             </button>
           </div>
@@ -289,15 +289,15 @@ export function ManageAnnouncementsPage() {
 
   // ── List view ──
   return (
-    <div className="max-w-5xl mx-auto">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
+    <div className="max-w-5xl mx-auto space-y-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Manage Announcements</h1>
-          <p className="text-gray-600">Publish important academic updates for your students.</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-slate-100 tracking-tight">Manage Announcements</h1>
+          <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">Publish important academic updates for your students.</p>
         </div>
         <button
           onClick={openAdd}
-          className="flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white font-medium py-2.5 px-4 rounded-lg transition-colors"
+          className="btn-primary gap-2"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="12"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           Add Announcement
@@ -305,30 +305,30 @@ export function ManageAnnouncementsPage() {
       </div>
 
       {announcements.length === 0 ? (
-        <div className="bg-white rounded-xl border border-gray-200 p-12 text-center shadow-sm">
-          <p className="text-gray-500">No announcements yet. Click <strong>Add Announcement</strong> to create one.</p>
+        <div className="card p-12 text-center border-dashed border-slate-300 dark:border-slate-800">
+          <p className="text-slate-500 dark:text-slate-400">No announcements yet. Click <strong className="text-slate-900 dark:text-slate-100">Add Announcement</strong> to create one.</p>
         </div>
       ) : (
-        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+        <div className="card overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-gray-50 border-b border-gray-200 text-sm text-gray-600">
-                  <th className="p-4 font-semibold">Title</th>
-                  <th className="p-4 font-semibold">Category &amp; Priority</th>
-                  <th className="p-4 font-semibold">Target</th>
-                  <th className="p-4 font-semibold">Posted</th>
-                  <th className="p-4 font-semibold text-right">Actions</th>
+                <tr className="bg-slate-50 dark:bg-slate-900/80 border-b border-slate-200 dark:border-slate-800 text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400 font-semibold">
+                  <th className="p-4">Title</th>
+                  <th className="p-4">Category &amp; Priority</th>
+                  <th className="p-4">Target</th>
+                  <th className="p-4">Posted</th>
+                  <th className="p-4 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800/70">
                 {announcements.map((announcement) => (
-                  <tr key={announcement.id} className="hover:bg-gray-50 transition-colors group">
+                  <tr key={announcement.id} className="hover:bg-slate-50/70 dark:hover:bg-slate-800/40 transition-colors group">
                     <td className="p-4">
                       <div className="flex items-center gap-2">
-                        <p className="font-bold text-gray-900">{announcement.title}</p>
+                        <p className="font-bold text-slate-900 dark:text-slate-100">{announcement.title}</p>
                         {announcement.isPinned && (
-                          <span className="flex items-center gap-1 text-[10px] uppercase font-bold tracking-wider bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded">
+                          <span className="flex items-center gap-1 text-[10px] uppercase font-bold tracking-wider bg-primary-50 dark:bg-primary-950/60 text-primary-700 dark:text-primary-300 border border-primary-200/60 dark:border-primary-900/40 px-1.5 py-0.5 rounded-md">
                             <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 17v5"/><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"/></svg>
                             Pinned
                           </span>
@@ -337,29 +337,29 @@ export function ManageAnnouncementsPage() {
                     </td>
                     <td className="p-4">
                       <div className="flex flex-col gap-1.5 items-start">
-                        <span className="inline-flex px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-700">{announcement.category}</span>
-                        <span className={`inline-flex px-2 py-0.5 rounded text-xs font-medium ${
-                          announcement.priority === 'Urgent'    ? 'bg-red-100 text-red-700' :
-                          announcement.priority === 'Important' ? 'bg-amber-100 text-amber-700' :
-                          'bg-blue-100 text-blue-700'
-                        }`}>{announcement.priority}</span>
+                        <span className="badge-past text-[11px]">{announcement.category}</span>
+                        <span className={`badge ${
+                          announcement.priority === 'Urgent'    ? 'badge-urgent' :
+                          announcement.priority === 'Important' ? 'badge-approaching' :
+                          'badge-normal'
+                        } text-[11px]`}>{announcement.priority}</span>
                       </div>
                     </td>
                     <td className="p-4">
-                      <p className="text-sm text-gray-600">{announcement.division}</p>
+                      <p className="text-sm text-slate-600 dark:text-slate-400">{announcement.division}</p>
                     </td>
                     <td className="p-4">
-                      <p className="text-sm text-gray-500">{announcement.postedTime || 'Just now'}</p>
+                      <p className="text-sm text-slate-500 dark:text-slate-400">{announcement.postedTime || 'Just now'}</p>
                     </td>
                     <td className="p-4 text-right">
                       <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button onClick={() => handleTogglePin(announcement.id)} className="p-1.5 text-gray-400 hover:text-amber-600 hover:bg-amber-50 rounded-md transition-colors" title={announcement.isPinned ? 'Unpin' : 'Pin'}>
+                        <button onClick={() => handleTogglePin(announcement.id)} className="p-1.5 text-slate-400 hover:text-amber-600 dark:hover:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/50 rounded-lg transition-colors cursor-pointer" title={announcement.isPinned ? 'Unpin' : 'Pin'}>
                           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 17v5"/><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"/></svg>
                         </button>
-                        <button onClick={() => openEdit(announcement)} className="p-1.5 text-gray-400 hover:text-primary-600 hover:bg-primary-50 rounded-md transition-colors" title="Edit">
+                        <button onClick={() => openEdit(announcement)} className="p-1.5 text-slate-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-950/50 rounded-lg transition-colors cursor-pointer" title="Edit">
                           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
                         </button>
-                        <button onClick={() => handleDelete(announcement.id)} className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors" title="Delete">
+                        <button onClick={() => handleDelete(announcement.id)} className="p-1.5 text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/50 rounded-lg transition-colors cursor-pointer" title="Delete">
                           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
                         </button>
                       </div>

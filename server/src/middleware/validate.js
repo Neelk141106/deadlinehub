@@ -6,7 +6,7 @@ const AppError = require('../utils/AppError');
  */
 const validateObjectId = (req, res, next) => {
   const { id } = req.params;
-  if (!id || !mongoose.Types.ObjectId.isValid(id)) {
+  if (!id || !mongoose.Types.ObjectId.isValid(id) || !/^[0-9a-fA-F]{24}$/.test(id)) {
     return next(new AppError('Invalid ID format', 400));
   }
   next();

@@ -68,7 +68,7 @@ router.get('/:id', validateObjectId, async (req, res, next) => {
     const announcement = await Announcement.findById(id);
 
     if (!announcement) {
-      return next(new AppError('Announcement not found', 404));
+      return next(new AppError('Resource not found', 404));
     }
 
     res.status(200).json(announcement);
@@ -93,11 +93,11 @@ router.put('/:id', validateObjectId, validateAnnouncement(true), async (req, res
     const updatedAnnouncement = await Announcement.findByIdAndUpdate(
       id,
       updateData,
-      { new: true, runValidators: true }
+      { returnDocument: 'after', runValidators: true }
     );
 
     if (!updatedAnnouncement) {
-      return next(new AppError('Announcement not found', 404));
+      return next(new AppError('Resource not found', 404));
     }
 
     res.status(200).json(updatedAnnouncement);
@@ -113,7 +113,7 @@ router.delete('/:id', validateObjectId, async (req, res, next) => {
 
     const deletedAnnouncement = await Announcement.findByIdAndDelete(id);
     if (!deletedAnnouncement) {
-      return next(new AppError('Announcement not found', 404));
+      return next(new AppError('Resource not found', 404));
     }
 
     res.status(200).json({

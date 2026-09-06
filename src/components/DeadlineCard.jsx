@@ -38,13 +38,13 @@ export function DeadlineCard({
         
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mt-1 pt-3 border-t border-slate-100 dark:border-slate-800">
           {/* 4. Due date/time */}
-          <div className="flex items-center text-sm text-slate-600 dark:text-slate-400 font-medium">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-1.5 text-slate-400 dark:text-slate-500"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <div className="flex items-center text-sm text-slate-600 dark:text-slate-300 font-medium">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-1.5 text-slate-400 dark:text-slate-400"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
             {dateTimeDisplay}
           </div>
           
           {/* 5. Priority */}
-          <div className="text-xs text-slate-500 dark:text-slate-400 flex items-center bg-slate-50 dark:bg-slate-800/70 px-2.5 py-1 rounded-lg w-fit border border-slate-200 dark:border-slate-700">
+          <div className="text-xs text-slate-600 dark:text-slate-300 flex items-center bg-slate-50 dark:bg-slate-800/80 px-2.5 py-1 rounded-lg w-fit border border-slate-200 dark:border-slate-700">
             <span className="font-semibold mr-1">Priority:</span> {priority}
           </div>
         </div>

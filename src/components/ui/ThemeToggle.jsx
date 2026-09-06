@@ -1,33 +1,38 @@
 import React from 'react';
 import { useTheme } from '../../context/ThemeContext';
 
-export function ThemeToggle({ className = '', showLabel = false }) {
-  const { theme, toggleTheme, isDark } = useTheme();
+export function ThemeToggle({ className = '' }) {
+  const { toggleTheme, isDark } = useTheme();
 
   return (
     <button
       type="button"
       onClick={toggleTheme}
-      className={`inline-flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-xl border transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500/50 cursor-pointer ${
+      className={`inline-flex items-center p-1 rounded-xl border transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500/50 cursor-pointer ${
         isDark
-          ? 'bg-slate-800/80 border-slate-700/80 text-amber-400 hover:bg-slate-700 hover:border-slate-600 shadow-sm'
-          : 'bg-white/90 border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 shadow-sm'
+          ? 'bg-slate-800/90 border-slate-700/80 hover:border-slate-600'
+          : 'bg-slate-100 border-slate-200 hover:border-slate-300'
       } ${className}`}
       title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-      aria-label="Toggle theme"
+      aria-label={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
     >
-      {isDark ? (
+      <span
+        className={`flex items-center justify-center w-7 h-7 rounded-lg transition-all duration-200 ${
+          !isDark
+            ? 'bg-white text-amber-500 shadow-xs'
+            : 'text-slate-400 hover:text-slate-200'
+        }`}
+      >
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          width="18"
-          height="18"
+          width="15"
+          height="15"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
           strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
-          className="text-amber-400 transition-transform duration-300 rotate-0 hover:rotate-45"
         >
           <circle cx="12" cy="12" r="4" />
           <path d="M12 2v2" />
@@ -39,27 +44,28 @@ export function ThemeToggle({ className = '', showLabel = false }) {
           <path d="m6.34 17.66-1.41 1.41" />
           <path d="m19.07 4.93-1.41 1.41" />
         </svg>
-      ) : (
+      </span>
+      <span
+        className={`flex items-center justify-center w-7 h-7 rounded-lg transition-all duration-200 ${
+          isDark
+            ? 'bg-primary-600 text-white shadow-xs'
+            : 'text-slate-400 hover:text-slate-600'
+        }`}
+      >
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          width="18"
-          height="18"
+          width="14"
+          height="14"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
           strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
-          className="text-primary-600 transition-transform duration-300 rotate-0 hover:-rotate-12"
         >
           <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
         </svg>
-      )}
-      {showLabel && (
-        <span className="text-xs font-semibold">
-          {isDark ? 'Light' : 'Dark'}
-        </span>
-      )}
+      </span>
     </button>
   );
 }

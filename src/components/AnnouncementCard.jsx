@@ -35,13 +35,13 @@ export function AnnouncementCard({
       {/* 2 & 3. Title and Message */}
       <div>
         <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100 leading-tight mb-1.5">{title}</h3>
-        <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">{message}</p>
+        <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">{message}</p>
       </div>
       
       {/* 4 & 5. Posted by and time */}
-      <div className="mt-1 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center text-xs text-slate-500 dark:text-slate-400 font-medium">
+      <div className="mt-1 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center text-xs text-slate-600 dark:text-slate-300 font-medium">
         <span>Posted by {postedBy}</span>
-        <span className="mx-2 text-slate-300 dark:text-slate-600">&bull;</span>
+        <span className="mx-2 text-slate-300 dark:text-slate-500">&bull;</span>
         <span>{postedTime}</span>
       </div>
     </div>

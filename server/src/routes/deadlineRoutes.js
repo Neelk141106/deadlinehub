@@ -58,7 +58,7 @@ router.get('/:id', validateObjectId, async (req, res, next) => {
     const deadline = await Deadline.findById(id);
 
     if (!deadline) {
-      return next(new AppError('Deadline not found', 404));
+      return next(new AppError('Resource not found', 404));
     }
 
     res.status(200).json(deadline);
@@ -75,11 +75,11 @@ router.put('/:id', validateObjectId, validateDeadline(true), async (req, res, ne
     const updatedDeadline = await Deadline.findByIdAndUpdate(
       id,
       req.body,
-      { new: true, runValidators: true }
+      { returnDocument: 'after', runValidators: true }
     );
 
     if (!updatedDeadline) {
-      return next(new AppError('Deadline not found', 404));
+      return next(new AppError('Resource not found', 404));
     }
 
     res.status(200).json(updatedDeadline);
@@ -95,7 +95,7 @@ router.delete('/:id', validateObjectId, async (req, res, next) => {
 
     const deletedDeadline = await Deadline.findByIdAndDelete(id);
     if (!deletedDeadline) {
-      return next(new AppError('Deadline not found', 404));
+      return next(new AppError('Resource not found', 404));
     }
 
     res.status(200).json({

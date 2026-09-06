@@ -14,7 +14,7 @@ function getGreeting() {
   return 'Good Evening';
 }
 
-export function StudentDashboard() {
+export function StudentDashboard({ userName = 'Student' }) {
   const { deadlines } = useDeadlines();
   const { announcements } = useAnnouncements();
 
@@ -82,48 +82,65 @@ export function StudentDashboard() {
   }, [announcements]);
 
   return (
-    <div className="max-w-6xl mx-auto space-y-8">
+    <div className="max-w-7xl mx-auto space-y-6">
       {/* Greeting and Class Info */}
-      <header className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-gray-200 pb-6">
+      <header className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-slate-200/80 dark:border-slate-800/80 pb-5">
         <div>
-          {/* EH-009: greeting is derived from current time via useEffect + useState */}
-          <h1 className="text-3xl font-bold text-gray-900 tracking-tight">
-            {greeting}, Neel 👋
+          {/* Greeting dynamically adapts and supports user name prop */}
+          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-slate-100 tracking-tight">
+            {greeting}{userName ? `, ${userName}` : ''} 👋
           </h1>
-          <p className="text-gray-500 mt-1">Here's what you need to know today.</p>
+          <p className="text-slate-600 dark:text-slate-300 mt-1 text-sm font-normal">Here's what you need to know today.</p>
         </div>
-        <div className="bg-primary-50 text-primary-700 px-4 py-2 rounded-lg font-medium text-sm inline-flex items-center w-fit">
+        <div className="bg-primary-50 dark:bg-primary-950/60 text-primary-700 dark:text-primary-300 border border-primary-200/80 dark:border-primary-900/50 px-3.5 py-1.5 rounded-xl font-semibold text-xs tracking-wide shadow-xs inline-flex items-center gap-1.5 w-fit">
+          <span className="w-2 h-2 rounded-full bg-primary-500"></span>
           IT • Semester 5 • D15C
         </div>
       </header>
 
-      {/* EH-008: Summary overview cards — counts are DERIVED, not hardcoded */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex flex-col items-center text-center">
-          <span className="text-3xl font-bold text-red-500">{deadlineStats.dueSoonCount}</span>
-          <span className="text-xs font-medium text-gray-500 mt-1 uppercase tracking-wide">Due Soon</span>
+      {/* 3 Summary overview cards balanced across the content width */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="card-hover p-5 flex items-center justify-between">
+          <div className="text-left">
+            <span className="text-3xl font-bold text-red-600 dark:text-red-400 tracking-tight">{deadlineStats.dueSoonCount}</span>
+            <p className="text-xs font-semibold text-slate-600 dark:text-slate-300 mt-1 uppercase tracking-wider">Due Soon</p>
+          </div>
+          <div className="w-10 h-10 rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-200/60 dark:border-red-900/40 text-red-600 dark:text-red-400 flex items-center justify-center shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
         </div>
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex flex-col items-center text-center">
-          <span className="text-3xl font-bold text-amber-500">{deadlineStats.thisWeekCount}</span>
-          <span className="text-xs font-medium text-gray-500 mt-1 uppercase tracking-wide">This Week</span>
+
+        <div className="card-hover p-5 flex items-center justify-between">
+          <div className="text-left">
+            <span className="text-3xl font-bold text-amber-600 dark:text-amber-400 tracking-tight">{deadlineStats.thisWeekCount}</span>
+            <p className="text-xs font-semibold text-slate-600 dark:text-slate-300 mt-1 uppercase tracking-wider">This Week</p>
+          </div>
+          <div className="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200/60 dark:border-amber-900/40 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+          </div>
         </div>
-        <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-4 flex flex-col items-center text-center col-span-2 sm:col-span-1">
-          <span className="text-3xl font-bold text-primary-600">{announcements.length}</span>
-          <span className="text-xs font-medium text-gray-500 mt-1 uppercase tracking-wide">Announcements</span>
+
+        <div className="card-hover p-5 flex items-center justify-between">
+          <div className="text-left">
+            <span className="text-3xl font-bold text-primary-600 dark:text-primary-400 tracking-tight">{announcements.length}</span>
+            <p className="text-xs font-semibold text-slate-600 dark:text-slate-300 mt-1 uppercase tracking-wider">Announcements</p>
+          </div>
+          <div className="w-10 h-10 rounded-xl bg-primary-50 dark:bg-primary-950/40 border border-primary-200/60 dark:border-primary-900/40 text-primary-600 dark:text-primary-400 flex items-center justify-center shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          </div>
         </div>
       </div>
 
+      {/* Main Grid Layout: Upcoming Deadlines ~ 2/3 width, Latest Announcements ~ 1/3 width */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
 
-      {/* Main Grid Layout for Desktop/Tablet */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Left Column (2/3 width on desktop): Needs Attention & Upcoming Deadlines */}
+        <div className="lg:col-span-2 space-y-6">
 
-        {/* Left Column (Needs Attention & Upcoming) */}
-        <div className="lg:col-span-2 space-y-8">
-
-          {/* EH-008: Needs Attention — derived from MOCK_DEADLINES */}
-          <section>
-            <SectionHeader title={`Needs Attention${deadlineStats.needsAttention.length > 0 ? ` (${deadlineStats.needsAttention.length})` : ''}`} />
-            {deadlineStats.needsAttention.length > 0 ? (
+          {/* Needs Attention section (only rendered when there are urgent items) */}
+          {deadlineStats.needsAttention.length > 0 && (
+            <section>
+              <SectionHeader title={`Needs Attention (${deadlineStats.needsAttention.length})`} />
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {deadlineStats.needsAttention.map((d) => (
                   <DeadlineCard
@@ -135,46 +152,64 @@ export function StudentDashboard() {
                   />
                 ))}
               </div>
-            ) : (
-              <p className="text-sm text-gray-500 py-4">Nothing urgent right now. You're all caught up!</p>
-            )}
-          </section>
+            </section>
+          )}
 
-          {/* EH-008: Upcoming Deadlines — derived & sorted from MOCK_DEADLINES */}
+          {/* Upcoming Deadlines section with polished compact empty state */}
           <section>
             <SectionHeader title="Upcoming Deadlines" />
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {deadlineStats.upcoming.map((d) => (
-                <DeadlineCard
-                  key={d.id}
-                  dueDate={d.dueDate}
-                  subject={d.subject}
-                  title={d.title}
-                  priority={d.priority}
-                />
-              ))}
-            </div>
+            {deadlineStats.upcoming.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {deadlineStats.upcoming.map((d) => (
+                  <DeadlineCard
+                    key={d.id}
+                    dueDate={d.dueDate}
+                    subject={d.subject}
+                    title={d.title}
+                    priority={d.priority}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="card p-8 sm:p-10 text-center border-dashed border-slate-200 dark:border-slate-800 flex flex-col items-center justify-center">
+                <div className="w-12 h-12 rounded-2xl bg-primary-50 dark:bg-primary-950/60 border border-primary-200/60 dark:border-primary-900/40 text-primary-600 dark:text-primary-400 flex items-center justify-center mb-3">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect width="18" height="18" x="3" y="4" rx="2" ry="2"/>
+                    <line x1="16" x2="16" y1="2" y2="6"/>
+                    <line x1="8" x2="8" y1="2" y2="6"/>
+                    <line x1="3" x2="21" y1="10" y2="10"/>
+                    <path d="m9 16 2 2 4-4"/>
+                  </svg>
+                </div>
+                <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">No upcoming deadlines</h3>
+                <p className="text-sm text-slate-600 dark:text-slate-300 mt-1">You're all caught up.</p>
+              </div>
+            )}
           </section>
         </div>
 
-        {/* Right Column (Announcements) */}
-        {/* EH-008: Latest Announcements — derived from MOCK_ANNOUNCEMENTS (pinned first, then recency) */}
-        <div className="space-y-4">
+        {/* Right Column (1/3 width on desktop): Latest Announcements */}
+        <div className="lg:col-span-1 space-y-4">
           <SectionHeader title="Latest Announcements" />
           <div className="flex flex-col gap-4">
-            {latestAnnouncements.map((a) => (
-              <AnnouncementCard
-                key={a.id}
-                priorityVariant={a.priorityVariant || (a.priority ? a.priority.toLowerCase() : 'normal')}
-                priorityText={a.priorityText || (a.priority ? a.priority.toUpperCase() : (a.category ? a.category.toUpperCase() : 'GENERAL'))}
-                isPinned={a.isPinned}
-                title={a.title}
-                message={a.message}
-                postedBy={a.postedBy || 'Teacher / Admin'}
-                postedTime={a.postedTime || a.time || 'Just now'}
-              />
-            ))}
-
+            {latestAnnouncements.length > 0 ? (
+              latestAnnouncements.map((a) => (
+                <AnnouncementCard
+                  key={a.id}
+                  priorityVariant={a.priorityVariant || (a.priority ? a.priority.toLowerCase() : 'normal')}
+                  priorityText={a.priorityText || (a.priority ? a.priority.toUpperCase() : (a.category ? a.category.toUpperCase() : 'GENERAL'))}
+                  isPinned={a.isPinned}
+                  title={a.title}
+                  message={a.message}
+                  postedBy={a.postedBy || 'Teacher / Admin'}
+                  postedTime={a.postedTime || a.time || 'Just now'}
+                />
+              ))
+            ) : (
+              <div className="card p-6 text-center border-dashed border-slate-200 dark:border-slate-800">
+                <p className="text-sm text-slate-600 dark:text-slate-300">No announcements posted yet.</p>
+              </div>
+            )}
           </div>
         </div>
 

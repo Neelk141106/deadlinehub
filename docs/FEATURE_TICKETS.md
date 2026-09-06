@@ -657,5 +657,20 @@ Status: DONE
 - Zero exposure of internal stack traces, DB details, or environment secrets
 - Backend remains stable and running across all error conditions
 
+### E5-003 — Security Middleware
+Status: DONE
+
+- Installed and configured `helmet` with custom cross-origin resource policy
+- Explicitly disabled `x-powered-by` header
+- Added security headers (X-Content-Type-Options, X-Frame-Options, Strict-Transport-Security)
+
+### E5-004 — Safer CORS & Request Limits
+Status: DONE
+
+- Explicit CORS configuration allowing only trusted Vite frontend origin (`http://localhost:5173`, `http://127.0.0.1:5173`)
+- Allowed methods restricted to `GET, POST, PUT, DELETE`
+- JSON payload body limit set to `100kb` with handled 413 Payload Too Large error
+- Centralized error handling integration for rejected CORS origins (403 Forbidden)
+
 
 

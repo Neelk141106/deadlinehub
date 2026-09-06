@@ -265,11 +265,13 @@ Experiment 4 — MongoDB + Mongoose Integration — COMPLETED
 Experiment 5 — Secure REST APIs — IN PROGRESS
 - E5-001 — Request Validation (Deadlines & Announcements): COMPLETED ✅
 - E5-002 — Centralized Error Handling & Safe 404 Middleware: COMPLETED ✅
-- UI Foundation — Light/Dark Theme Foundation (ThemeContext & ThemeToggle): COMPLETED ✅
+- E5-003 — Security Middleware (Helmet, disabled x-powered-by): COMPLETED ✅
+- E5-004 — Safer CORS (origin whitelist) & Request Size Limits (100kb): COMPLETED ✅
+- UI Foundation & Core Screens Redesign (Light/Dark mode, manual Switch Role removed): COMPLETED ✅
 
 ### Next Task
 
-Experiment 5 — Next Ticket (E5-003)
+Experiment 5 — Next Ticket (E5-005)
 
 ---
 
@@ -391,8 +393,8 @@ Planned later:
 17. Git is the source of detailed implementation history.
 
 Experiment 1, Experiment 2, Experiment 3, and Experiment 4 are COMPLETED.
-Experiment 5 (E5-001, E5-002) and UI Theme Foundation are COMPLETED.
+Experiment 5 (E5-001, E5-002, E5-003, E5-004) and Core UI Light/Dark Redesign are COMPLETED.
 
-Next ticket: E5-003. Do NOT begin E5-003 until explicitly instructed.
+Next ticket: E5-005. Do NOT begin E5-005 until explicitly instructed.
 
 

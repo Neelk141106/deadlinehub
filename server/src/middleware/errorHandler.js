@@ -27,10 +27,10 @@ const errorHandler = (err, req, res, next) => {
     message = 'Request payload too large (maximum 100kb allowed)';
   }
 
-  // Fallback for non-operational 500 unexpected errors
-  if (statusCode === 500 && !err.isOperational) {
+  // Fallback for 500 unexpected errors (never leak stack or DB details)
+  if (statusCode === 500) {
     console.error('Unexpected Server Error:', err);
-    message = 'An unexpected server error occurred';
+    message = 'Internal server error';
   }
 
   res.status(statusCode).json({
