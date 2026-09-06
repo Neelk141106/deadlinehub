@@ -21,6 +21,12 @@ const errorHandler = (err, req, res, next) => {
     message = 'Malformed JSON payload';
   }
 
+  // Handle payload too large (413)
+  if (err.type === 'entity.too.large' || statusCode === 413) {
+    statusCode = 413;
+    message = 'Request payload too large (maximum 100kb allowed)';
+  }
+
   // Fallback for non-operational 500 unexpected errors
   if (statusCode === 500 && !err.isOperational) {
     console.error('Unexpected Server Error:', err);
