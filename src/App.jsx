@@ -72,8 +72,17 @@ function App() {
   if (currentView === 'studentLogin') {
     return <StudentLogin 
       onLogin={(loggedInUser) => {
-        setUserRole('student');
-        setCurrentView('joinClass');
+        // Role comes from the authenticated user returned by the backend
+        const role = loggedInUser?.role || 'student';
+        setUserRole(role);
+        // Returning students who already have a division go straight to the app.
+        // New students (no division yet) are directed to join a class first.
+        if (loggedInUser?.division && loggedInUser.division.trim()) {
+          setActiveTab('dashboard');
+          setCurrentView('app');
+        } else {
+          setCurrentView('joinClass');
+        }
       }} 
       onBack={() => setCurrentView('welcome')} 
       onRegisterClick={() => setCurrentView('studentRegistration')} 
@@ -169,10 +178,12 @@ function App() {
           </div>
 
           <div className="space-y-1">
-            <a href="#" className="flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-100 rounded-xl font-medium transition-colors">
+            <button
+              onClick={() => setActiveTab('profile')}
+              className="w-full flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-100 rounded-xl font-medium transition-colors cursor-pointer text-left">
               <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
               Profile
-            </a>
+            </button>
             <button 
               onClick={() => {
                 logout();
@@ -214,6 +225,89 @@ function App() {
         {activeTab === 'joinRequests' && <JoinRequestsPage />}
         {activeTab === 'deadlines' && (userRole === 'teacher' ? <ManageDeadlinesPage /> : <DeadlinesPage />)}
         {activeTab === 'announcements' && (userRole === 'teacher' ? <ManageAnnouncementsPage /> : <AnnouncementsPage />)}
+        {activeTab === 'profile' && (
+          <div className="max-w-2xl mx-auto space-y-6">
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-slate-100 tracking-tight">Profile</h1>
+              <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">Your account information.</p>
+            </div>
+            <div className="card p-6 sm:p-8 space-y-5">
+              {/* Avatar + Name */}
+              <div className="flex items-center gap-4 pb-5 border-b border-slate-100 dark:border-slate-800">
+                <div className="w-14 h-14 rounded-2xl bg-primary-100 dark:bg-primary-900/60 text-primary-700 dark:text-primary-300 flex items-center justify-center font-bold text-xl shrink-0">
+                  {user?.name ? user.name.charAt(0).toUpperCase() : '?'}
+                </div>
+                <div>
+                  <p className="text-lg font-bold text-slate-900 dark:text-slate-100">{user?.name || '—'}</p>
+                  <span className={`inline-flex items-center gap-1.5 text-xs font-semibold px-2 py-0.5 rounded-full mt-1 ${
+                    user?.role === 'teacher'
+                      ? 'bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border border-amber-200/60 dark:border-amber-900/40'
+                      : 'bg-primary-50 dark:bg-primary-950/40 text-primary-700 dark:text-primary-300 border border-primary-200/60 dark:border-primary-900/40'
+                  }`}>
+                    {user?.role === 'teacher' ? 'Teacher / Admin' : 'Student'}
+                  </span>
+                </div>
+              </div>
+              {/* Fields */}
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Email</p>
+                    <p className="text-sm font-medium text-slate-900 dark:text-slate-100 break-all">{user?.email || '—'}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Role</p>
+                    <p className="text-sm font-medium text-slate-900 dark:text-slate-100 capitalize">{user?.role || '—'}</p>
+                  </div>
+                </div>
+                {/* Student-only fields */}
+                {user?.role === 'student' && (
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2 border-t border-slate-100 dark:border-slate-800">
+                    {user?.department && (
+                      <div>
+                        <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Department</p>
+                        <p className="text-sm font-medium text-slate-900 dark:text-slate-100">{user.department}</p>
+                      </div>
+                    )}
+                    {user?.semester && (
+                      <div>
+                        <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Semester</p>
+                        <p className="text-sm font-medium text-slate-900 dark:text-slate-100">{user.semester}</p>
+                      </div>
+                    )}
+                    {user?.division && (
+                      <div>
+                        <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Division</p>
+                        <p className="text-sm font-medium text-slate-900 dark:text-slate-100">{user.division}</p>
+                      </div>
+                    )}
+                    {user?.studentCode && (
+                      <div>
+                        <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Student Code</p>
+                        <p className="text-sm font-medium text-slate-900 dark:text-slate-100">{user.studentCode}</p>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+              {/* Sign Out */}
+              <div className="pt-4 border-t border-slate-100 dark:border-slate-800">
+                <button
+                  onClick={() => {
+                    logout();
+                    setCurrentView('landing');
+                    setUserRole('student');
+                    setActiveTab('deadlines');
+                  }}
+                  className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 border border-red-200/60 dark:border-red-900/40 rounded-xl transition-colors cursor-pointer"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+                  Sign Out
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </main>
 
       {/* Mobile Bottom Navigation */}

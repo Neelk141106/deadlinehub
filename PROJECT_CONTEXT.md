@@ -133,53 +133,29 @@ Experiment 1 — COMPLETED
 Experiment 2 — COMPLETED
 Experiment 3 — COMPLETED
 Experiment 4 — MongoDB + Mongoose Integration — COMPLETED
+Experiment 5 — Secure REST APIs — COMPLETED
+Experiment 6 — JWT Authentication & Role-Based Access — COMPLETED
 
-### Experiment 4 Summary
+### Experiment 6 Summary
 
-REST API Design with MongoDB + Mongoose Integration.
-- Node.js & Express backend configured in `server/` on port 5000.
-- MongoDB Atlas cluster connected via Mongoose ODM with explicit DNS resolution (`8.8.8.8`, `1.1.1.1`).
-- Mongoose models created: `Deadline` and `Announcement` with timestamps and schema validations.
-- Express REST API routes implemented: `/api/deadlines` and `/api/announcements` with full CRUD support (`GET`, `POST`, `PUT`, `DELETE`).
-- Frontend React Context (`DeadlineContext`, `AnnouncementContext`) connected to REST APIs via native `fetch` service (`src/api/api.js`).
-- Database persistence verified across browser refreshes and role navigation.
-- Fixed `dueDate` ISO parsing and added past-date validation for new deadlines.
-- Safe error handling across all mutations (failed API calls do not corrupt Context state).
-
----
-
-## Architecture
-
-```
-React Components (Dashboard, Pages, Cards, Forms)
-       │
-       ▼
-Context API (useDeadlines, useAnnouncements)
-       │
-       ▼
-Frontend API Service (src/api/api.js using native fetch)
-       │
-       ▼
-Express.js REST API (localhost:5000/api/...)
-       │
-       ▼
-Mongoose ODM (Models with Validation & Timestamps)
-       │
-       ▼
-MongoDB Atlas (Cloud Database)
-```
-
----
-
-## Known Limitations
-
-- Login/Session persistence: Refreshing requires entering role/login again (expected for Experiment 4; persistent authentication and JWT will be implemented in Experiment 6).
+- **User Model in MongoDB**: Mongoose User model with name, unique lowercase email, role enum (`student`, `teacher`), student metadata, and sanitized `toJSON` (passwords/hashes never leaked).
+- **Registration API**: `POST /api/auth/register` with input validation and duplicate email check.
+- **bcrypt Password Hashing**: Passwords securely hashed with `bcryptjs` (10 salt rounds) via pre-save hooks.
+- **JWT Login**: `POST /api/auth/login` validating password hash, issuing 1-day signed JWT tokens with `{ id, role }`.
+- **Auth Middleware**: `authMiddleware` validating `Bearer <token>` and attaching decoded user.
+- **Protected Routes**: `/api/auth/me`, `/api/deadlines`, and `/api/announcements` secured with token authentication.
+- **Backend RBAC**: `requireRole('teacher')` restricts `POST`, `PUT`, `DELETE` operations on deadlines & announcements to teachers while students retain read-only `GET` access.
+- **Persistent Authenticated Session**: Frontend `AuthContext` and `api.js` automatically restore user session on refresh and inject auth tokens on all API requests.
+- **Logout**: Complete cleanup of auth token, local storage, user state, and active navigation tab.
+- **Real User Profile**: Profile screen and dashboard greet and display authenticated user details without fake data or password exposure.
+- **Final Mobile Management Fixes**: Responsive card layouts for Deadline/Announcement management on mobile, unclipped action buttons, and safe bottom navigation padding.
 
 ---
 
 ## Next Stage
 
-Experiment 5 — Secure REST APIs
+Experiment 7 — Postman API Testing
+
 
 
 ---
@@ -269,7 +245,7 @@ Experiment 5 — Secure REST APIs — COMPLETED
 - E5-004 — Safer CORS (origin whitelist) & Request Size Limits (100kb): COMPLETED ✅
 - UI Foundation & Core Screens Redesign (Light/Dark mode, manual Switch Role removed): COMPLETED ✅
 
-Experiment 6 — JWT Authentication & Role-Based Access — IN PROGRESS
+Experiment 6 — JWT Authentication & Role-Based Access — COMPLETED ✅
 - E6-001 — User Model + Authentication Structure: COMPLETED ✅
   * MongoDB/Mongoose User model created with core & student fields
   * Lowercase unique email, role enum ('student', 'teacher'), timestamps
@@ -290,7 +266,6 @@ Experiment 6 — JWT Authentication & Role-Based Access — IN PROGRESS
   * Protected `/api/deadlines` and `/api/announcements` routes
   * Frontend `AuthContext` with persistent session restoration via `localStorage`
   * Automatic `Authorization: Bearer <token>` injection in `api.js`
-
 - E6-005 — Role-Based Access Control: COMPLETED ✅
   * `requireRole` middleware created in `server/src/middleware/roleMiddleware.js`
   * POST, PUT, DELETE on `/api/deadlines` and `/api/announcements` restricted to `teacher` role
@@ -304,10 +279,19 @@ Experiment 6 — JWT Authentication & Role-Based Access — IN PROGRESS
   * StudentDashboard receives real `user.name` from AuthContext
   * Mobile avatar initial derived from real user name
   * Announcements `postedBy` field uses real authenticated teacher name
+- E6-007 — Final Auth / Mobile / UX Verification: COMPLETED ✅
+  * Verified Student read-only API access and absence of teacher controls
+  * Verified Teacher login and complete CRUD operations on deadlines and announcements
+  * Verified persistent session restoration, clean logout, and invalid token fallback
+  * Verified user profile rendering from JWT/AuthContext and 0% password/hash exposure
+  * Verified responsive mobile layouts, unclipped button icons, and safe bottom navigation padding
+- E6-008 — Final Documentation / Completion Status: COMPLETED ✅
+  * PROJECT_CONTEXT.md and docs/FEATURE_TICKETS.md updated
+  * Experiment 6 finalized and marked COMPLETE
 
 ### Next Task
 
-Experiment 6 — E6-007 (if defined) or Experiment 7 (Do NOT begin until explicitly instructed)
+Experiment 7 — Postman API Testing (Do NOT begin until explicitly instructed)
 
 ---
 
@@ -319,33 +303,33 @@ Experiment 6 — E6-007 (if defined) or Experiment 7 (Do NOT begin until explici
 - Node.js & Express (Backend REST API)
 - MongoDB Atlas (Cloud Database)
 - Mongoose (ODM / Schema & Models)
+- JSON Web Tokens (JWT) & bcryptjs (Authentication & Password Security)
 - Git & GitHub (Version Control)
 
 ---
 
 ## Current Frontend & Backend State
 
-Experiments 1, 2, 3, and 4 are fully complete.
+Experiments 1, 2, 3, 4, 5, and 6 are fully complete.
 The application is a full stack web application featuring:
-- React + Vite frontend with Tailwind CSS.
-- React Context API (`DeadlineContext`, `AnnouncementContext`) managing global state.
-- Native `fetch` client (`src/api/api.js`) communicating with Express REST API on `http://localhost:5000/api`.
-- Node.js / Express backend with CORS and JSON body parser.
-- Mongoose models (`Deadline`, `Announcement`) persisting to MongoDB Atlas with timestamps and validation.
+- React + Vite frontend with Tailwind CSS and responsive Light/Dark modes.
+- React Context API (`DeadlineContext`, `AnnouncementContext`, `AuthContext`) managing global state and auth.
+- Native `fetch` client (`src/api/api.js`) communicating with Express REST API on `http://localhost:5000/api` with automatic Bearer token injection.
+- Node.js / Express backend with CORS origin whitelisting, request limits, Helmet security headers, and centralized error handling.
+- Mongoose models (`User`, `Deadline`, `Announcement`) persisting to MongoDB Atlas with timestamps and validation.
+- Secure JWT authentication, bcrypt password hashing, and role-based access control (Student read-only, Teacher CRUD).
 - Dynamic date calculation, status filters, live search, past-date prevention for new deadlines, and pinned announcements.
-- All CRUD actions (`add`, `update`, `delete`, `togglePin`) synchronized between React state and MongoDB.
+- All CRUD actions synchronized between React state and MongoDB.
 
 ---
 
 ## Not Implemented Yet
 
 - Teacher/Admin dashboard analytics
-- Real JWT Authentication & Password Hashing (Experiment 6)
-- Role-based route authorization & security middleware (Experiment 5/6)
+- Postman API Testing & Collection (Experiment 7)
 - WebSockets / Socket.IO (Experiment 8)
-- CI/CD & Docker (Experiments 9/10)
-
-- WebSockets
+- CI/CD & Deployment (Experiment 9)
+- Docker Containerization (Experiment 10)
 
 ---
 
@@ -428,10 +412,9 @@ Planned later:
 
 17. Git is the source of detailed implementation history.
 
-Experiment 1, Experiment 2, Experiment 3, Experiment 4, and Experiment 5 are COMPLETED.
-Experiment 6 (E6-001, E6-002, E6-003, E6-004) is COMPLETED. Experiment 6 is IN PROGRESS.
+Experiment 1, Experiment 2, Experiment 3, Experiment 4, Experiment 5, and Experiment 6 are COMPLETED.
 
-Next ticket: E6-005 — Role-Based Access Control. Do NOT begin E6-005 until explicitly instructed.
+Next stage: Experiment 7 — Postman API Testing. Do NOT begin Experiment 7 until explicitly instructed.
 
 
 

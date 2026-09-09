@@ -366,7 +366,7 @@ export function ManageDeadlinesPage() {
         </div>
         <button
           onClick={openAdd}
-          className="btn-primary gap-2"
+          className="btn-primary gap-2 shrink-0"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="12"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           Add Deadline
@@ -378,59 +378,97 @@ export function ManageDeadlinesPage() {
           <p className="text-slate-500 dark:text-slate-400">No deadlines yet. Click <strong className="text-slate-900 dark:text-slate-100">Add Deadline</strong> to create one.</p>
         </div>
       ) : (
-        <div className="card overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-slate-50 dark:bg-slate-900/80 border-b border-slate-200 dark:border-slate-800 text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400 font-semibold">
-                  <th className="p-4">Subject &amp; Title</th>
-                  <th className="p-4">Type &amp; Priority</th>
-                  <th className="p-4">Due Date</th>
-                  <th className="p-4">Target</th>
-                  <th className="p-4 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-800/70">
-                {deadlines.map((deadline) => (
-                  <tr key={deadline.id} className="hover:bg-slate-50/70 dark:hover:bg-slate-800/40 transition-colors group">
-                    <td className="p-4">
-                      <p className="font-bold text-slate-900 dark:text-slate-100">{deadline.subject}</p>
-                      <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">{deadline.title}</p>
-                    </td>
-                    <td className="p-4">
-                      <div className="flex flex-col gap-1.5 items-start">
-                        <span className="badge-past text-[11px]">{deadline.type}</span>
-                        <span className={`badge ${
-                          deadline.priority === 'Urgent'    ? 'badge-urgent' :
-                          deadline.priority === 'Important' ? 'badge-approaching' :
-                          'badge-normal'
-                        } text-[11px]`}>{deadline.priority}</span>
-                      </div>
-                    </td>
-                    <td className="p-4">
-                      <p className="text-sm font-medium text-slate-900 dark:text-slate-100">{formatDue(deadline).split(' • ')[0]}</p>
-                      <p className="text-xs text-slate-500 dark:text-slate-400">{formatDue(deadline).split(' • ')[1]}</p>
-                    </td>
-                    <td className="p-4">
-                      <p className="text-sm text-slate-600 dark:text-slate-400">{formatTarget(deadline)}</p>
-                    </td>
-                    <td className="p-4 text-right">
-                      <div className="flex items-center justify-end gap-2 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
-                        <button onClick={() => openEdit(deadline)} className="p-1.5 text-slate-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-950/50 rounded-lg transition-colors cursor-pointer" title="Edit">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
-                        </button>
-                        <button onClick={() => handleDelete(deadline.id)} className="p-1.5 text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/50 rounded-lg transition-colors cursor-pointer" title="Delete">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        <>
+          {/* ── Mobile card list (hidden on sm+) ─────────────────────── */}
+          <div className="sm:hidden space-y-3">
+            {deadlines.map((deadline) => (
+              <div key={deadline.id || deadline._id} className="card p-4 space-y-3">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <p className="font-bold text-slate-900 dark:text-slate-100 truncate">{deadline.subject}</p>
+                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">{deadline.title}</p>
+                  </div>
+                  <div className="flex items-center gap-1 shrink-0">
+                    <button onClick={() => openEdit(deadline)} className="p-2 text-slate-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-950/50 rounded-lg transition-colors cursor-pointer" title="Edit">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
+                    </button>
+                    <button onClick={() => handleDelete(deadline.id || deadline._id)} className="p-2 text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/50 rounded-lg transition-colors cursor-pointer" title="Delete">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+                    </button>
+                  </div>
+                </div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="badge-past text-[11px]">{deadline.type}</span>
+                  <span className={`badge ${
+                    deadline.priority === 'Urgent'    ? 'badge-urgent' :
+                    deadline.priority === 'Important' ? 'badge-approaching' :
+                    'badge-normal'
+                  } text-[11px]`}>{deadline.priority}</span>
+                </div>
+                <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-500 dark:text-slate-400">
+                  <span><span className="font-medium text-slate-700 dark:text-slate-300">Due:</span> {formatDue(deadline)}</span>
+                  <span><span className="font-medium text-slate-700 dark:text-slate-300">Target:</span> {formatTarget(deadline)}</span>
+                </div>
+              </div>
+            ))}
           </div>
-        </div>
+
+          {/* ── Desktop table (hidden below sm) ──────────────────────── */}
+          <div className="card overflow-hidden hidden sm:block">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-slate-50 dark:bg-slate-900/80 border-b border-slate-200 dark:border-slate-800 text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400 font-semibold">
+                    <th className="p-4">Subject &amp; Title</th>
+                    <th className="p-4">Type &amp; Priority</th>
+                    <th className="p-4">Due Date</th>
+                    <th className="p-4">Target</th>
+                    <th className="p-4 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800/70">
+                  {deadlines.map((deadline) => (
+                    <tr key={deadline.id} className="hover:bg-slate-50/70 dark:hover:bg-slate-800/40 transition-colors group">
+                      <td className="p-4">
+                        <p className="font-bold text-slate-900 dark:text-slate-100">{deadline.subject}</p>
+                        <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">{deadline.title}</p>
+                      </td>
+                      <td className="p-4">
+                        <div className="flex flex-col gap-1.5 items-start">
+                          <span className="badge-past text-[11px]">{deadline.type}</span>
+                          <span className={`badge ${
+                            deadline.priority === 'Urgent'    ? 'badge-urgent' :
+                            deadline.priority === 'Important' ? 'badge-approaching' :
+                            'badge-normal'
+                          } text-[11px]`}>{deadline.priority}</span>
+                        </div>
+                      </td>
+                      <td className="p-4">
+                        <p className="text-sm font-medium text-slate-900 dark:text-slate-100">{formatDue(deadline).split(' • ')[0]}</p>
+                        <p className="text-xs text-slate-500 dark:text-slate-400">{formatDue(deadline).split(' • ')[1]}</p>
+                      </td>
+                      <td className="p-4">
+                        <p className="text-sm text-slate-600 dark:text-slate-400">{formatTarget(deadline)}</p>
+                      </td>
+                      <td className="p-4 text-right">
+                        <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button onClick={() => openEdit(deadline)} className="p-1.5 text-slate-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-950/50 rounded-lg transition-colors cursor-pointer" title="Edit">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
+                          </button>
+                          <button onClick={() => handleDelete(deadline.id)} className="p-1.5 text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/50 rounded-lg transition-colors cursor-pointer" title="Delete">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </>
       )}
     </div>
   );
 }
+

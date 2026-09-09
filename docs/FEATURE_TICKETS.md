@@ -737,4 +737,21 @@ Status: DONE
 - StudentDashboard receives real authenticated `user.name` as greeting prop
 - Mobile avatar initial letter derived from real user name
 - Announcement `postedBy` field uses real authenticated teacher name from AuthContext
+
+### E6-007 — Final Auth / Mobile / UX Verification
+Status: DONE
+
+- Verified Student role authentication, read-only API access, and UI restriction from administrative controls
+- Verified Teacher role authentication and full CRUD capabilities for deadlines and announcements
+- Verified session persistence via JWT and localStorage, startup re-validation, clean logout, and invalid token fallback
+- Verified authenticated user profile display with zero password/hash exposure
+- Verified mobile viewport layouts, card rendering, unclipped action buttons, and safe bottom navigation padding
+
+### E6-008 — Final Documentation / Completion Status
+Status: DONE
+
+- Updated PROJECT_CONTEXT.md and docs/FEATURE_TICKETS.md with complete Experiment 6 deliverables
+- Experiment 6 finalized and marked COMPLETE
+- Roadmap updated to Experiment 7 — Postman API Testing (not started)
+
 
