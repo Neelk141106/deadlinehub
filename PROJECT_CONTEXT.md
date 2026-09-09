@@ -291,9 +291,23 @@ Experiment 6 — JWT Authentication & Role-Based Access — IN PROGRESS
   * Frontend `AuthContext` with persistent session restoration via `localStorage`
   * Automatic `Authorization: Bearer <token>` injection in `api.js`
 
+- E6-005 — Role-Based Access Control: COMPLETED ✅
+  * `requireRole` middleware created in `server/src/middleware/roleMiddleware.js`
+  * POST, PUT, DELETE on `/api/deadlines` and `/api/announcements` restricted to `teacher` role
+  * Students retain GET access; 403 Forbidden returned for unauthorized write attempts
+  * Frontend role-based routing already correct (teacher role from JWT, no manual selection)
+  * Management pages (Deadlines/Announcements) accessible only to teacher role
+  * Mobile management table action buttons always visible on touch devices
+- E6-006 — Logout + Persistent Session + Real Profile: COMPLETED ✅
+  * Logout clears token, user state, and resets activeTab to prevent stale navigation
+  * Session restoration via `GET /api/auth/me` on startup (implemented in E6-004, verified)
+  * StudentDashboard receives real `user.name` from AuthContext
+  * Mobile avatar initial derived from real user name
+  * Announcements `postedBy` field uses real authenticated teacher name
+
 ### Next Task
 
-Experiment 6 — E6-005 — Role-Based Access Control (Do NOT begin until explicitly instructed)
+Experiment 6 — E6-007 (if defined) or Experiment 7 (Do NOT begin until explicitly instructed)
 
 ---
 

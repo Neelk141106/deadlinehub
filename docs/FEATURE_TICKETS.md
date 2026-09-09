@@ -720,12 +720,21 @@ Status: DONE
 - Native `api.js` updated to inject `Authorization` header on all requests
 
 ### E6-005 — Role-Based Access Control
-Status: TO DO (NEXT)
+Status: DONE
 
-- Role-based authorization middleware (student vs teacher/admin permissions)
-- Student read-only vs teacher create/edit/delete enforcement on resources
-- Role-based view routing and protected navigation
+- `requireRole` middleware in `server/src/middleware/roleMiddleware.js`
+- POST, PUT, DELETE on deadlines and announcements restricted to `teacher` role
+- Students retain read-only (GET) access to all resource endpoints
+- 403 Forbidden returned for unauthorized write attempts
+- Frontend derives role from backend JWT — no manual role selection permitted
+- Mobile management table action buttons always visible on touch devices
 
+### E6-006 — Logout + Persistent Session + Real Profile
+Status: DONE
 
-
+- Logout clears token, user state, and resets activeTab to prevent stale navigation state
+- Session restoration via `GET /api/auth/me` on startup (already implemented in E6-004, verified)
+- StudentDashboard receives real authenticated `user.name` as greeting prop
+- Mobile avatar initial letter derived from real user name
+- Announcement `postedBy` field uses real authenticated teacher name from AuthContext
 

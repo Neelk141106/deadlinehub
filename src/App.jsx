@@ -83,7 +83,9 @@ function App() {
   if (currentView === 'teacherLogin') {
     return <TeacherLogin 
       onLogin={(loggedInUser) => {
-        setUserRole('teacher');
+        // Role comes from the authenticated user returned by the backend — never hardcoded
+        const role = loggedInUser?.role || 'teacher';
+        setUserRole(role);
         setActiveTab('classes');
         setCurrentView('app');
       }} 
@@ -176,6 +178,7 @@ function App() {
                 logout();
                 setCurrentView('landing');
                 setUserRole('student');
+                setActiveTab('deadlines');
               }} 
               className="w-full flex items-center gap-3 px-3 py-2 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-red-600 dark:hover:text-red-400 rounded-xl font-medium transition-colors cursor-pointer"
             >
@@ -199,14 +202,14 @@ function App() {
         <div className="flex items-center gap-2">
           <ThemeToggle />
           <div className="w-8 h-8 rounded-xl bg-primary-100 dark:bg-primary-900/60 text-primary-700 dark:text-primary-300 flex items-center justify-center font-bold text-sm">
-            {userRole === 'student' ? 'S' : 'T'}
+            {user?.name ? user.name.charAt(0).toUpperCase() : (userRole === 'student' ? 'S' : 'T')}
           </div>
         </div>
       </header>
 
       {/* Main Content Area */}
       <main className="flex-1 p-4 md:p-8 pb-24 md:pb-8 overflow-auto">
-        {activeTab === 'dashboard' && <StudentDashboard />}
+        {activeTab === 'dashboard' && <StudentDashboard userName={user?.name || 'Student'} />}
         {activeTab === 'classes' && <ClassesPage />}
         {activeTab === 'joinRequests' && <JoinRequestsPage />}
         {activeTab === 'deadlines' && (userRole === 'teacher' ? <ManageDeadlinesPage /> : <DeadlinesPage />)}

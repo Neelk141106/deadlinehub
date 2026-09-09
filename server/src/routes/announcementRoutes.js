@@ -2,6 +2,7 @@ const express = require('express');
 const Announcement = require('../models/Announcement');
 const AppError = require('../utils/AppError');
 const { validateObjectId, validateAnnouncement } = require('../middleware/validate');
+const requireRole = require('../middleware/roleMiddleware');
 
 const router = express.Router();
 
@@ -15,8 +16,8 @@ router.get('/', async (req, res, next) => {
   }
 });
 
-// POST /api/announcements - Create a new announcement
-router.post('/', validateAnnouncement(false), async (req, res, next) => {
+// POST /api/announcements - Create a new announcement (teacher only)
+router.post('/', requireRole('teacher'), validateAnnouncement(false), async (req, res, next) => {
   try {
     const {
       title,
@@ -77,8 +78,8 @@ router.get('/:id', validateObjectId, async (req, res, next) => {
   }
 });
 
-// PUT /api/announcements/:id - Update an announcement by ID
-router.put('/:id', validateObjectId, validateAnnouncement(true), async (req, res, next) => {
+// PUT /api/announcements/:id - Update an announcement by ID (teacher only)
+router.put('/:id', validateObjectId, requireRole('teacher'), validateAnnouncement(true), async (req, res, next) => {
   try {
     const { id } = req.params;
 
@@ -106,8 +107,8 @@ router.put('/:id', validateObjectId, validateAnnouncement(true), async (req, res
   }
 });
 
-// DELETE /api/announcements/:id - Delete an announcement by ID
-router.delete('/:id', validateObjectId, async (req, res, next) => {
+// DELETE /api/announcements/:id - Delete an announcement by ID (teacher only)
+router.delete('/:id', validateObjectId, requireRole('teacher'), async (req, res, next) => {
   try {
     const { id } = req.params;
 

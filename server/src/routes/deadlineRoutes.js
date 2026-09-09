@@ -2,6 +2,7 @@ const express = require('express');
 const Deadline = require('../models/Deadline');
 const AppError = require('../utils/AppError');
 const { validateObjectId, validateDeadline } = require('../middleware/validate');
+const requireRole = require('../middleware/roleMiddleware');
 
 const router = express.Router();
 
@@ -15,8 +16,8 @@ router.get('/', async (req, res, next) => {
   }
 });
 
-// POST /api/deadlines - Create a new deadline
-router.post('/', validateDeadline(false), async (req, res, next) => {
+// POST /api/deadlines - Create a new deadline (teacher only)
+router.post('/', requireRole('teacher'), validateDeadline(false), async (req, res, next) => {
   try {
     const {
       title,
@@ -67,8 +68,8 @@ router.get('/:id', validateObjectId, async (req, res, next) => {
   }
 });
 
-// PUT /api/deadlines/:id - Update a deadline by ID
-router.put('/:id', validateObjectId, validateDeadline(true), async (req, res, next) => {
+// PUT /api/deadlines/:id - Update a deadline by ID (teacher only)
+router.put('/:id', validateObjectId, requireRole('teacher'), validateDeadline(true), async (req, res, next) => {
   try {
     const { id } = req.params;
 
@@ -88,8 +89,8 @@ router.put('/:id', validateObjectId, validateDeadline(true), async (req, res, ne
   }
 });
 
-// DELETE /api/deadlines/:id - Delete a deadline by ID
-router.delete('/:id', validateObjectId, async (req, res, next) => {
+// DELETE /api/deadlines/:id - Delete a deadline by ID (teacher only)
+router.delete('/:id', validateObjectId, requireRole('teacher'), async (req, res, next) => {
   try {
     const { id } = req.params;
 
