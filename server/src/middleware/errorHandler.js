@@ -27,6 +27,13 @@ const errorHandler = (err, req, res, next) => {
     message = 'Request payload too large (maximum 100kb allowed)';
   }
 
+  // Handle MongoDB Duplicate Key Error (11000)
+  if (err.code === 11000) {
+    statusCode = 409;
+    const field = Object.keys(err.keyPattern || err.keyValue || {})[0] || 'field';
+    message = field === 'email' ? 'Email already exists' : `${field} already exists`;
+  }
+
   // Fallback for 500 unexpected errors (never leak stack or DB details)
   if (statusCode === 500) {
     console.error('Unexpected Server Error:', err);

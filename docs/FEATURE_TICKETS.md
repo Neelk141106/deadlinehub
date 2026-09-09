@@ -672,5 +672,53 @@ Status: DONE
 - JSON payload body limit set to `100kb` with handled 413 Payload Too Large error
 - Centralized error handling integration for rejected CORS origins (403 Forbidden)
 
+---
+
+# Experiment 6 — JWT Authentication & Role-Based Access
+
+## Goal
+
+Implement secure user registration, authentication with JSON Web Tokens (JWT), password hashing with bcrypt, and role-based access control.
+
+---
+
+### E6-001 — User Model + Authentication Structure
+Status: DONE
+
+- Mongoose User schema with name, email, password, role (student/teacher), and student metadata (studentCode, department, semester, division)
+- Unique, lowercase email index with format validation
+- Timestamps and sanitized toJSON transform (never serializes password or hash)
+- Auth route structure established at `/api/auth`
+
+### E6-002 — User Registration + Password Hashing
+Status: DONE
+
+- Password hashing using bcryptjs with 10 salt rounds before storing in MongoDB
+- Registration endpoint `POST /api/auth/register`
+- Robust input validation (name required, valid email, min 6 char password, valid role)
+- Clean duplicate email rejection returning 409 Conflict
+- Passwords and hashes strictly excluded from API responses
+- Student registration form connected to registration API with feedback states
+
+### E6-003 — Login + JWT Generation
+Status: TO DO (NEXT)
+
+- User login endpoint `POST /api/auth/login`
+- Verify password against stored bcrypt hash
+- Generate signed JWT with user ID and role
+
+### E6-004 — Auth Middleware & Protected Routes
+Status: TO DO
+
+- JWT verification middleware
+- Role authorization middleware (student/teacher access control)
+
+### E6-005 — Frontend Auth Integration & Role-Based Navigation
+Status: TO DO
+
+- Persist authentication state and token in frontend
+- Role-based routing to Student vs Teacher/Admin dashboards
+
+
 
 

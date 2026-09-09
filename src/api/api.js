@@ -127,3 +127,17 @@ export const announcementApi = {
     return handleResponse(res);
   },
 };
+
+export const authApi = {
+  async register(userData) {
+    const res = await fetch(`${API_BASE_URL}/auth/register`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(userData),
+    });
+    return handleResponse(res);
+  },
+};
+

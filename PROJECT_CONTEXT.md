@@ -262,16 +262,28 @@ Experiment 1 — COMPLETED
 Experiment 2 — COMPLETED
 Experiment 3 — COMPLETED
 Experiment 4 — MongoDB + Mongoose Integration — COMPLETED
-Experiment 5 — Secure REST APIs — IN PROGRESS
+Experiment 5 — Secure REST APIs — COMPLETED
 - E5-001 — Request Validation (Deadlines & Announcements): COMPLETED ✅
 - E5-002 — Centralized Error Handling & Safe 404 Middleware: COMPLETED ✅
 - E5-003 — Security Middleware (Helmet, disabled x-powered-by): COMPLETED ✅
 - E5-004 — Safer CORS (origin whitelist) & Request Size Limits (100kb): COMPLETED ✅
 - UI Foundation & Core Screens Redesign (Light/Dark mode, manual Switch Role removed): COMPLETED ✅
 
+Experiment 6 — JWT Authentication & Role-Based Access — IN PROGRESS
+- E6-001 — User Model + Authentication Structure: COMPLETED ✅
+  * MongoDB/Mongoose User model created with core & student fields
+  * Lowercase unique email, role enum ('student', 'teacher'), timestamps
+  * Passwords strictly stripped from responses via sanitized toJSON
+  * Authentication route structure mounted at `/api/auth`
+- E6-002 — User Registration + Password Hashing: COMPLETED ✅
+  * Password hashing implemented using bcryptjs (10 salt rounds)
+  * POST `/api/auth/register` endpoint with payload validation
+  * Controlled 409 duplicate email rejection
+  * Connected existing Student Registration screen with real-time feedback
+
 ### Next Task
 
-Experiment 5 — Next Ticket (E5-005)
+Experiment 6 — E6-003 — Login + JWT Generation (Do NOT begin until explicitly instructed)
 
 ---
 
@@ -392,9 +404,10 @@ Planned later:
 
 17. Git is the source of detailed implementation history.
 
-Experiment 1, Experiment 2, Experiment 3, and Experiment 4 are COMPLETED.
-Experiment 5 (E5-001, E5-002, E5-003, E5-004) and Core UI Light/Dark Redesign are COMPLETED.
+Experiment 1, Experiment 2, Experiment 3, Experiment 4, and Experiment 5 are COMPLETED.
+Experiment 6 (E6-001, E6-002) is COMPLETED. Experiment 6 is IN PROGRESS.
 
-Next ticket: E5-005. Do NOT begin E5-005 until explicitly instructed.
+Next ticket: E6-003 — Login + JWT Generation. Do NOT begin E6-003 until explicitly instructed.
+
 
 
