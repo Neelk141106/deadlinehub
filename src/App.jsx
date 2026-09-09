@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AppWelcome } from './components/AppWelcome';
 import { StudentDashboard } from './components/StudentDashboard';
 import { DeadlinesPage } from './components/DeadlinesPage';
@@ -13,11 +13,25 @@ import { JoinRequestsPage } from './components/JoinRequestsPage';
 import { ManageDeadlinesPage } from './components/ManageDeadlinesPage';
 import { ManageAnnouncementsPage } from './components/ManageAnnouncementsPage';
 import { ThemeToggle } from './components/ui/ThemeToggle';
+import { useAuth } from './context/AuthContext';
 
 function App() {
+  const { user, logout, loading: authLoading } = useAuth();
   const [currentView, setCurrentView] = useState('landing');
   const [activeTab, setActiveTab] = useState('deadlines');
   const [userRole, setUserRole] = useState('student');
+
+  useEffect(() => {
+    if (user) {
+      setUserRole(user.role || 'student');
+      if (user.role === 'teacher') {
+        setActiveTab('classes');
+      } else {
+        setActiveTab('dashboard');
+      }
+      setCurrentView('app');
+    }
+  }, [user]);
 
   const navItemClass = (tabId) => 
     `flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-semibold transition-all duration-200 cursor-pointer ${
@@ -25,6 +39,17 @@ function App() {
         ? 'text-primary-700 dark:text-primary-300 bg-primary-50 dark:bg-primary-950/60 border border-primary-200/70 dark:border-primary-900/50 shadow-sm' 
         : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100/70 dark:hover:bg-slate-800/70 hover:text-slate-900 dark:hover:text-slate-100'
     }`;
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-slate-50 dark:bg-[#0B0F19] flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-10 h-10 border-4 border-primary-600 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
+          <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Loading DeadlineHub...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (currentView === 'landing') {
     return (
@@ -46,7 +71,10 @@ function App() {
 
   if (currentView === 'studentLogin') {
     return <StudentLogin 
-      onLogin={() => setCurrentView('joinClass')} 
+      onLogin={(loggedInUser) => {
+        setUserRole('student');
+        setCurrentView('joinClass');
+      }} 
       onBack={() => setCurrentView('welcome')} 
       onRegisterClick={() => setCurrentView('studentRegistration')} 
     />;
@@ -54,7 +82,7 @@ function App() {
 
   if (currentView === 'teacherLogin') {
     return <TeacherLogin 
-      onLogin={() => {
+      onLogin={(loggedInUser) => {
         setUserRole('teacher');
         setActiveTab('classes');
         setCurrentView('app');
@@ -145,6 +173,7 @@ function App() {
             </a>
             <button 
               onClick={() => {
+                logout();
                 setCurrentView('landing');
                 setUserRole('student');
               }} 

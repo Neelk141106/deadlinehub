@@ -6,6 +6,7 @@ const connectDB = require('./config/db');
 const deadlineRoutes = require('./routes/deadlineRoutes');
 const announcementRoutes = require('./routes/announcementRoutes');
 const authRoutes = require('./routes/authRoutes');
+const authMiddleware = require('./middleware/authMiddleware');
 const errorHandler = require('./middleware/errorHandler');
 const AppError = require('./utils/AppError');
 
@@ -61,8 +62,8 @@ app.get('/api/health', (req, res) => {
 
 // Resource Routes
 app.use('/api/auth', authRoutes);
-app.use('/api/deadlines', deadlineRoutes);
-app.use('/api/announcements', announcementRoutes);
+app.use('/api/deadlines', authMiddleware, deadlineRoutes);
+app.use('/api/announcements', authMiddleware, announcementRoutes);
 
 // 404 Handler for Unmatched Routes
 app.use((req, res, next) => {

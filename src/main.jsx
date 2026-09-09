@@ -4,13 +4,16 @@ import './index.css'
 import App from './App2.jsx'
 import { DeadlineProvider } from './context/DeadlineContext'
 import { ThemeProvider } from './context/ThemeContext'
+import { AuthProvider } from './context/AuthContext'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <ThemeProvider>
-      <DeadlineProvider>
-        <App />
-      </DeadlineProvider>
+      <AuthProvider>
+        <DeadlineProvider>
+          <App />
+        </DeadlineProvider>
+      </AuthProvider>
     </ThemeProvider>
   </StrictMode>,
 )

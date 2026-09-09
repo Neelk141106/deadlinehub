@@ -701,23 +701,30 @@ Status: DONE
 - Student registration form connected to registration API with feedback states
 
 ### E6-003 — Login + JWT Generation
-Status: TO DO (NEXT)
+Status: DONE
 
 - User login endpoint `POST /api/auth/login`
-- Verify password against stored bcrypt hash
-- Generate signed JWT with user ID and role
+- Verify password against stored bcrypt hash using `user.comparePassword`
+- Generate signed JWT with user ID, role, and 1-day expiration
+- Return token and user metadata (never password or hash)
+- Student and Teacher login forms connected to backend authentication
 
 ### E6-004 — Auth Middleware & Protected Routes
-Status: TO DO
+Status: DONE
 
-- JWT verification middleware
-- Role authorization middleware (student/teacher access control)
+- `authMiddleware` created to parse and verify `Authorization: Bearer <token>`
+- Protected profile endpoint `GET /api/auth/me`
+- Protected existing shared application APIs (`/api/deadlines` and `/api/announcements`)
+- Global frontend `AuthContext` with automatic token/session restoration on startup
+- Persistent login support via `localStorage`
+- Native `api.js` updated to inject `Authorization` header on all requests
 
-### E6-005 — Frontend Auth Integration & Role-Based Navigation
-Status: TO DO
+### E6-005 — Role-Based Access Control
+Status: TO DO (NEXT)
 
-- Persist authentication state and token in frontend
-- Role-based routing to Student vs Teacher/Admin dashboards
+- Role-based authorization middleware (student vs teacher/admin permissions)
+- Student read-only vs teacher create/edit/delete enforcement on resources
+- Role-based view routing and protected navigation
 
 
 

@@ -280,10 +280,20 @@ Experiment 6 — JWT Authentication & Role-Based Access — IN PROGRESS
   * POST `/api/auth/register` endpoint with payload validation
   * Controlled 409 duplicate email rejection
   * Connected existing Student Registration screen with real-time feedback
+- E6-003 — Login + JWT Generation: COMPLETED ✅
+  * POST `/api/auth/login` endpoint verifying bcrypt hash
+  * JWT generation with 1-day expiration and `{ id, role }` payload
+  * Connected Student Login & Teacher Login screens to backend authentication
+- E6-004 — Auth Middleware & Protected Routes: COMPLETED ✅
+  * `authMiddleware` verifying `Bearer <token>` against `process.env.JWT_SECRET`
+  * Protected `GET /api/auth/me` user profile endpoint
+  * Protected `/api/deadlines` and `/api/announcements` routes
+  * Frontend `AuthContext` with persistent session restoration via `localStorage`
+  * Automatic `Authorization: Bearer <token>` injection in `api.js`
 
 ### Next Task
 
-Experiment 6 — E6-003 — Login + JWT Generation (Do NOT begin until explicitly instructed)
+Experiment 6 — E6-005 — Role-Based Access Control (Do NOT begin until explicitly instructed)
 
 ---
 
@@ -405,9 +415,9 @@ Planned later:
 17. Git is the source of detailed implementation history.
 
 Experiment 1, Experiment 2, Experiment 3, Experiment 4, and Experiment 5 are COMPLETED.
-Experiment 6 (E6-001, E6-002) is COMPLETED. Experiment 6 is IN PROGRESS.
+Experiment 6 (E6-001, E6-002, E6-003, E6-004) is COMPLETED. Experiment 6 is IN PROGRESS.
 
-Next ticket: E6-003 — Login + JWT Generation. Do NOT begin E6-003 until explicitly instructed.
+Next ticket: E6-005 — Role-Based Access Control. Do NOT begin E6-005 until explicitly instructed.
 
 
 
