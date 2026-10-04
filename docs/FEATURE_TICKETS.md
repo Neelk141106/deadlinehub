@@ -752,6 +752,40 @@ Status: DONE
 
 - Updated PROJECT_CONTEXT.md and docs/FEATURE_TICKETS.md with complete Experiment 6 deliverables
 - Experiment 6 finalized and marked COMPLETE
-- Roadmap updated to Experiment 7 — Postman API Testing (not started)
+
+---
+
+# Experiment 7 — Validating RESTful APIs using Postman
+
+## Goal
+
+Validate DeadlineHub RESTful APIs using Postman. Test authentication, deadlines, announcements, status codes, and error scenarios.
+
+---
+
+### E7-001 — Postman Collection & API Testing Setup
+Status: DONE
+
+- Created complete Postman v2.1.0 collection (`postman/DeadlineHub_API.postman_collection.json`)
+- Organized collection cleanly into `Auth`, `Deadlines`, and `Announcements` folders
+- Covered exact existing endpoints:
+  * Auth: POST `/api/auth/register`, POST `/api/auth/login`, GET `/api/auth/me`
+  * Deadlines: GET `/api/deadlines`, GET `/api/deadlines/:id`, POST `/api/deadlines`, PUT `/api/deadlines/:id`, DELETE `/api/deadlines/:id`
+  * Announcements: GET `/api/announcements`, GET `/api/announcements/:id`, POST `/api/announcements`, PUT `/api/announcements/:id`, DELETE `/api/announcements/:id`
+- Created Postman environment file (`postman/DeadlineHub_Environment.postman_environment.json`) with conceptual variables: `baseUrl = http://localhost:5000`, `token = <JWT>`
+- Ensured zero exposure of secrets, database credentials, passwords, or MongoDB URIs
+
+### E7-002 — Validate GET APIs
+Status: DONE
+
+- Validated `GET /api/deadlines` with Bearer token authentication (Expected: 200, Actual: 200)
+- Validated `GET /api/deadlines/:id` with valid ObjectId (Expected: 200, Actual: 200)
+- Validated `GET /api/announcements` with Bearer token authentication (Expected: 200, Actual: 200)
+- Validated `GET /api/announcements/:id` with valid ObjectId (Expected: 200, Actual: 200)
+- Validated missing JWT authentication rejection across protected GET routes (Expected: 401, Actual: 401)
+- Validated malformed ID controlled validation error (Expected: 400, Actual: 400)
+- Validated nonexistent valid ObjectId error handling (Expected: 404, Actual: 404)
+- Documented all test execution results in `docs/POSTMAN_API_TESTING.md`
+
 
 

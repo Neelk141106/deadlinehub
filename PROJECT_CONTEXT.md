@@ -135,26 +135,22 @@ Experiment 3 — COMPLETED
 Experiment 4 — MongoDB + Mongoose Integration — COMPLETED
 Experiment 5 — Secure REST APIs — COMPLETED
 Experiment 6 — JWT Authentication & Role-Based Access — COMPLETED
+Experiment 7 — Postman API Testing — IN PROGRESS (E7-001 & E7-002 Completed)
 
-### Experiment 6 Summary
+### Experiment 7 Status (In Progress)
 
-- **User Model in MongoDB**: Mongoose User model with name, unique lowercase email, role enum (`student`, `teacher`), student metadata, and sanitized `toJSON` (passwords/hashes never leaked).
-- **Registration API**: `POST /api/auth/register` with input validation and duplicate email check.
-- **bcrypt Password Hashing**: Passwords securely hashed with `bcryptjs` (10 salt rounds) via pre-save hooks.
-- **JWT Login**: `POST /api/auth/login` validating password hash, issuing 1-day signed JWT tokens with `{ id, role }`.
-- **Auth Middleware**: `authMiddleware` validating `Bearer <token>` and attaching decoded user.
-- **Protected Routes**: `/api/auth/me`, `/api/deadlines`, and `/api/announcements` secured with token authentication.
-- **Backend RBAC**: `requireRole('teacher')` restricts `POST`, `PUT`, `DELETE` operations on deadlines & announcements to teachers while students retain read-only `GET` access.
-- **Persistent Authenticated Session**: Frontend `AuthContext` and `api.js` automatically restore user session on refresh and inject auth tokens on all API requests.
-- **Logout**: Complete cleanup of auth token, local storage, user state, and active navigation tab.
-- **Real User Profile**: Profile screen and dashboard greet and display authenticated user details without fake data or password exposure.
-- **Final Mobile Management Fixes**: Responsive card layouts for Deadline/Announcement management on mobile, unclipped action buttons, and safe bottom navigation padding.
-
----
-
-## Next Stage
-
-Experiment 7 — Postman API Testing
+- **E7-001 — Postman Collection & Testing Setup**: COMPLETED ✅
+  * Created complete Postman v2.1.0 collection (`postman/DeadlineHub_API.postman_collection.json`) covering Auth (`register`, `login`, `me`), Deadlines (`GET`, `GET :id`, `POST`, `PUT`, `DELETE`), and Announcements (`GET`, `GET :id`, `POST`, `PUT`, `DELETE`).
+  * Created Postman environment file (`postman/DeadlineHub_Environment.postman_environment.json`) utilizing `baseUrl` and `{{token}}` without committing credentials or secrets.
+  * Authored comprehensive test documentation in `docs/POSTMAN_API_TESTING.md`.
+- **E7-002 — Validate GET APIs**: COMPLETED ✅
+  * Successfully validated `GET /api/deadlines` (200 OK) with Bearer token authentication.
+  * Successfully validated `GET /api/deadlines/:id` (200 OK) for single deadline retrieval.
+  * Successfully validated `GET /api/announcements` (200 OK) with Bearer token authentication.
+  * Successfully validated `GET /api/announcements/:id` (200 OK) for single announcement retrieval.
+  * Validated missing token negative tests across endpoints returning controlled 401 Unauthorized.
+  * Validated malformed ID negative tests returning controlled 400 Bad Request (`Invalid ID format`).
+  * Validated nonexistent valid ObjectId negative tests returning controlled 404 Not Found (`Resource not found`).
 
 
 
@@ -289,9 +285,12 @@ Experiment 6 — JWT Authentication & Role-Based Access — COMPLETED ✅
   * PROJECT_CONTEXT.md and docs/FEATURE_TICKETS.md updated
   * Experiment 6 finalized and marked COMPLETE
 
-### Next Task
+### Current Task
 
-Experiment 7 — Postman API Testing (Do NOT begin until explicitly instructed)
+Experiment 7 — Postman API Testing (E7-001 & E7-002 Completed)
+- E7-001 — Postman Collection & API Testing Setup: DONE
+- E7-002 — Validate GET APIs: DONE
+- Next Tickets: E7-003+ (Do NOT begin until explicitly instructed)
 
 ---
 
