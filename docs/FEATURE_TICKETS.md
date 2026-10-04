@@ -902,4 +902,47 @@ Status: DONE
 - Styled to match DeadlineHub theme tokens and dark mode palette (`dark:bg-[#151C2C]`)
 - Integrated into `DeadlineProvider` tree wrapping `{children}` so notifications function globally across all views without page refresh
 - Production build verified (`npm run build`)
+
+### E8-005 — Socket.IO Disconnect / Reconnect / Error Handling
+Status: DONE
+
+- Configured Socket.IO client automatic reconnection with exponential backoff options in `src/context/SocketContext.jsx`:
+  * `reconnection: true`
+  * `reconnectionAttempts: Infinity`
+  * `reconnectionDelay: 1000` (1s initial delay)
+  * `reconnectionDelayMax: 5000` (5s maximum delay)
+  * `timeout: 20000`
+  * `transports: ['websocket', 'polling']`
+- Added comprehensive socket and manager lifecycle listeners:
+  * `connect` sets state to `'connected'`
+  * `disconnect` gracefully detects intentional client disconnects (`'disconnected'`) vs unexpected server disconnects (`'reconnecting'`)
+  * `connect_error` triggers reconnecting status without crashing
+  * `reconnect_attempt` logs attempt number and sets status to `'reconnecting'`
+  * `reconnect` restores status to `'connected'`
+  * `reconnect_error` logs warning and maintains reconnecting state
+  * `reconnect_failed` sets status to `'disconnected'`
+- Created `src/components/ui/ConnectionStatus.jsx` badge component with live indicators:
+  * "Connected" with emerald indicator and pulse animation
+  * "Reconnecting..." with amber indicator and pulse animation
+  * "Disconnected" with red indicator
+- Embedded `ConnectionStatus` in `src/App2.jsx`:
+  * Sidebar footer with "Live Sync" label on desktop
+  * Top navigation bar (dot indicator) on mobile
+- Confirmed the React application remains fully responsive and does not crash when the backend server disconnects, restarts, or fails to connect
+- Verified disconnect and reconnect behavior with automated script test
+
+### E8-006 — Final Testing and Documentation
+Status: DONE
+
+- Tested Socket.IO connection and handshake endpoints (`/socket.io/?EIO=4&transport=polling` → 200 OK)
+- Verified real-time deadline CRUD events (`deadline:created`, `deadline:updated`, `deadline:deleted`) broadcast instantly to connected clients
+- Verified real-time announcement CRUD events (`announcement:created`, `announcement:updated`, `announcement:deleted`) broadcast instantly to connected clients
+- Verified real-time notifications via `NotificationContext` display toast alerts without page refresh
+- Tested disconnect and reconnect behavior cleanly
+- Verified that all existing REST APIs, JWT authentication, and Role-Based Authorization remain intact and functional (21/21 passing automated tests)
+- Verified client-side deduplication prevents duplicate entries when initiating client receives broadcast events
+- Verified production build clean compilation (`npm run build`, 76 modules, 0 errors)
+- Updated `PROJECT_CONTEXT.md` and `docs/FEATURE_TICKETS.md`
+- Marked Experiment 8 COMPLETE
+
 

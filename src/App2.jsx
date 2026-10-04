@@ -13,6 +13,7 @@ import { JoinRequestsPage } from './components/JoinRequestsPage';
 import { ManageDeadlinesPage } from './components/ManageDeadlinesPage';
 import { ManageAnnouncementsPage } from './components/ManageAnnouncementsPage';
 import { ThemeToggle } from './components/ui/ThemeToggle';
+import { ConnectionStatus } from './components/ui/ConnectionStatus';
 import { useAuth } from './context/AuthContext';
 
 function App() {
@@ -165,6 +166,11 @@ function App() {
 
         <div className="p-4 border-t border-slate-200/80 dark:border-slate-800/80 space-y-3">
           <div className="flex items-center justify-between px-2">
+            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Live Sync</span>
+            <ConnectionStatus />
+          </div>
+
+          <div className="flex items-center justify-between px-2">
             <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Theme</span>
             <ThemeToggle />
           </div>
@@ -200,6 +206,7 @@ function App() {
           </span>
         </div>
         <div className="flex items-center gap-2">
+          <ConnectionStatus showLabel={false} />
           <ThemeToggle />
           <div className="w-8 h-8 rounded-xl bg-primary-100 dark:bg-primary-900/60 text-primary-700 dark:text-primary-300 flex items-center justify-center font-bold text-sm">
             {userRole === 'student' ? 'S' : 'T'}

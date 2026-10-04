@@ -121,7 +121,7 @@ Future experiment functionality must NOT be implemented early.
 - Experiment 5 — Secure REST APIs
 - Experiment 6 — JWT Authentication & Roles
 - Experiment 7 — Postman API Testing ✅
-- Experiment 8 — WebSockets / Socket.IO
+- Experiment 8 — WebSockets / Socket.IO ✅
 - Experiment 9 — CI/CD & Deployment
 - Experiment 10 — Docker
 
@@ -136,7 +136,7 @@ Experiment 4 — MongoDB + Mongoose Integration — COMPLETED
 Experiment 5 — Secure REST APIs — COMPLETED
 Experiment 6 — JWT Authentication & Role-Based Access — COMPLETED
 Experiment 7 — Postman API Testing — COMPLETED
-Experiment 8 — WebSockets / Socket.IO — IN PROGRESS (E8-001, E8-002, E8-003, E8-004 Completed)
+Experiment 8 — WebSockets / Socket.IO — COMPLETED ✅
 
 ### Experiment 7 Status (Completed)
 
@@ -234,8 +234,34 @@ Experiment 8 — WebSockets / Socket.IO — IN PROGRESS (E8-001, E8-002, E8-003,
   * Styled with existing Tailwind CSS theme and dark mode classes (`dark:bg-[#151C2C]`, semantic border/badge colors).
   * Auto-dismisses after 4 seconds and provides a manual close button.
   * Production build verified cleanly (`npm run build`).
-
-
+- **E8-005 — Socket.IO Disconnect / Reconnect / Error Handling**: COMPLETED ✅
+  * Enhanced `src/context/SocketContext.jsx` with automatic reconnection options:
+    - `reconnection: true`
+    - `reconnectionAttempts: Infinity`
+    - `reconnectionDelay: 1000` (1s initial backoff)
+    - `reconnectionDelayMax: 5000` (5s max backoff)
+    - `timeout: 20000`
+    - `transports: ['websocket', 'polling']`
+  * Added fine-grained connection status state (`'connected' | 'reconnecting' | 'disconnected' | 'connecting'`).
+  * Handled full manager and socket error/disconnect lifecycles (`connect`, `disconnect`, `connect_error`, `reconnect_attempt`, `reconnect`, `reconnect_error`, `reconnect_failed`).
+  * Created `src/components/ui/ConnectionStatus.jsx` badge component with real-time indicators:
+    - Connected (green dot + pulse animation, "Connected")
+    - Reconnecting (amber dot + pulse animation, "Reconnecting...")
+    - Disconnected (red dot, "Disconnected")
+  * Integrated connection status badge into `src/App2.jsx` desktop sidebar (with "Live Sync" label) and mobile header bar (dot only).
+  * Guaranteed the application does not crash on disconnect, during reconnect cycles, or on network failure.
+  * Verified disconnect and automatic reconnect programmatically via automated test script.
+- **E8-006 — Final Testing and Documentation**: COMPLETED ✅
+  * Executed comprehensive verification across all Experiment 8 capabilities:
+    1. Socket connection and polling reachability verified (`/socket.io/?EIO=4&transport=polling` → 200 OK)
+    2. Real-time deadline CRUD events (`deadline:created`, `deadline:updated`, `deadline:deleted`) verified via Socket.IO client
+    3. Real-time announcement CRUD events (`announcement:created`, `announcement:updated`, `announcement:deleted`) verified via Socket.IO client
+    4. Real-time notifications and activity toast alerts verified with action descriptions and deduplication
+    5. Clean disconnect and reconnect behavior verified without application crashes
+    6. All existing REST APIs, JWT authentication, and Role-Based Authorization (RBAC) verified intact (21/21 tests passed)
+    7. Clean production build verified (`npm run build`, 76 modules transformed, 0 errors)
+  * Updated `PROJECT_CONTEXT.md` and `docs/FEATURE_TICKETS.md` with complete documentation.
+  * Formally marked Experiment 8 COMPLETED.
 
 ---
 
