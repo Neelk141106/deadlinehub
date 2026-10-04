@@ -135,13 +135,13 @@ Experiment 3 — COMPLETED
 Experiment 4 — MongoDB + Mongoose Integration — COMPLETED
 Experiment 5 — Secure REST APIs — COMPLETED
 Experiment 6 — JWT Authentication & Role-Based Access — COMPLETED
-Experiment 7 — Postman API Testing — IN PROGRESS (E7-001, E7-002, E7-003, E7-004 Completed)
+Experiment 7 — Postman API Testing — IN PROGRESS (E7-001, E7-002, E7-003, E7-004, E7-005, E7-006 Completed)
 
 ### Experiment 7 Status (In Progress)
 
 - **E7-001 — Postman Collection & Testing Setup**: COMPLETED ✅
   * Created complete Postman v2.1.0 collection (`postman/DeadlineHub_API.postman_collection.json`) structured into `Auth`, `Deadlines` (GET, POST, PUT, DELETE), and `Announcements` (GET, POST, PUT, DELETE).
-  * Created Postman environment file (`postman/DeadlineHub_Environment.postman_environment.json`) utilizing `baseUrl`, `token`, and `studentToken` placeholders without committing credentials or secrets.
+  * Created Postman environment file (`postman/DeadlineHub_Environment.postman_environment.json`) utilizing `baseUrl`, `token`, `teacherToken`, and `studentToken` placeholders without committing credentials or secrets.
   * Authored comprehensive test documentation in `docs/POSTMAN_API_TESTING.md`.
 - **E7-002 — Validate GET APIs**: COMPLETED ✅
   * Validated `GET /api/deadlines` (200 OK) with Bearer token authentication.
@@ -158,15 +158,29 @@ Experiment 7 — Postman API Testing — IN PROGRESS (E7-001, E7-002, E7-003, E7
   * Validated missing required fields returning controlled 400 Bad Request.
   * Validated invalid payload data (malformed date, whitespace title/message) returning 400 Bad Request.
   * Validated missing JWT returning 401 Unauthorized across POST routes.
-  * Validated student JWT rejection with 403 Forbidden (`Forbidden: teacher role required`).
+  * Validated student JWT rejection with 403 Forbidden.
 - **E7-004 — Validate PUT & DELETE APIs**: COMPLETED ✅
   * Validated `PUT /api/deadlines/:id` and `PUT /api/announcements/:id` with teacher JWT successfully updating MongoDB documents (200 OK).
   * Validated `DELETE /api/deadlines/:id` and `DELETE /api/announcements/:id` with teacher JWT successfully removing documents (200 OK).
   * Verified MongoDB document deletion via subsequent GET returning 404 Not Found.
   * Validated malformed ID on PUT/DELETE returning controlled 400 Bad Request (`Invalid ID format`).
   * Validated nonexistent valid ObjectId on PUT/DELETE returning controlled 404 Not Found (`Resource not found`).
-  * Validated student JWT on PUT/DELETE returning 403 Forbidden (`Forbidden: teacher role required`).
+  * Validated student JWT on PUT/DELETE returning 403 Forbidden.
   * Validated missing JWT on PUT/DELETE returning 401 Unauthorized.
+- **E7-005 — JWT Authentication Testing**: COMPLETED ✅
+  * Validated `POST /api/auth/login` with valid Student credentials (200 OK, JWT returned with student role).
+  * Validated `POST /api/auth/login` with valid Teacher credentials (200 OK, JWT returned with teacher role).
+  * Validated wrong password returning 401 Unauthorized (`Invalid email or password`).
+  * Validated unknown email returning 401 Unauthorized (`Invalid email or password`).
+  * Validated missing email/password returning 400 Bad Request (`Please provide email and password`).
+  * Validated `GET /api/auth/me` without Authorization header returning 401 Unauthorized.
+  * Validated `GET /api/auth/me` with invalid JWT returning 401 Unauthorized (`Invalid token. Authentication failed.`).
+  * Validated `GET /api/auth/me` with valid Student JWT (200 OK) and valid Teacher JWT (200 OK).
+- **E7-006 — Role-Based Authorization Testing**: COMPLETED ✅
+  * Validated Student token allows read access: `GET /api/deadlines` (200 OK) and `GET /api/announcements` (200 OK).
+  * Validated Student token rejected with 403 Forbidden on mutations: POST, PUT, DELETE for deadlines and announcements.
+  * Validated Teacher token allows full CRUD: GET (200), POST (201), PUT (200), DELETE (200) for deadlines and announcements.
+  * Verified critical distinction: 401 = Unauthenticated (no/invalid JWT), 403 = Unauthorized role (authenticated student attempting teacher action).
 
 
 
@@ -303,12 +317,14 @@ Experiment 6 — JWT Authentication & Role-Based Access — COMPLETED ✅
 
 ### Current Task
 
-Experiment 7 — Postman API Testing (E7-001, E7-002, E7-003, E7-004 Completed)
+Experiment 7 — Postman API Testing (E7-001 through E7-006 Completed)
 - E7-001 — Postman Collection & API Testing Setup: DONE
 - E7-002 — Validate GET APIs: DONE
 - E7-003 — Validate POST APIs: DONE
 - E7-004 — Validate PUT & DELETE APIs: DONE
-- Next Tickets: E7-005+ (Do NOT begin until explicitly instructed)
+- E7-005 — JWT Authentication Testing: DONE
+- E7-006 — Role-Based Authorization Testing: DONE
+- Next Tickets: E7-007+ (Do NOT begin until explicitly instructed)
 
 ---
 

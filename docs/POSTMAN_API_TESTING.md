@@ -8,6 +8,8 @@
   - E7-002 — Validate GET APIs
   - E7-003 — Validate POST APIs
   - E7-004 — Validate PUT and DELETE APIs
+  - E7-005 — JWT Authentication Testing
+  - E7-006 — Role-Based Authorization Testing
 - **Base URL**: `http://localhost:5000`
 - **Environment**: Node.js / Express backend with MongoDB Atlas persistence, JWT authentication, role-based authorization (`teacher` vs `student`), and centralized error handling.
 - **Collection File**: `postman/DeadlineHub_API.postman_collection.json`
@@ -20,10 +22,10 @@
 ```
 DeadlineHub API
 ├── Auth
-│   ├── Register User (POST /api/auth/register)
-│   ├── Login Teacher (POST /api/auth/login)
-│   ├── Login Student (POST /api/auth/login)
-│   └── Get Authenticated User Profile (GET /api/auth/me)
+│   ├── Register
+│   ├── Login - Student
+│   ├── Login - Teacher
+│   └── Get Current User
 ├── Deadlines
 │   ├── GET
 │   │   ├── GET All Deadlines (200)
@@ -78,9 +80,71 @@ DeadlineHub API
 
 ---
 
-## E7-002: GET APIs Validation & Test Results
+## E7-005: JWT Authentication Testing
 
-All GET endpoints were executed against the active backend server (`http://localhost:5000`) and validated.
+Tested against `POST /api/auth/login` and `GET /api/auth/me`:
+
+| Test Case | Method | Endpoint | Auth Header | Body / Params | Expected Status | Actual Status | Response Message / Data | Result |
+| :--- | :---: | :--- | :---: | :--- | :---: | :---: | :--- | :---: |
+| 1. Valid Student Credentials | `POST` | `/api/auth/login` | None | `{"email":"student_e7@college.edu","password":"..."}` | `200` | `200` | JWT token returned; `user.role: "student"` | **PASSED** |
+| 2. Valid Teacher Credentials | `POST` | `/api/auth/login` | None | `{"email":"teacher_e7@college.edu","password":"..."}` | `200` | `200` | JWT token returned; `user.role: "teacher"` | **PASSED** |
+| 3. Wrong Password | `POST` | `/api/auth/login` | None | `{"email":"student_e7@college.edu","password":"wrong"}` | `401` | `401` | `{"success":false,"message":"Invalid email or password"}` | **PASSED** |
+| 4. Unknown Email | `POST` | `/api/auth/login` | None | `{"email":"unknown@college.edu","password":"..."}` | `401` | `401` | `{"success":false,"message":"Invalid email or password"}` | **PASSED** |
+| 5a. Missing Both Fields | `POST` | `/api/auth/login` | None | `{}` | `400` | `400` | `{"success":false,"message":"Please provide email and password"}` | **PASSED** |
+| 5b. Missing Password | `POST` | `/api/auth/login` | None | `{"email":"student_e7@college.edu"}` | `400` | `400` | `{"success":false,"message":"Please provide email and password"}` | **PASSED** |
+| 6. Without Auth Header | `GET` | `/api/auth/me` | None | None | `401` | `401` | `{"success":false,"message":"Authentication required. No token provided."}` | **PASSED** |
+| 7. With Invalid JWT | `GET` | `/api/auth/me` | `Bearer invalid.jwt` | None | `401` | `401` | `{"success":false,"message":"Invalid token. Authentication failed."}` | **PASSED** |
+| 8. With Student JWT | `GET` | `/api/auth/me` | `Bearer {{studentToken}}` | None | `200` | `200` | User profile returned (`role: "student"`, no password) | **PASSED** |
+| 9. With Teacher JWT | `GET` | `/api/auth/me` | `Bearer {{teacherToken}}` | None | `200` | `200` | User profile returned (`role: "teacher"`, no password) | **PASSED** |
+
+---
+
+## E7-006: Role-Based Authorization Testing
+
+Tested using two distinct Postman tokens: `{{studentToken}}` and `{{teacherToken}}`.
+
+### Student Role Tests
+
+| Test Case | Method | Endpoint | Auth | Expected Status | Actual Status | Semantics & Verification | Result |
+| :--- | :---: | :--- | :---: | :---: | :---: | :--- | :---: |
+| Student Read Deadlines | `GET` | `/api/deadlines` | Student JWT | `200` | `200` | Read access permitted | **PASSED** |
+| Student Read Announcements | `GET` | `/api/announcements` | Student JWT | `200` | `200` | Read access permitted | **PASSED** |
+| Student Create Deadline | `POST` | `/api/deadlines` | Student JWT | `403` | `403` | Forbidden: requires teacher role | **PASSED** |
+| Student Update Deadline | `PUT` | `/api/deadlines/:id` | Student JWT | `403` | `403` | Forbidden: requires teacher role | **PASSED** |
+| Student Delete Deadline | `DELETE` | `/api/deadlines/:id` | Student JWT | `403` | `403` | Forbidden: requires teacher role | **PASSED** |
+| Student Create Announcement | `POST` | `/api/announcements` | Student JWT | `403` | `403` | Forbidden: requires teacher role | **PASSED** |
+| Student Update Announcement | `PUT` | `/api/announcements/:id` | Student JWT | `403` | `403` | Forbidden: requires teacher role | **PASSED** |
+| Student Delete Announcement | `DELETE` | `/api/announcements/:id` | Student JWT | `403` | `403` | Forbidden: requires teacher role | **PASSED** |
+
+### Teacher Role Tests
+
+| Test Case | Method | Endpoint | Auth | Expected Status | Actual Status | Semantics & Verification | Result |
+| :--- | :---: | :--- | :---: | :---: | :---: | :--- | :---: |
+| Teacher Read Deadlines | `GET` | `/api/deadlines` | Teacher JWT | `200` | `200` | Read access permitted | **PASSED** |
+| Teacher Create Deadline | `POST` | `/api/deadlines` | Teacher JWT | `201` | `201` | Allowed; document created | **PASSED** |
+| Teacher Update Deadline | `PUT` | `/api/deadlines/:id` | Teacher JWT | `200` | `200` | Allowed; document updated | **PASSED** |
+| Teacher Delete Deadline | `DELETE` | `/api/deadlines/:id` | Teacher JWT | `200` | `200` | Allowed; document deleted | **PASSED** |
+| Teacher Read Announcements | `GET` | `/api/announcements` | Teacher JWT | `200` | `200` | Read access permitted | **PASSED** |
+| Teacher Create Announcement | `POST` | `/api/announcements` | Teacher JWT | `201` | `201` | Allowed; document created | **PASSED** |
+| Teacher Update Announcement | `PUT` | `/api/announcements/:id` | Teacher JWT | `200` | `200` | Allowed; document updated | **PASSED** |
+| Teacher Delete Announcement | `DELETE` | `/api/announcements/:id` | Teacher JWT | `200` | `200` | Allowed; document deleted | **PASSED** |
+
+---
+
+## 401 Unauthorized vs 403 Forbidden Semantic Distinction
+
+- **401 Unauthorized**:
+  - Meaning: The requester has not provided valid authentication credentials.
+  - Triggered by: Missing `Authorization` header, missing `Bearer ` prefix, expired token, or signature verification failure.
+  - Example Response: `{"success":false,"message":"Authentication required. No token provided."}` or `{"success":false,"message":"Invalid token. Authentication failed."}`.
+- **403 Forbidden**:
+  - Meaning: The requester is authenticated (valid JWT decoded), but their assigned role does not have permission to execute the requested operation.
+  - Triggered by: A user with `role: "student"` attempting `POST`, `PUT`, or `DELETE` on `/api/deadlines` or `/api/announcements`.
+  - Example Response: `{"success":false,"message":"Forbidden: this action requires one of the following roles: teacher."}`.
+
+---
+
+## E7-002: GET APIs Validation & Test Results
 
 | Endpoint | Method | Auth Required | Expected Status | Actual Status | Purpose | Result |
 | :--- | :---: | :---: | :---: | :---: | :--- | :---: |
@@ -88,7 +152,6 @@ All GET endpoints were executed against the active backend server (`http://local
 | `/api/deadlines/:id` | `GET` | Yes (Bearer) | `200` | `200` | Fetch single deadline by valid ObjectId | **PASSED** |
 | `/api/announcements` | `GET` | Yes (Bearer) | `200` | `200` | Fetch all announcements (pinned first, then chronological) | **PASSED** |
 | `/api/announcements/:id` | `GET` | Yes (Bearer) | `200` | `200` | Fetch single announcement by valid ObjectId | **PASSED** |
-| `/api/auth/me` | `GET` | Yes (Bearer) | `200` | `200` | Retrieve authenticated user profile | **PASSED** |
 | `/api/deadlines` | `GET` | No Auth | `401` | `401` | Reject unauthenticated request | **PASSED** |
 | `/api/deadlines/invalid-id-123` | `GET` | Yes (Bearer) | `400` | `400` | Intercept malformed ObjectId | **PASSED** |
 | `/api/deadlines/000000000000000000000000` | `GET` | Yes (Bearer) | `404` | `404` | Handle nonexistent valid ObjectId | **PASSED** |
@@ -98,99 +161,16 @@ All GET endpoints were executed against the active backend server (`http://local
 
 ---
 
-## E7-003: POST APIs Validation & Test Results
+## E7-003 & E7-004: POST, PUT & DELETE Validation
 
-POST endpoints were verified for Teacher authorization, payload validation, missing authentication, and RBAC rejection for Student role.
-
-### 1. POST /api/deadlines
-
-| Test Case | Method | Endpoint | Auth | Request Purpose | Expected Status | Actual Status | Result |
-| :--- | :---: | :--- | :---: | :--- | :---: | :---: | :---: |
-| Valid Teacher Request | `POST` | `/api/deadlines` | Teacher JWT | Create deadline with valid title, dueDate, etc. | `201` | `201` | **PASSED** |
-| MongoDB Persistence | `GET` | `/api/deadlines/:id` | Teacher JWT | Confirm created document exists in MongoDB | `200` | `200` | **PASSED** |
-| Missing Required Fields | `POST` | `/api/deadlines` | Teacher JWT | Omit title and dueDate in payload | `400` | `400` | **PASSED** |
-| Invalid Due Date | `POST` | `/api/deadlines` | Teacher JWT | Pass malformed non-date string as `dueDate` | `400` | `400` | **PASSED** |
-| Empty Title | `POST` | `/api/deadlines` | Teacher JWT | Pass whitespace-only title | `400` | `400` | **PASSED** |
-| Missing JWT | `POST` | `/api/deadlines` | None | Attempt creation without Authorization header | `401` | `401` | **PASSED** |
-| Student JWT Attempt | `POST` | `/api/deadlines` | Student JWT | Attempt creation with student role (RBAC check) | `403` | `403` | **PASSED** |
-
-- **Response Payloads Verified**:
-  - `201 Created`: Returns newly created Deadline document with `_id`, `createdAt`, and `updatedAt`.
-  - `400 Bad Request`: `{"success":false,"message":"Title is required and cannot be empty"}` / `{"success":false,"message":"Due date must be a valid date"}`.
-  - `401 Unauthorized`: `{"success":false,"message":"Authentication required. No token provided."}`.
-  - `403 Forbidden`: `{"success":false,"message":"Forbidden: teacher role required"}`.
-
----
-
-### 2. POST /api/announcements
-
-| Test Case | Method | Endpoint | Auth | Request Purpose | Expected Status | Actual Status | Result |
-| :--- | :---: | :--- | :---: | :--- | :---: | :---: | :---: |
-| Valid Teacher Request | `POST` | `/api/announcements` | Teacher JWT | Create announcement with title, message, category | `201` | `201` | **PASSED** |
-| MongoDB Persistence | `GET` | `/api/announcements/:id` | Teacher JWT | Confirm created document exists in MongoDB | `200` | `200` | **PASSED** |
-| Missing Required Fields | `POST` | `/api/announcements` | Teacher JWT | Omit title and message in payload | `400` | `400` | **PASSED** |
-| Empty Message | `POST` | `/api/announcements` | Teacher JWT | Pass whitespace-only message | `400` | `400` | **PASSED** |
-| Missing JWT | `POST` | `/api/announcements` | None | Attempt creation without Authorization header | `401` | `401` | **PASSED** |
-| Student JWT Attempt | `POST` | `/api/announcements` | Student JWT | Attempt creation with student role (RBAC check) | `403` | `403` | **PASSED** |
-
-- **Response Payloads Verified**:
-  - `201 Created`: Returns newly created Announcement document with `_id`, `isPinned`, `priorityVariant`, and timestamps.
-  - `400 Bad Request`: `{"success":false,"message":"Title is required and cannot be empty"}` / `{"success":false,"message":"Message is required and cannot be empty"}`.
-  - `401 Unauthorized`: `{"success":false,"message":"Authentication required. No token provided."}`.
-  - `403 Forbidden`: `{"success":false,"message":"Forbidden: teacher role required"}`.
-
----
-
-## E7-004: PUT & DELETE APIs Validation & Test Results
-
-PUT and DELETE endpoints were tested using temporary test documents created specifically for this stage to protect existing application data.
-
-### 1. PUT & DELETE /api/deadlines/:id
-
-| Test Case | Method | Endpoint | Auth | Request Purpose | Expected Status | Actual Status | Result |
-| :--- | :---: | :--- | :---: | :--- | :---: | :---: | :---: |
-| Missing JWT (PUT) | `PUT` | `/api/deadlines/:id` | None | Attempt update without token | `401` | `401` | **PASSED** |
-| Student JWT (PUT) | `PUT` | `/api/deadlines/:id` | Student JWT | Attempt update with student role (RBAC) | `403` | `403` | **PASSED** |
-| Malformed ID (PUT) | `PUT` | `/api/deadlines/malformed-id-999` | Teacher JWT | Update with invalid non-hex ID | `400` | `400` | **PASSED** |
-| Nonexistent ID (PUT) | `PUT` | `/api/deadlines/000000000000000000000000` | Teacher JWT | Update with valid hex ID not in DB | `404` | `404` | **PASSED** |
-| Valid Teacher (PUT) | `PUT` | `/api/deadlines/:id` | Teacher JWT | Update title & priority of test deadline | `200` | `200` | **PASSED** |
-| MongoDB Update Verified | `GET` | `/api/deadlines/:id` | Teacher JWT | Verify updated fields in MongoDB | `200` | `200` | **PASSED** |
-| Missing JWT (DELETE) | `DELETE` | `/api/deadlines/:id` | None | Attempt deletion without token | `401` | `401` | **PASSED** |
-| Student JWT (DELETE) | `DELETE` | `/api/deadlines/:id` | Student JWT | Attempt deletion with student role (RBAC) | `403` | `403` | **PASSED** |
-| Malformed ID (DELETE) | `DELETE` | `/api/deadlines/malformed-id-999` | Teacher JWT | Delete with invalid non-hex ID | `400` | `400` | **PASSED** |
-| Nonexistent ID (DELETE) | `DELETE` | `/api/deadlines/000000000000000000000000` | Teacher JWT | Delete with valid hex ID not in DB | `404` | `404` | **PASSED** |
-| Valid Teacher (DELETE) | `DELETE` | `/api/deadlines/:id` | Teacher JWT | Delete test deadline document | `200` | `200` | **PASSED** |
-| MongoDB Deletion Verified | `GET` | `/api/deadlines/:id` | Teacher JWT | Verify document is permanently removed | `404` | `404` | **PASSED** |
-
----
-
-### 2. PUT & DELETE /api/announcements/:id
-
-| Test Case | Method | Endpoint | Auth | Request Purpose | Expected Status | Actual Status | Result |
-| :--- | :---: | :--- | :---: | :--- | :---: | :---: | :---: |
-| Missing JWT (PUT) | `PUT` | `/api/announcements/:id` | None | Attempt update without token | `401` | `401` | **PASSED** |
-| Student JWT (PUT) | `PUT` | `/api/announcements/:id` | Student JWT | Attempt update with student role (RBAC) | `403` | `403` | **PASSED** |
-| Malformed ID (PUT) | `PUT` | `/api/announcements/malformed-id-999` | Teacher JWT | Update with invalid non-hex ID | `400` | `400` | **PASSED** |
-| Nonexistent ID (PUT) | `PUT` | `/api/announcements/000000000000000000000000` | Teacher JWT | Update with valid hex ID not in DB | `404` | `404` | **PASSED** |
-| Valid Teacher (PUT) | `PUT` | `/api/announcements/:id` | Teacher JWT | Update title & priority of test announcement | `200` | `200` | **PASSED** |
-| MongoDB Update Verified | `GET` | `/api/announcements/:id` | Teacher JWT | Verify updated fields in MongoDB | `200` | `200` | **PASSED** |
-| Missing JWT (DELETE) | `DELETE` | `/api/announcements/:id` | None | Attempt deletion without token | `401` | `401` | **PASSED** |
-| Student JWT (DELETE) | `DELETE` | `/api/announcements/:id` | Student JWT | Attempt deletion with student role (RBAC) | `403` | `403` | **PASSED** |
-| Malformed ID (DELETE) | `DELETE` | `/api/announcements/malformed-id-999` | Teacher JWT | Delete with invalid non-hex ID | `400` | `400` | **PASSED** |
-| Nonexistent ID (DELETE) | `DELETE` | `/api/announcements/000000000000000000000000` | Teacher JWT | Delete with valid hex ID not in DB | `404` | `404` | **PASSED** |
-| Valid Teacher (DELETE) | `DELETE` | `/api/announcements/:id` | Teacher JWT | Delete test announcement document | `200` | `200` | **PASSED** |
-| MongoDB Deletion Verified | `GET` | `/api/announcements/:id` | Teacher JWT | Verify document is permanently removed | `404` | `404` | **PASSED** |
-
----
-
-## Security and Integrity Verification
-
-1. **Role-Based Access Control (RBAC)**:
-   - `student` role is strictly restricted to read-only (`GET`) requests on both `/api/deadlines` and `/api/announcements`.
-   - Any mutation request (`POST`, `PUT`, `DELETE`) with a student token is intercepted by `roleMiddleware` returning `403 Forbidden` (`{"success":false,"message":"Forbidden: teacher role required"}`).
-2. **Authentication Middleware**:
-   - Requests omitting `Authorization: Bearer <token>` are intercepted immediately by `authMiddleware` returning `401 Unauthorized` (`{"success":false,"message":"Authentication required. No token provided."}`).
-3. **Database Cast Protection**:
-   - Requests with non-24-character hexadecimal IDs are intercepted by `validateObjectId` returning `400 Bad Request` (`{"success":false,"message":"Invalid ID format"}`), preventing unhandled Mongoose CastError exceptions.
-4. **Data Lifecycle Safety**:
-   - Test data used for PUT and DELETE validations was created dynamically during testing and purged cleanly upon completion, leaving existing project deadlines and announcements intact.
+| Endpoint | Method | Action | Auth | Expected Status | Actual Status | Result |
+| :--- | :---: | :--- | :---: | :---: | :---: | :---: |
+| `/api/deadlines` | `POST` | Valid creation | Teacher JWT | `201` | `201` | **PASSED** |
+| `/api/deadlines` | `POST` | Missing required fields | Teacher JWT | `400` | `400` | **PASSED** |
+| `/api/deadlines` | `POST` | Invalid date | Teacher JWT | `400` | `400` | **PASSED** |
+| `/api/deadlines/:id` | `PUT` | Valid update | Teacher JWT | `200` | `200` | **PASSED** |
+| `/api/deadlines/:id` | `DELETE` | Valid delete | Teacher JWT | `200` | `200` | **PASSED** |
+| `/api/announcements` | `POST` | Valid creation | Teacher JWT | `201` | `201` | **PASSED** |
+| `/api/announcements` | `POST` | Missing title/message | Teacher JWT | `400` | `400` | **PASSED** |
+| `/api/announcements/:id` | `PUT` | Valid update | Teacher JWT | `200` | `200` | **PASSED** |
+| `/api/announcements/:id` | `DELETE` | Valid delete | Teacher JWT | `200` | `200` | **PASSED** |

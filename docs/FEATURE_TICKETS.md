@@ -813,6 +813,31 @@ Status: DONE
 - Validated missing JWT returning 401 Unauthorized on PUT and DELETE
 - Documented all test results in `docs/POSTMAN_API_TESTING.md`
 
+### E7-005 — JWT Authentication Testing
+Status: DONE
+
+- Validated `POST /api/auth/login` with valid Student credentials (Expected: 200, Actual: 200, JWT returned)
+- Validated `POST /api/auth/login` with valid Teacher credentials (Expected: 200, Actual: 200, JWT returned)
+- Validated wrong password returning 401 Unauthorized (`Invalid email or password`)
+- Validated unknown email returning 401 Unauthorized (`Invalid email or password`)
+- Validated missing email or password returning 400 Bad Request (`Please provide email and password`)
+- Validated `GET /api/auth/me` without Authorization header returning 401 Unauthorized
+- Validated `GET /api/auth/me` with invalid JWT returning 401 Unauthorized (`Invalid token. Authentication failed.`)
+- Validated `GET /api/auth/me` with valid Student JWT (Expected: 200, Actual: 200)
+- Validated `GET /api/auth/me` with valid Teacher JWT (Expected: 200, Actual: 200)
+- Documented all test results in `docs/POSTMAN_API_TESTING.md`
+
+### E7-006 — Role-Based Authorization Testing
+Status: DONE
+
+- Configured Postman collection and environment to support distinct `{{studentToken}}` and `{{teacherToken}}`
+- Verified Student role read-only access: `GET /api/deadlines` (200) and `GET /api/announcements` (200)
+- Verified Student role mutation rejection: 403 Forbidden on POST, PUT, DELETE for deadlines and announcements
+- Verified Teacher role complete CRUD access: GET (200), POST (201), PUT (200), DELETE (200) for deadlines and announcements
+- Verified 401 Unauthorized (unauthenticated user) vs 403 Forbidden (authenticated user without permission) semantic distinction
+- Documented all test results in `docs/POSTMAN_API_TESTING.md`
+
+
 
 
 
