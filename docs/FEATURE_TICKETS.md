@@ -787,5 +787,32 @@ Status: DONE
 - Validated nonexistent valid ObjectId error handling (Expected: 404, Actual: 404)
 - Documented all test execution results in `docs/POSTMAN_API_TESTING.md`
 
+### E7-003 — Validate POST APIs
+Status: DONE
+
+- Validated `POST /api/deadlines` with Teacher JWT creating deadline (Expected: 201, Actual: 201)
+- Validated `POST /api/announcements` with Teacher JWT creating announcement (Expected: 201, Actual: 201)
+- Verified created documents persist in MongoDB via direct retrieval (200 OK)
+- Validated missing required fields returning 400 Bad Request on both endpoints
+- Validated invalid payload data (bad date, whitespace fields) returning 400 Bad Request
+- Validated missing JWT returning 401 Unauthorized
+- Validated Student JWT attempting creation returning 403 Forbidden via RBAC middleware
+- Documented all test results in `docs/POSTMAN_API_TESTING.md`
+
+### E7-004 — Validate PUT and DELETE APIs
+Status: DONE
+
+- Created dedicated temporary test documents to protect existing application data
+- Validated `PUT /api/deadlines/:id` and `PUT /api/announcements/:id` with Teacher JWT updating documents (Expected: 200, Actual: 200)
+- Verified update persistence in MongoDB via subsequent GET requests (200 OK)
+- Validated `DELETE /api/deadlines/:id` and `DELETE /api/announcements/:id` with Teacher JWT (Expected: 200, Actual: 200)
+- Verified document removal in MongoDB via subsequent GET requests returning 404 Not Found
+- Validated malformed ID returning controlled 400 Bad Request on PUT and DELETE
+- Validated nonexistent valid ObjectId returning 404 Not Found on PUT and DELETE
+- Validated Student JWT mutation attempts returning 403 Forbidden on PUT and DELETE
+- Validated missing JWT returning 401 Unauthorized on PUT and DELETE
+- Documented all test results in `docs/POSTMAN_API_TESTING.md`
+
+
 
 

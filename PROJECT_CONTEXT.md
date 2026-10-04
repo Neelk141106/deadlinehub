@@ -135,22 +135,38 @@ Experiment 3 — COMPLETED
 Experiment 4 — MongoDB + Mongoose Integration — COMPLETED
 Experiment 5 — Secure REST APIs — COMPLETED
 Experiment 6 — JWT Authentication & Role-Based Access — COMPLETED
-Experiment 7 — Postman API Testing — IN PROGRESS (E7-001 & E7-002 Completed)
+Experiment 7 — Postman API Testing — IN PROGRESS (E7-001, E7-002, E7-003, E7-004 Completed)
 
 ### Experiment 7 Status (In Progress)
 
 - **E7-001 — Postman Collection & Testing Setup**: COMPLETED ✅
-  * Created complete Postman v2.1.0 collection (`postman/DeadlineHub_API.postman_collection.json`) covering Auth (`register`, `login`, `me`), Deadlines (`GET`, `GET :id`, `POST`, `PUT`, `DELETE`), and Announcements (`GET`, `GET :id`, `POST`, `PUT`, `DELETE`).
-  * Created Postman environment file (`postman/DeadlineHub_Environment.postman_environment.json`) utilizing `baseUrl` and `{{token}}` without committing credentials or secrets.
+  * Created complete Postman v2.1.0 collection (`postman/DeadlineHub_API.postman_collection.json`) structured into `Auth`, `Deadlines` (GET, POST, PUT, DELETE), and `Announcements` (GET, POST, PUT, DELETE).
+  * Created Postman environment file (`postman/DeadlineHub_Environment.postman_environment.json`) utilizing `baseUrl`, `token`, and `studentToken` placeholders without committing credentials or secrets.
   * Authored comprehensive test documentation in `docs/POSTMAN_API_TESTING.md`.
 - **E7-002 — Validate GET APIs**: COMPLETED ✅
-  * Successfully validated `GET /api/deadlines` (200 OK) with Bearer token authentication.
-  * Successfully validated `GET /api/deadlines/:id` (200 OK) for single deadline retrieval.
-  * Successfully validated `GET /api/announcements` (200 OK) with Bearer token authentication.
-  * Successfully validated `GET /api/announcements/:id` (200 OK) for single announcement retrieval.
+  * Validated `GET /api/deadlines` (200 OK) with Bearer token authentication.
+  * Validated `GET /api/deadlines/:id` (200 OK) for single deadline retrieval.
+  * Validated `GET /api/announcements` (200 OK) with Bearer token authentication.
+  * Validated `GET /api/announcements/:id` (200 OK) for single announcement retrieval.
   * Validated missing token negative tests across endpoints returning controlled 401 Unauthorized.
   * Validated malformed ID negative tests returning controlled 400 Bad Request (`Invalid ID format`).
   * Validated nonexistent valid ObjectId negative tests returning controlled 404 Not Found (`Resource not found`).
+- **E7-003 — Validate POST APIs**: COMPLETED ✅
+  * Validated `POST /api/deadlines` with teacher JWT creating resource and returning 201 Created.
+  * Validated `POST /api/announcements` with teacher JWT creating resource and returning 201 Created.
+  * Verified MongoDB persistence for created resources.
+  * Validated missing required fields returning controlled 400 Bad Request.
+  * Validated invalid payload data (malformed date, whitespace title/message) returning 400 Bad Request.
+  * Validated missing JWT returning 401 Unauthorized across POST routes.
+  * Validated student JWT rejection with 403 Forbidden (`Forbidden: teacher role required`).
+- **E7-004 — Validate PUT & DELETE APIs**: COMPLETED ✅
+  * Validated `PUT /api/deadlines/:id` and `PUT /api/announcements/:id` with teacher JWT successfully updating MongoDB documents (200 OK).
+  * Validated `DELETE /api/deadlines/:id` and `DELETE /api/announcements/:id` with teacher JWT successfully removing documents (200 OK).
+  * Verified MongoDB document deletion via subsequent GET returning 404 Not Found.
+  * Validated malformed ID on PUT/DELETE returning controlled 400 Bad Request (`Invalid ID format`).
+  * Validated nonexistent valid ObjectId on PUT/DELETE returning controlled 404 Not Found (`Resource not found`).
+  * Validated student JWT on PUT/DELETE returning 403 Forbidden (`Forbidden: teacher role required`).
+  * Validated missing JWT on PUT/DELETE returning 401 Unauthorized.
 
 
 
@@ -287,10 +303,12 @@ Experiment 6 — JWT Authentication & Role-Based Access — COMPLETED ✅
 
 ### Current Task
 
-Experiment 7 — Postman API Testing (E7-001 & E7-002 Completed)
+Experiment 7 — Postman API Testing (E7-001, E7-002, E7-003, E7-004 Completed)
 - E7-001 — Postman Collection & API Testing Setup: DONE
 - E7-002 — Validate GET APIs: DONE
-- Next Tickets: E7-003+ (Do NOT begin until explicitly instructed)
+- E7-003 — Validate POST APIs: DONE
+- E7-004 — Validate PUT & DELETE APIs: DONE
+- Next Tickets: E7-005+ (Do NOT begin until explicitly instructed)
 
 ---
 
