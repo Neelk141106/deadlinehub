@@ -837,7 +837,52 @@ Status: DONE
 - Verified 401 Unauthorized (unauthenticated user) vs 403 Forbidden (authenticated user without permission) semantic distinction
 - Documented all test results in `docs/POSTMAN_API_TESTING.md`
 
+---
 
+# Experiment 8 — Real-Time Communication using WebSockets / Socket.IO
 
+## Goal
 
+Integrate Socket.IO into DeadlineHub for real-time communication between server and connected clients, broadcasting instant updates when deadlines and announcements change without breaking RESTful APIs or requiring manual browser refreshes.
+
+---
+
+### E8-001 — Socket.IO Backend Setup
+Status: DONE
+
+- Installed `socket.io` dependency on the Express backend server
+- Refactored `server/src/server.js` from `app.listen()` to native `http.createServer(app)`
+- Attached Socket.IO `Server` instance to HTTP server, coexisting on port 5000
+- Configured safe Socket.IO CORS origin matching frontend (`http://localhost:5173`, `http://127.0.0.1:5173`)
+- Added connection and disconnection event logging
+- Attached `io` instance to Express app (`app.set('io', io)`) for route-level broadcasting
+- Kept all existing REST APIs, JWT authentication, RBAC, MongoDB, validation, and error handling intact
+
+### E8-002 — Socket.IO Frontend Connection
+Status: DONE
+
+- Installed `socket.io-client` dependency on React frontend
+- Created `src/context/SocketContext.jsx` exposing `SocketProvider` and `useSocket` hook
+- Managed socket lifecycle with automatic connection on mount and disconnect cleanup on unmount
+- Integrated `SocketProvider` into `src/main.jsx` provider tree
+- Exposed live connection status (`connected`) and socket instance to downstream components
+
+### E8-003 — Real-Time Deadline & Announcement Updates
+Status: DONE
+
+- Connected backend REST handlers to Socket.IO via `req.app.get('io')`
+- Emitted real-time events on successful Teacher operations:
+  * `deadline:created` upon successful deadline POST (emits created deadline object)
+  * `deadline:updated` upon successful deadline PUT (emits updated deadline object)
+  * `deadline:deleted` upon successful deadline DELETE (emits `{ _id: id }`)
+  * `announcement:created` upon successful announcement POST (emits created announcement object)
+  * `announcement:updated` upon successful announcement PUT (emits updated announcement object)
+  * `announcement:deleted` upon successful announcement DELETE (emits `{ _id: id }`)
+- REST APIs remain strictly authoritative for validation, authorization, and CRUD persistence; Socket.IO only broadcasts successful changes
+- Updated `DeadlineContext.jsx` and `AnnouncementContext.jsx` to listen for Socket.IO events via `useSocket()`
+- Implemented deduplication logic on `created` events (`prev.some(item => item._id === newItem._id)`) to prevent duplicate records when the initiating client performs the REST call and subsequently receives the broadcast event
+- Real-time updates reflect in other connected browser sessions without page reload
+- Ensured unmount cleanup using `socket.off(...)` to prevent event listener leakage
+- Confirmed full build correctness (`npm run build`) and verified with end-to-end automated socket event test suite
+- Notifications explicitly deferred to E8-004 per task constraints
 

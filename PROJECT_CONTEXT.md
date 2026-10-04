@@ -136,7 +136,7 @@ Experiment 4 — MongoDB + Mongoose Integration — COMPLETED
 Experiment 5 — Secure REST APIs — COMPLETED
 Experiment 6 — JWT Authentication & Role-Based Access — COMPLETED
 Experiment 7 — Postman API Testing — COMPLETED
-Experiment 8 — WebSockets / Socket.IO — IN PROGRESS (E8-001, E8-002 Completed)
+Experiment 8 — WebSockets / Socket.IO — IN PROGRESS (E8-001, E8-002, E8-003 Completed)
 
 ### Experiment 7 Status (Completed)
 
@@ -203,6 +203,23 @@ Experiment 8 — WebSockets / Socket.IO — IN PROGRESS (E8-001, E8-002 Complete
   * `useSocket()` hook exposes `{ socket, connected }` with provider guard.
   * `SocketProvider` added to `src/main.jsx` provider tree (inside `AuthProvider`, wrapping `DeadlineProvider`).
   * Frontend builds cleanly with 74 modules including `socket.io-client` (build verified, 0 errors).
+- **E8-003 — Real-Time Deadline & Announcement Updates**: COMPLETED ✅
+  * Connected backend REST route handlers to Socket.IO using `req.app.get('io')`.
+  * Emitted real-time events upon successful teacher CRUD operations:
+    - `POST /api/deadlines` → `deadline:created` (saved deadline document)
+    - `PUT /api/deadlines/:id` → `deadline:updated` (updated deadline document)
+    - `DELETE /api/deadlines/:id` → `deadline:deleted` (`{ _id: id }`)
+    - `POST /api/announcements` → `announcement:created` (saved announcement document)
+    - `PUT /api/announcements/:id` → `announcement:updated` (updated announcement document)
+    - `DELETE /api/announcements/:id` → `announcement:deleted` (`{ _id: id }`)
+  * REST APIs remain strictly responsible for validation, authentication, authorization, and CRUD; Socket.IO only broadcasts successful changes.
+  * Updated `DeadlineContext.jsx` and `AnnouncementContext.jsx` to listen for real-time events via `useSocket()`.
+  * Implemented client-side deduplication on `created` events by checking if `_id` already exists in state, preventing duplicate records when the initiating client updates state via REST response and receives its own broadcast.
+  * Changes reflect instantaneously in other connected browser sessions without requiring page refresh.
+  * Proper cleanup registered in `useEffect` returning `socket.off(...)` to avoid memory leaks.
+  * Notifications explicitly deferred to E8-004 per requirements.
+  * Verified all 6 real-time events end-to-end via automated test script.
+  * Production frontend build verified cleanly (`npm run build`).
 
 
 

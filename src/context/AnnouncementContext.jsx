@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { announcementApi } from '../api/api';
+import { useSocket } from './SocketContext';
 
 const AnnouncementContext = createContext();
 
@@ -7,6 +8,8 @@ export function AnnouncementProvider({ children }) {
   const [announcements, setAnnouncements] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const { socket } = useSocket();
 
   const fetchAnnouncements = async () => {
     try {
@@ -26,9 +29,44 @@ export function AnnouncementProvider({ children }) {
     fetchAnnouncements();
   }, []);
 
+  // Real-time Socket.IO event listeners
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleCreated = (announcement) => {
+      setAnnouncements((prev) => {
+        // Deduplicate: skip if this _id is already in state (e.g. initiating teacher tab)
+        const exists = prev.some((a) => a._id === announcement._id);
+        if (exists) return prev;
+        return [announcement, ...prev];
+      });
+    };
+
+    const handleUpdated = (announcement) => {
+      setAnnouncements((prev) =>
+        prev.map((a) => (a._id === announcement._id ? announcement : a))
+      );
+    };
+
+    const handleDeleted = ({ _id }) => {
+      setAnnouncements((prev) => prev.filter((a) => a._id !== _id));
+    };
+
+    socket.on('announcement:created', handleCreated);
+    socket.on('announcement:updated', handleUpdated);
+    socket.on('announcement:deleted', handleDeleted);
+
+    return () => {
+      socket.off('announcement:created', handleCreated);
+      socket.off('announcement:updated', handleUpdated);
+      socket.off('announcement:deleted', handleDeleted);
+    };
+  }, [socket]);
+
   const addAnnouncement = async (newAnnouncement) => {
     try {
       const created = await announcementApi.create(newAnnouncement);
+      // Add to local state immediately (socket will deduplicate)
       setAnnouncements((prev) => [created, ...prev]);
       return created;
     } catch (err) {
@@ -109,3 +147,4 @@ export function useAnnouncements() {
 }
 
 export default AnnouncementContext;
+

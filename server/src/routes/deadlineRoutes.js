@@ -46,6 +46,13 @@ router.post('/', requireRole('teacher'), validateDeadline(false), async (req, re
     });
 
     const savedDeadline = await deadline.save();
+
+    // Broadcast real-time event to all connected clients
+    const io = req.app.get('io');
+    if (io) {
+      io.emit('deadline:created', savedDeadline);
+    }
+
     res.status(201).json(savedDeadline);
   } catch (error) {
     next(error);
@@ -83,6 +90,12 @@ router.put('/:id', validateObjectId, requireRole('teacher'), validateDeadline(tr
       return next(new AppError('Resource not found', 404));
     }
 
+    // Broadcast real-time event to all connected clients
+    const io = req.app.get('io');
+    if (io) {
+      io.emit('deadline:updated', updatedDeadline);
+    }
+
     res.status(200).json(updatedDeadline);
   } catch (error) {
     next(error);
@@ -97,6 +110,12 @@ router.delete('/:id', validateObjectId, requireRole('teacher'), async (req, res,
     const deletedDeadline = await Deadline.findByIdAndDelete(id);
     if (!deletedDeadline) {
       return next(new AppError('Resource not found', 404));
+    }
+
+    // Broadcast real-time event to all connected clients
+    const io = req.app.get('io');
+    if (io) {
+      io.emit('deadline:deleted', { _id: id });
     }
 
     res.status(200).json({

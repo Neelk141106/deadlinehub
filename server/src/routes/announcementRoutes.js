@@ -56,6 +56,13 @@ router.post('/', requireRole('teacher'), validateAnnouncement(false), async (req
     });
 
     const savedAnnouncement = await announcement.save();
+
+    // Broadcast real-time event to all connected clients
+    const io = req.app.get('io');
+    if (io) {
+      io.emit('announcement:created', savedAnnouncement);
+    }
+
     res.status(201).json(savedAnnouncement);
   } catch (error) {
     next(error);
@@ -101,6 +108,12 @@ router.put('/:id', validateObjectId, requireRole('teacher'), validateAnnouncemen
       return next(new AppError('Resource not found', 404));
     }
 
+    // Broadcast real-time event to all connected clients
+    const io = req.app.get('io');
+    if (io) {
+      io.emit('announcement:updated', updatedAnnouncement);
+    }
+
     res.status(200).json(updatedAnnouncement);
   } catch (error) {
     next(error);
@@ -115,6 +128,12 @@ router.delete('/:id', validateObjectId, requireRole('teacher'), async (req, res,
     const deletedAnnouncement = await Announcement.findByIdAndDelete(id);
     if (!deletedAnnouncement) {
       return next(new AppError('Resource not found', 404));
+    }
+
+    // Broadcast real-time event to all connected clients
+    const io = req.app.get('io');
+    if (io) {
+      io.emit('announcement:deleted', { _id: id });
     }
 
     res.status(200).json({
