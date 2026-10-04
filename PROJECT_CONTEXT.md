@@ -136,7 +136,7 @@ Experiment 4 — MongoDB + Mongoose Integration — COMPLETED
 Experiment 5 — Secure REST APIs — COMPLETED
 Experiment 6 — JWT Authentication & Role-Based Access — COMPLETED
 Experiment 7 — Postman API Testing — COMPLETED
-Experiment 8 — WebSockets / Socket.IO — IN PROGRESS (E8-001, E8-002, E8-003 Completed)
+Experiment 8 — WebSockets / Socket.IO — IN PROGRESS (E8-001, E8-002, E8-003, E8-004 Completed)
 
 ### Experiment 7 Status (Completed)
 
@@ -217,9 +217,23 @@ Experiment 8 — WebSockets / Socket.IO — IN PROGRESS (E8-001, E8-002, E8-003 
   * Implemented client-side deduplication on `created` events by checking if `_id` already exists in state, preventing duplicate records when the initiating client updates state via REST response and receives its own broadcast.
   * Changes reflect instantaneously in other connected browser sessions without requiring page refresh.
   * Proper cleanup registered in `useEffect` returning `socket.off(...)` to avoid memory leaks.
-  * Notifications explicitly deferred to E8-004 per requirements.
   * Verified all 6 real-time events end-to-end via automated test script.
   * Production frontend build verified cleanly (`npm run build`).
+- **E8-004 — Real-Time Notifications / Activity**: COMPLETED ✅
+  * Created `src/context/NotificationContext.jsx` with `NotificationProvider` and `useNotification` hook.
+  * Listens to existing Socket.IO events (`deadline:created`, `deadline:updated`, `deadline:deleted`, `announcement:created`, `announcement:updated`, `announcement:deleted`).
+  * Shows real-time toast notifications with action-specific titles and item details without requiring page refresh:
+    - `deadline:created` → "New deadline added" + deadline title
+    - `deadline:updated` → "Deadline updated" + deadline title
+    - `deadline:deleted` → "Deadline removed"
+    - `announcement:created` → "Announcement added" + announcement title
+    - `announcement:updated` → "Announcement updated" + announcement title
+    - `announcement:deleted` → "Announcement removed"
+  * Prevents duplicate notifications for any single event via ref-based event key deduplication cache (`processedKeysRef`).
+  * Seamlessly integrated into `DeadlineProvider` tree wrapping `{children}` so toasts appear across all views.
+  * Styled with existing Tailwind CSS theme and dark mode classes (`dark:bg-[#151C2C]`, semantic border/badge colors).
+  * Auto-dismisses after 4 seconds and provides a manual close button.
+  * Production build verified cleanly (`npm run build`).
 
 
 

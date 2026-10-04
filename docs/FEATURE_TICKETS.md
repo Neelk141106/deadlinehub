@@ -884,5 +884,22 @@ Status: DONE
 - Real-time updates reflect in other connected browser sessions without page reload
 - Ensured unmount cleanup using `socket.off(...)` to prevent event listener leakage
 - Confirmed full build correctness (`npm run build`) and verified with end-to-end automated socket event test suite
-- Notifications explicitly deferred to E8-004 per task constraints
+
+### E8-004 — Real-Time Notifications / Activity
+Status: DONE
+
+- Built `src/context/NotificationContext.jsx` with `NotificationProvider` and `useNotification` hook
+- Subscribed to existing Socket.IO events (`deadline:created`, `deadline:updated`, `deadline:deleted`, `announcement:created`, `announcement:updated`, `announcement:deleted`)
+- Rendered lightweight floating toast notifications (`NotificationToasts`) with descriptive titles and details:
+  * "New deadline added"
+  * "Deadline updated"
+  * "Deadline removed"
+  * "Announcement added"
+  * "Announcement updated"
+  * "Announcement removed"
+- Prevented duplicate notifications for one event using ref-based event key deduplication (`processedKeysRef`)
+- Handled lifecycle: auto-dismiss after 4 seconds and manual dismiss with close button
+- Styled to match DeadlineHub theme tokens and dark mode palette (`dark:bg-[#151C2C]`)
+- Integrated into `DeadlineProvider` tree wrapping `{children}` so notifications function globally across all views without page refresh
+- Production build verified (`npm run build`)
 

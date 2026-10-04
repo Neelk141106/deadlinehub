@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { AnnouncementProvider } from './AnnouncementContext';
+import { NotificationProvider } from './NotificationContext';
 import { deadlineApi } from '../api/api';
 import { useSocket } from './SocketContext';
 
@@ -120,7 +121,9 @@ export function DeadlineProvider({ children }) {
       }}
     >
       <AnnouncementProvider>
-        {children}
+        <NotificationProvider>
+          {children}
+        </NotificationProvider>
       </AnnouncementProvider>
     </DeadlineContext.Provider>
   );
