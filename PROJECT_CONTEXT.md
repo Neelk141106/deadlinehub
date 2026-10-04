@@ -120,7 +120,7 @@ Future experiment functionality must NOT be implemented early.
 - Experiment 4 — MongoDB + Mongoose
 - Experiment 5 — Secure REST APIs
 - Experiment 6 — JWT Authentication & Roles
-- Experiment 7 — Postman API Testing
+- Experiment 7 — Postman API Testing ✅
 - Experiment 8 — WebSockets / Socket.IO
 - Experiment 9 — CI/CD & Deployment
 - Experiment 10 — Docker
@@ -135,9 +135,10 @@ Experiment 3 — COMPLETED
 Experiment 4 — MongoDB + Mongoose Integration — COMPLETED
 Experiment 5 — Secure REST APIs — COMPLETED
 Experiment 6 — JWT Authentication & Role-Based Access — COMPLETED
-Experiment 7 — Postman API Testing — IN PROGRESS (E7-001, E7-002, E7-003, E7-004, E7-005, E7-006 Completed)
+Experiment 7 — Postman API Testing — COMPLETED
+Experiment 8 — WebSockets / Socket.IO — IN PROGRESS (E8-001, E8-002 Completed)
 
-### Experiment 7 Status (In Progress)
+### Experiment 7 Status (Completed)
 
 - **E7-001 — Postman Collection & Testing Setup**: COMPLETED ✅
   * Created complete Postman v2.1.0 collection (`postman/DeadlineHub_API.postman_collection.json`) structured into `Auth`, `Deadlines` (GET, POST, PUT, DELETE), and `Announcements` (GET, POST, PUT, DELETE).
@@ -181,6 +182,27 @@ Experiment 7 — Postman API Testing — IN PROGRESS (E7-001, E7-002, E7-003, E7
   * Validated Student token rejected with 403 Forbidden on mutations: POST, PUT, DELETE for deadlines and announcements.
   * Validated Teacher token allows full CRUD: GET (200), POST (201), PUT (200), DELETE (200) for deadlines and announcements.
   * Verified critical distinction: 401 = Unauthenticated (no/invalid JWT), 403 = Unauthorized role (authenticated student attempting teacher action).
+
+### Experiment 8 Progress
+
+- **E8-001 — Socket.IO Backend Setup**: COMPLETED ✅
+  * Installed `socket.io` package on the backend server.
+  * Refactored `server/src/server.js` to use native `http.createServer(app)` instead of `app.listen`.
+  * Attached `socket.io` `Server` instance to the native HTTP server so WebSocket and REST share port 5000.
+  * Socket.IO CORS configured to match existing `allowedOrigins` whitelist (`http://localhost:5173`, `http://127.0.0.1:5173`).
+  * Connection and disconnection events logged with socket ID and reason.
+  * `io` instance exposed on the Express app (`app.set('io', io)`) for future route-level event emission.
+  * All existing REST APIs, Helmet, CORS, JWT auth, validation, and centralized error handling remain fully intact and tested.
+  * Socket.IO polling handshake verified: `GET /socket.io/?EIO=4&transport=polling` → 200 OK with valid `sid`.
+- **E8-002 — Socket.IO Frontend Connection**: COMPLETED ✅
+  * Installed `socket.io-client` package on the frontend.
+  * Created `src/context/SocketContext.jsx` with `SocketProvider` component and `useSocket` hook.
+  * `SocketProvider` manages Socket.IO client lifecycle: creates socket on mount, disconnects on unmount.
+  * `connected` boolean state tracks live connection status.
+  * `connect`, `disconnect`, and `connect_error` events logged to console for observability.
+  * `useSocket()` hook exposes `{ socket, connected }` with provider guard.
+  * `SocketProvider` added to `src/main.jsx` provider tree (inside `AuthProvider`, wrapping `DeadlineProvider`).
+  * Frontend builds cleanly with 74 modules including `socket.io-client` (build verified, 0 errors).
 
 
 
@@ -317,14 +339,10 @@ Experiment 6 — JWT Authentication & Role-Based Access — COMPLETED ✅
 
 ### Current Task
 
-Experiment 7 — Postman API Testing (E7-001 through E7-006 Completed)
-- E7-001 — Postman Collection & API Testing Setup: DONE
-- E7-002 — Validate GET APIs: DONE
-- E7-003 — Validate POST APIs: DONE
-- E7-004 — Validate PUT & DELETE APIs: DONE
-- E7-005 — JWT Authentication Testing: DONE
-- E7-006 — Role-Based Authorization Testing: DONE
-- Next Tickets: E7-007+ (Do NOT begin until explicitly instructed)
+Experiment 8 — WebSockets / Socket.IO (E8-001, E8-002 Completed)
+- E8-001 — Socket.IO Backend Setup: DONE
+- E8-002 — Socket.IO Frontend Connection: DONE
+- Next Tickets: E8-003+ (Do NOT begin until explicitly instructed)
 
 ---
 
@@ -337,6 +355,7 @@ Experiment 7 — Postman API Testing (E7-001 through E7-006 Completed)
 - MongoDB Atlas (Cloud Database)
 - Mongoose (ODM / Schema & Models)
 - JSON Web Tokens (JWT) & bcryptjs (Authentication & Password Security)
+- Socket.IO (WebSockets — server: `socket.io`, client: `socket.io-client`)
 - Git & GitHub (Version Control)
 
 ---
@@ -359,8 +378,7 @@ The application is a full stack web application featuring:
 ## Not Implemented Yet
 
 - Teacher/Admin dashboard analytics
-- Postman API Testing & Collection (Experiment 7)
-- WebSockets / Socket.IO (Experiment 8)
+- WebSockets real-time events (Experiment 8 E8-003+)
 - CI/CD & Deployment (Experiment 9)
 - Docker Containerization (Experiment 10)
 
@@ -445,9 +463,10 @@ Planned later:
 
 17. Git is the source of detailed implementation history.
 
-Experiment 1, Experiment 2, Experiment 3, Experiment 4, Experiment 5, and Experiment 6 are COMPLETED.
+Experiments 1 through 7 are COMPLETED.
+Experiment 8 — WebSockets / Socket.IO — IN PROGRESS (E8-001 and E8-002 complete).
 
-Next stage: Experiment 7 — Postman API Testing. Do NOT begin Experiment 7 until explicitly instructed.
+Do NOT begin E8-003+ until explicitly instructed.
 
 
 

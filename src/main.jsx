@@ -5,14 +5,17 @@ import App from './App2.jsx'
 import { DeadlineProvider } from './context/DeadlineContext'
 import { ThemeProvider } from './context/ThemeContext'
 import { AuthProvider } from './context/AuthContext'
+import { SocketProvider } from './context/SocketContext'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <ThemeProvider>
       <AuthProvider>
-        <DeadlineProvider>
-          <App />
-        </DeadlineProvider>
+        <SocketProvider>
+          <DeadlineProvider>
+            <App />
+          </DeadlineProvider>
+        </SocketProvider>
       </AuthProvider>
     </ThemeProvider>
   </StrictMode>,
