@@ -65,6 +65,11 @@ const announcementSchema = new mongoose.Schema(
       trim: true,
       default: 'All Divisions',
     },
+    classId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Class',
+      default: null,
+    },
   },
   {
     timestamps: true,

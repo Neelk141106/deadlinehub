@@ -6,10 +6,14 @@ const requireRole = require('../middleware/roleMiddleware');
 
 const router = express.Router();
 
-// GET /api/announcements - Get all announcements
+// GET /api/announcements - Get all announcements (optionally filtered by classId)
 router.get('/', async (req, res, next) => {
   try {
-    const announcements = await Announcement.find().sort({ isPinned: -1, postedAt: -1, createdAt: -1 });
+    const filter = {};
+    if (req.query.classId) {
+      filter.classId = req.query.classId;
+    }
+    const announcements = await Announcement.find(filter).sort({ isPinned: -1, postedAt: -1, createdAt: -1 });
     res.status(200).json(announcements);
   } catch (error) {
     next(error);
@@ -33,6 +37,7 @@ router.post('/', requireRole('teacher'), validateAnnouncement(false), async (req
       branch,
       semester,
       division,
+      classId,
     } = req.body;
 
     const priorityVal = priority || 'Normal';
@@ -53,6 +58,7 @@ router.post('/', requireRole('teacher'), validateAnnouncement(false), async (req
       branch: branch || 'Information Technology',
       semester: semester || 'Semester 5',
       division: division || 'All Divisions',
+      classId: classId || null,
     });
 
     const savedAnnouncement = await announcement.save();

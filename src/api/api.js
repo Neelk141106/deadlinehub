@@ -168,3 +168,53 @@ export const authApi = {
     return handleResponse(res);
   },
 };
+
+export const classApi = {
+  async getAll() {
+    const res = await fetch(`${API_BASE_URL}/classes`, {
+      headers: getAuthHeaders(false),
+    });
+    return handleResponse(res);
+  },
+
+  async getMyClasses() {
+    const res = await fetch(`${API_BASE_URL}/classes/my-classes`, {
+      headers: getAuthHeaders(false),
+    });
+    return handleResponse(res);
+  },
+
+  async getById(id) {
+    const res = await fetch(`${API_BASE_URL}/classes/${id}`, {
+      headers: getAuthHeaders(false),
+    });
+    return handleResponse(res);
+  },
+
+  async create(classData) {
+    const res = await fetch(`${API_BASE_URL}/classes`, {
+      method: 'POST',
+      headers: getAuthHeaders(true),
+      body: JSON.stringify(classData),
+    });
+    return handleResponse(res);
+  },
+
+  async join(classCode) {
+    const res = await fetch(`${API_BASE_URL}/classes/join`, {
+      method: 'POST',
+      headers: getAuthHeaders(true),
+      body: JSON.stringify({ classCode }),
+    });
+    return handleResponse(res);
+  },
+
+  async delete(id) {
+    const res = await fetch(`${API_BASE_URL}/classes/${id}`, {
+      method: 'DELETE',
+      headers: getAuthHeaders(false),
+    });
+    return handleResponse(res);
+  },
+};
+

@@ -6,10 +6,14 @@ const requireRole = require('../middleware/roleMiddleware');
 
 const router = express.Router();
 
-// GET /api/deadlines - Get all deadlines
+// GET /api/deadlines - Get all deadlines (optionally filtered by classId)
 router.get('/', async (req, res, next) => {
   try {
-    const deadlines = await Deadline.find().sort({ dueDate: 1, createdAt: -1 });
+    const filter = {};
+    if (req.query.classId) {
+      filter.classId = req.query.classId;
+    }
+    const deadlines = await Deadline.find(filter).sort({ dueDate: 1, createdAt: -1 });
     res.status(200).json(deadlines);
   } catch (error) {
     next(error);
@@ -30,6 +34,7 @@ router.post('/', requireRole('teacher'), validateDeadline(false), async (req, re
       branch,
       semester,
       division,
+      classId,
     } = req.body;
 
     const deadline = new Deadline({
@@ -43,6 +48,7 @@ router.post('/', requireRole('teacher'), validateDeadline(false), async (req, re
       branch: branch || 'Information Technology',
       semester: semester || 'Semester 5',
       division: division || 'All Divisions',
+      classId: classId || null,
     });
 
     const savedDeadline = await deadline.save();

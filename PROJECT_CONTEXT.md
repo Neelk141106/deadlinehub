@@ -265,6 +265,35 @@ Experiment 8 — WebSockets / Socket.IO — COMPLETED ✅
 
 ---
 
+## Authentication & Class Management (Google Classroom Flow) — COMPLETED ✅
+
+- **Class Model & Database**:
+  * Created `server/src/models/Class.js` with `className`, `subject`, `semester`, `division`, unique uppercase `classCode`, `teacherId` (ObjectId ref User), and `students` ([ObjectId ref User]).
+  * Added optional `classId` reference to `server/src/models/Deadline.js` and `server/src/models/Announcement.js` for class-specific assignments and alerts with full backward compatibility.
+- **Backend Class REST APIs (`server/src/routes/classRoutes.js`)**:
+  * `POST /api/classes` — Teacher creates a class with auto-generated unique class code (e.g. `D15C-5IT`) or optional custom code (201 Created).
+  * `GET /api/classes` & `GET /api/classes/my-classes` — Authenticated role-aware retrieval (teacher gets created classes with enrolled students list; student gets joined classes with instructor info).
+  * `GET /api/classes/:id` — Details view guarded strictly by teacher ownership or student enrollment (403 if unauthorized).
+  * `POST /api/classes/join` — Student joins using valid unique class code (400 if already joined, 404 if invalid code). Role strictly remains `student`.
+  * `DELETE /api/classes/:id` — Teacher deletes own class (403 if attempting to delete another teacher's class).
+- **Socket.IO Integration**:
+  * `class:created`, `class:student-joined`, and `class:deleted` broadcast in real time across connected clients.
+- **Frontend Student Experience**:
+  * `StudentDashboard.jsx` shows "My Classes" section with enrolled class cards, teacher name, division/semester, and class code badge.
+  * 1-click class filter allowing students to filter dashboard deadlines and announcements by specific class or view all classes.
+  * "Join Class" modal (`JoinClass.jsx`) with live code validation, error feedback, and success confirmation.
+- **Frontend Teacher Experience**:
+  * `ClassesPage.jsx` allows teachers to create new classes, view generated class codes with 1-click clipboard copy, see student enrollments, inspect enrolled student lists via modal, and delete classes.
+- **Security & Authorization**:
+  * Protected via `authMiddleware` and `requireRole` (401 unauthenticated, 403 unauthorized, 400 bad request, 404 not found).
+  * Students cannot create or delete classes; class code never alters a user's role.
+- **Automated Verification**:
+  * 22/22 backend class API tests passed.
+  * 30/30 regression tests passed.
+  * Production frontend build verified (`npm run build`, 0 errors).
+
+---
+
 ## Full-Screen App Welcome Screen (UI Enhancement)
 
 A full-screen application Welcome Screen was added as a UI enhancement after Experiment 2.

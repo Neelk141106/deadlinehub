@@ -8,6 +8,7 @@ const connectDB = require('./config/db');
 const deadlineRoutes = require('./routes/deadlineRoutes');
 const announcementRoutes = require('./routes/announcementRoutes');
 const authRoutes = require('./routes/authRoutes');
+const classRoutes = require('./routes/classRoutes');
 const authMiddleware = require('./middleware/authMiddleware');
 const errorHandler = require('./middleware/errorHandler');
 const AppError = require('./utils/AppError');
@@ -87,6 +88,7 @@ app.get('/api/health', (req, res) => {
 
 // Resource Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/classes', authMiddleware, classRoutes);
 app.use('/api/deadlines', authMiddleware, deadlineRoutes);
 app.use('/api/announcements', authMiddleware, announcementRoutes);
 

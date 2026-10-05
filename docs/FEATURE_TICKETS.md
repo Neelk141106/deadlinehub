@@ -945,4 +945,43 @@ Status: DONE
 - Updated `PROJECT_CONTEXT.md` and `docs/FEATURE_TICKETS.md`
 - Marked Experiment 8 COMPLETE
 
+---
+
+# Class Management & Google Classroom Flow
+
+## Goal
+
+Provide a Google Classroom-style authentication and class management flow where teachers can create classes with unique auto-generated class codes, and students can join classes using the code while strictly preserving their "student" JWT role and permissions.
+
+---
+
+### CM-001 — Class Entity & Database Relationships
+Status: DONE
+
+- Implemented `server/src/models/Class.js` with `className`, `subject`, `semester`, `division`, unique uppercase `classCode`, `teacherId` (ref User), and `students` ([ref User])
+- Added indexing on `teacherId` and `students` for query efficiency
+- Added optional `classId` reference to `server/src/models/Deadline.js` and `server/src/models/Announcement.js` with full backward compatibility
+
+### CM-002 — Backend Class REST APIs & RBAC Authorization
+Status: DONE
+
+- Implemented `server/src/routes/classRoutes.js` and mounted on `/api/classes` with `authMiddleware`
+- `POST /api/classes` — Teacher creates a class with auto-generated unique class code (e.g. `D15C-5IT`) or optional custom code (201 Created)
+- `GET /api/classes` & `GET /api/classes/my-classes` — Returns teacher's owned classes or student's enrolled classes
+- `GET /api/classes/:id` — Returns class details with 403 authorization guard for non-enrolled students or non-owner teachers
+- `POST /api/classes/join` — Student joins class with class code; enforces role remains 'student', rejects duplicate joining (400), and validates existence (404)
+- `DELETE /api/classes/:id` — Teacher deletes own class; student or non-owner teacher rejected with 403 Forbidden
+- Real-time events broadcast via Socket.IO: `class:created`, `class:student-joined`, `class:deleted`
+
+### CM-003 — Frontend Class Management & Student Dashboard
+Status: DONE
+
+- Added `classApi` in `src/api/api.js` supporting all CRUD and join actions
+- Created `src/context/ClassContext.jsx` with real-time Socket.IO listeners and state synchronization
+- Upgraded `src/components/ClassesPage.jsx` into interactive teacher management page (Create Class modal, View Enrolled Students modal, copy class code, delete class)
+- Updated `src/components/StudentDashboard.jsx` with "My Classes" section, enrolled class cards, 1-click class filter for deadlines/announcements, and Join Class modal
+- Updated `src/components/JoinClass.jsx` to execute real-time code verification against backend API
+- Verified clean build (`npm run build`, 0 errors) and automated testing
+
+
 
