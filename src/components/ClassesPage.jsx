@@ -5,23 +5,35 @@ import { Input } from './ui/Input';
 import { Button } from './ui/Button';
 
 export function ClassesPage() {
-  const { classes, loading, error, createClass, deleteClass } = useClasses();
-  const { user } = useAuth();
+  const { classes, loading, error, createClass, updateClass, deleteClass } = useClasses();
 
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [editingClass, setEditingClass] = useState(null);
   const [selectedClassForStudents, setSelectedClassForStudents] = useState(null);
   const [copiedCode, setCopiedCode] = useState(null);
   const [deleteConfirmId, setDeleteConfirmId] = useState(null);
   const [actionError, setActionError] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
-  // Form state
+  // Create Form state
   const [formData, setFormData] = useState({
     className: '',
     subject: '',
+    department: 'Information Technology',
+    academicYear: '2026-2027',
     semester: 'Semester 5',
     division: 'D15C',
     classCode: '',
+  });
+
+  // Edit Form state
+  const [editFormData, setEditFormData] = useState({
+    className: '',
+    subject: '',
+    department: 'Information Technology',
+    academicYear: '2026-2027',
+    semester: 'Semester 5',
+    division: 'D15C',
   });
 
   const handleCopyCode = (code) => {
@@ -44,6 +56,8 @@ export function ClassesPage() {
       setFormData({
         className: '',
         subject: '',
+        department: 'Information Technology',
+        academicYear: '2026-2027',
         semester: 'Semester 5',
         division: 'D15C',
         classCode: '',
@@ -51,6 +65,39 @@ export function ClassesPage() {
       setShowCreateModal(false);
     } catch (err) {
       setActionError(err.message || 'Failed to create class');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const openEditModal = (cls) => {
+    setActionError('');
+    setEditingClass(cls);
+    setEditFormData({
+      className: cls.className || '',
+      subject: cls.subject || '',
+      department: cls.department || 'Information Technology',
+      academicYear: cls.academicYear || '2026-2027',
+      semester: cls.semester || 'Semester 5',
+      division: cls.division || 'D15C',
+    });
+  };
+
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+    if (!editingClass) return;
+    setActionError('');
+    if (!editFormData.className.trim()) {
+      setActionError('Class Name is required');
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      await updateClass(editingClass._id, editFormData);
+      setEditingClass(null);
+    } catch (err) {
+      setActionError(err.message || 'Failed to update class');
     } finally {
       setSubmitting(false);
     }
@@ -74,7 +121,7 @@ export function ClassesPage() {
             Manage Classes
           </h1>
           <p className="text-slate-600 dark:text-slate-400 text-sm mt-0.5">
-            Create classes, share unique class codes with students, and monitor enrollments.
+            Create classes, share unique class codes with students, edit class details, and monitor enrollments.
           </p>
         </div>
 
@@ -143,7 +190,7 @@ export function ClassesPage() {
               >
                 {/* Header banner */}
                 <div className="p-6 pb-4">
-                  <div className="flex justify-between items-start gap-2 mb-2">
+                  <div className="flex justify-between items-start gap-2 mb-2 flex-wrap">
                     <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
                       {cls.division || 'All Divisions'} • {cls.semester || 'Semester 5'}
                     </span>
@@ -158,6 +205,11 @@ export function ClassesPage() {
                   {cls.subject && (
                     <p className="text-sm font-medium text-slate-500 dark:text-slate-400 mt-1">
                       {cls.subject}
+                    </p>
+                  )}
+                  {(cls.department || cls.academicYear) && (
+                    <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
+                      {cls.department}{cls.academicYear ? ` • ${cls.academicYear}` : ''}
                     </p>
                   )}
                 </div>
@@ -201,18 +253,29 @@ export function ClassesPage() {
 
                 {/* Actions Footer */}
                 <div className="p-6 pt-4 border-t border-slate-100 dark:border-slate-800/80 mt-3 flex flex-col gap-2">
-                  <button
-                    onClick={() => setSelectedClassForStudents(cls)}
-                    className="btn-secondary w-full justify-center gap-2 text-xs font-semibold py-2 cursor-pointer"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                      <circle cx="9" cy="7" r="4" />
-                      <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
-                      <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-                    </svg>
-                    View Students ({studentCount})
-                  </button>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      onClick={() => setSelectedClassForStudents(cls)}
+                      className="btn-secondary justify-center gap-1.5 text-xs font-semibold py-2 cursor-pointer"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                        <circle cx="9" cy="7" r="4" />
+                      </svg>
+                      Students ({studentCount})
+                    </button>
+
+                    <button
+                      onClick={() => openEditModal(cls)}
+                      className="btn-secondary justify-center gap-1.5 text-xs font-semibold py-2 cursor-pointer text-slate-700 dark:text-slate-300 hover:text-primary-600 dark:hover:text-primary-400"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                      </svg>
+                      Edit Class
+                    </button>
+                  </div>
 
                   {isDeleting ? (
                     <div className="flex items-center gap-2 mt-1">
@@ -286,19 +349,33 @@ export function ClassesPage() {
                 />
               </div>
 
-              <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
-                  Subject / Course
-                </label>
-                <Input
-                  type="text"
-                  placeholder="e.g. Cloud Computing & DevOps"
-                  value={formData.subject}
-                  onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                    Subject / Course
+                  </label>
+                  <Input
+                    type="text"
+                    placeholder="e.g. Cloud Computing & DevOps"
+                    value={formData.subject}
+                    onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                    Department
+                  </label>
+                  <Input
+                    type="text"
+                    placeholder="e.g. Information Technology"
+                    value={formData.department}
+                    onChange={(e) => setFormData({ ...formData, department: e.target.value })}
+                  />
+                </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-3 gap-3">
                 <div className="space-y-1.5">
                   <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
                     Division
@@ -320,6 +397,18 @@ export function ClassesPage() {
                     placeholder="e.g. Semester 5"
                     value={formData.semester}
                     onChange={(e) => setFormData({ ...formData, semester: e.target.value })}
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                    Academic Year
+                  </label>
+                  <Input
+                    type="text"
+                    placeholder="e.g. 2026-2027"
+                    value={formData.academicYear}
+                    onChange={(e) => setFormData({ ...formData, academicYear: e.target.value })}
                   />
                 </div>
               </div>
@@ -352,6 +441,134 @@ export function ClassesPage() {
                   className="px-5 py-2 text-sm font-semibold"
                 >
                   {submitting ? 'Creating...' : 'Create Class'}
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal: Edit Class */}
+      {editingClass && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs">
+          <div className="bg-white dark:bg-[#151C2C] rounded-2xl max-w-lg w-full border border-slate-200 dark:border-slate-800 shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+            <div className="p-6 border-b border-slate-100 dark:border-slate-800/80 flex items-center justify-between">
+              <div>
+                <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">Edit Class Details</h2>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                  Update class information. Class Code ({editingClass.classCode}) remains preserved.
+                </p>
+              </div>
+              <button
+                onClick={() => setEditingClass(null)}
+                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+            </div>
+
+            <form onSubmit={handleEditSubmit} className="p-6 space-y-4">
+              {actionError && (
+                <div className="p-3 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/50 rounded-xl text-red-600 dark:text-red-400 text-xs font-medium">
+                  {actionError}
+                </div>
+              )}
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                  Class Name <span className="text-red-500">*</span>
+                </label>
+                <Input
+                  type="text"
+                  placeholder="e.g. Information Technology - Div C"
+                  value={editFormData.className}
+                  onChange={(e) => setEditFormData({ ...editFormData, className: e.target.value })}
+                  required
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                    Subject / Course
+                  </label>
+                  <Input
+                    type="text"
+                    placeholder="e.g. Cloud Computing & DevOps"
+                    value={editFormData.subject}
+                    onChange={(e) => setEditFormData({ ...editFormData, subject: e.target.value })}
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                    Department
+                  </label>
+                  <Input
+                    type="text"
+                    placeholder="e.g. Information Technology"
+                    value={editFormData.department}
+                    onChange={(e) => setEditFormData({ ...editFormData, department: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-3">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                    Division
+                  </label>
+                  <Input
+                    type="text"
+                    placeholder="e.g. D15C"
+                    value={editFormData.division}
+                    onChange={(e) => setEditFormData({ ...editFormData, division: e.target.value })}
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                    Semester
+                  </label>
+                  <Input
+                    type="text"
+                    placeholder="e.g. Semester 5"
+                    value={editFormData.semester}
+                    onChange={(e) => setEditFormData({ ...editFormData, semester: e.target.value })}
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
+                    Academic Year
+                  </label>
+                  <Input
+                    type="text"
+                    placeholder="e.g. 2026-2027"
+                    value={editFormData.academicYear}
+                    onChange={(e) => setEditFormData({ ...editFormData, academicYear: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={() => setEditingClass(null)}
+                  className="px-4 py-2 text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <Button
+                  type="submit"
+                  variant="primary"
+                  disabled={submitting}
+                  className="px-5 py-2 text-sm font-semibold"
+                >
+                  {submitting ? 'Saving Changes...' : 'Save Changes'}
                 </Button>
               </div>
             </form>

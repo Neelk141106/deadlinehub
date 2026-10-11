@@ -70,6 +70,22 @@ const announcementSchema = new mongoose.Schema(
       ref: 'Class',
       default: null,
     },
+    createdBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      default: null,
+    },
+    targetType: {
+      type: String,
+      enum: ['all_classes', 'particular_classes'],
+      default: 'all_classes',
+    },
+    targetClassIds: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Class',
+      },
+    ],
   },
   {
     timestamps: true,

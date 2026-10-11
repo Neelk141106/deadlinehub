@@ -3,7 +3,7 @@ import { Input } from './ui/Input';
 import { Button } from './ui/Button';
 import { useAuth } from '../context/AuthContext';
 
-export function TeacherLogin({ onLogin, onBack }) {
+export function TeacherLogin({ onLogin, onBack, onRegisterClick }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -204,6 +204,20 @@ export function TeacherLogin({ onLogin, onBack }) {
             {loading ? 'Logging in...' : 'Log In'}
           </Button>
         </form>
+
+        {/* Create Teacher Account Option */}
+        <div className="mt-6 pt-6 border-t border-slate-100 dark:border-slate-800 text-center">
+          <p className="text-sm text-slate-600 dark:text-slate-300">
+            New teacher?{' '}
+            <button
+              type="button"
+              onClick={onRegisterClick}
+              className="font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 focus:outline-none cursor-pointer"
+            >
+              Create Teacher Account
+            </button>
+          </p>
+        </div>
       </div>
     </div>
   );

@@ -12,6 +12,16 @@ const classSchema = new mongoose.Schema(
       trim: true,
       default: '',
     },
+    department: {
+      type: String,
+      trim: true,
+      default: 'Information Technology',
+    },
+    academicYear: {
+      type: String,
+      trim: true,
+      default: '',
+    },
     semester: {
       type: String,
       trim: true,

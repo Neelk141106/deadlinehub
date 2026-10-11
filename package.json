@@ -6,6 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "create-teacher": "npm --prefix server run create-teacher",
+    "test": "npm --prefix server test",
+    "test:e2e": "npm --prefix server run test:e2e",
     "lint": "oxlint",
     "preview": "vite preview"
   },

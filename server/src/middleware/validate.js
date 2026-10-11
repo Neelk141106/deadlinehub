@@ -108,7 +108,11 @@ const validateRegister = (req, res, next) => {
 
   // Validate role if provided
   if (role !== undefined) {
-    if (typeof role !== 'string' || !['student', 'teacher'].includes(role.toLowerCase().trim())) {
+    if (typeof role !== 'string') {
+      return next(new AppError('Role must be a valid string', 400));
+    }
+    const cleanRole = role.toLowerCase().trim();
+    if (!['student', 'teacher'].includes(cleanRole)) {
       return next(new AppError('Role must be either student or teacher', 400));
     }
   }

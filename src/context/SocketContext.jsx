@@ -13,6 +13,7 @@ const SocketContext = createContext(null);
 export function SocketProvider({ children }) {
   const socketRef = useRef(null);
   const [status, setStatus] = useState('connecting'); // 'connected' | 'reconnecting' | 'disconnected' | 'connecting'
+  const [socketInstance, setSocketInstance] = useState(null);
 
   useEffect(() => {
     // Configure socket instance with robust auto-reconnection options
@@ -27,10 +28,19 @@ export function SocketProvider({ children }) {
     });
 
     socketRef.current = socket;
+    setSocketInstance(socket);
+
+    const sendAuth = () => {
+      const token = localStorage.getItem('deadlinehub_token');
+      if (token) {
+        socket.emit('authenticate', { token });
+      }
+    };
 
     socket.on('connect', () => {
       console.log('[Socket.IO] Connected to server:', socket.id);
       setStatus('connected');
+      sendAuth();
     });
 
     socket.on('disconnect', (reason) => {
@@ -58,6 +68,7 @@ export function SocketProvider({ children }) {
       socket.io.on('reconnect', (attempt) => {
         console.log(`[Socket.IO] Reconnected successfully after #${attempt} attempts`);
         setStatus('connected');
+        sendAuth();
       });
 
       socket.io.on('reconnect_error', (err) => {
@@ -75,13 +86,14 @@ export function SocketProvider({ children }) {
     return () => {
       socket.disconnect();
       socketRef.current = null;
+      setSocketInstance(null);
     };
   }, []);
 
   const connected = status === 'connected';
 
   return (
-    <SocketContext.Provider value={{ socket: socketRef.current, connected, status }}>
+    <SocketContext.Provider value={{ socket: socketInstance, connected, status }}>
       {children}
     </SocketContext.Provider>
   );

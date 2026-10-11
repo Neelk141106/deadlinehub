@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useDeadlines } from '../context/DeadlineContext';
+import { useClasses } from '../context/ClassContext';
 
 const getTodayDateString = () => {
   const today = new Date();
@@ -20,10 +21,26 @@ const EMPTY_FORM = {
   branch: 'Information Technology',
   semester: 'Semester 5',
   division: 'All Divisions',
+  targetType: 'all_classes', // 'all_classes' | 'particular_classes'
+  targetClassIds: [],
 };
 
 // ── Reusable form view ────────────────────────────────────────────────────────
-function DeadlineForm({ heading, subheading, form, onChange, onSubmit, onCancel, submitLabel, error, minDate }) {
+function DeadlineForm({
+  heading,
+  subheading,
+  form,
+  classes,
+  onChange,
+  onTargetTypeChange,
+  onClassToggle,
+  onSelectAllClasses,
+  onSubmit,
+  onCancel,
+  submitLabel,
+  error,
+  minDate,
+}) {
   return (
     <div className="max-w-3xl mx-auto">
       <div className="mb-6 flex items-center gap-4">
@@ -86,7 +103,7 @@ function DeadlineForm({ heading, subheading, form, onChange, onSubmit, onCancel,
                 value={form.description}
                 onChange={onChange}
                 className="input-field min-h-[100px]"
-                placeholder="Add any details or instructions..."
+                placeholder="Add any details, submission instructions or links..."
               />
             </div>
 
@@ -141,33 +158,134 @@ function DeadlineForm({ heading, subheading, form, onChange, onSubmit, onCancel,
             </div>
           </div>
 
-          <div className="space-y-4">
-            <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100 border-b border-slate-100 dark:border-slate-800/80 pb-2 mt-6">Target Students</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="space-y-1.5">
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Branch</label>
-                <select name="branch" value={form.branch} onChange={onChange} className="input-field cursor-pointer">
-                  <option>Information Technology</option>
-                  <option>Computer Science</option>
-                  <option>Electronics</option>
-                </select>
+          {/* ── Deadline Targeting Section ──────────────────────────────── */}
+          <div className="space-y-4 pt-2">
+            <div className="border-b border-slate-100 dark:border-slate-800/80 pb-2">
+              <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">Target Classes</h2>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                Specify which of your classes should receive this deadline reminder.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {/* Option 1: All My Classes */}
+              <div
+                onClick={() => onTargetTypeChange('all_classes')}
+                className={`p-4 rounded-xl border cursor-pointer transition-all flex items-start gap-3 ${
+                  form.targetType === 'all_classes'
+                    ? 'border-primary-500 bg-primary-50/60 dark:bg-primary-950/40 ring-1 ring-primary-500 shadow-xs'
+                    : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 bg-white dark:bg-[#151C2C]'
+                }`}
+              >
+                <input
+                  type="radio"
+                  id="target-all-classes"
+                  name="targetType"
+                  value="all_classes"
+                  checked={form.targetType === 'all_classes'}
+                  onChange={() => onTargetTypeChange('all_classes')}
+                  className="mt-1 text-primary-600 focus:ring-primary-500 cursor-pointer"
+                />
+                <div>
+                  <label htmlFor="target-all-classes" className="text-sm font-bold text-slate-900 dark:text-slate-100 cursor-pointer block">
+                    All My Classes
+                  </label>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                    Automatically targets all classes you own ({classes.length} {classes.length === 1 ? 'class' : 'classes'}).
+                  </p>
+                </div>
               </div>
-              <div className="space-y-1.5">
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Semester</label>
-                <select name="semester" value={form.semester} onChange={onChange} className="input-field cursor-pointer">
-                  {['Semester 1','Semester 2','Semester 3','Semester 4','Semester 5','Semester 6','Semester 7','Semester 8'].map(s => <option key={s}>{s}</option>)}
-                </select>
-              </div>
-              <div className="space-y-1.5">
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Division</label>
-                <select name="division" value={form.division} onChange={onChange} className="input-field cursor-pointer">
-                  <option>All Divisions</option>
-                  <option>D15A</option>
-                  <option>D15B</option>
-                  <option>D15C</option>
-                </select>
+
+              {/* Option 2: Particular Classes */}
+              <div
+                onClick={() => onTargetTypeChange('particular_classes')}
+                className={`p-4 rounded-xl border cursor-pointer transition-all flex items-start gap-3 ${
+                  form.targetType === 'particular_classes'
+                    ? 'border-primary-500 bg-primary-50/60 dark:bg-primary-950/40 ring-1 ring-primary-500 shadow-xs'
+                    : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 bg-white dark:bg-[#151C2C]'
+                }`}
+              >
+                <input
+                  type="radio"
+                  id="target-particular-classes"
+                  name="targetType"
+                  value="particular_classes"
+                  checked={form.targetType === 'particular_classes'}
+                  onChange={() => onTargetTypeChange('particular_classes')}
+                  className="mt-1 text-primary-600 focus:ring-primary-500 cursor-pointer"
+                />
+                <div>
+                  <label htmlFor="target-particular-classes" className="text-sm font-bold text-slate-900 dark:text-slate-100 cursor-pointer block">
+                    Particular Classes
+                  </label>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                    Select one or more specific classes from your managed classes.
+                  </p>
+                </div>
               </div>
             </div>
+
+            {/* If Particular Classes selected: list classes */}
+            {form.targetType === 'particular_classes' && (
+              <div className="mt-4 p-4 rounded-xl bg-slate-50 dark:bg-[#0E1524] border border-slate-200/80 dark:border-slate-800 space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
+                    Select Target Classes ({form.targetClassIds.length} of {classes.length} selected)
+                  </span>
+                  {classes.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={onSelectAllClasses}
+                      className="text-xs font-semibold text-primary-600 dark:text-primary-400 hover:underline cursor-pointer"
+                    >
+                      {form.targetClassIds.length === classes.length ? 'Deselect All' : 'Select All'}
+                    </button>
+                  )}
+                </div>
+
+                {classes.length === 0 ? (
+                  <p className="text-xs text-amber-600 dark:text-amber-400 py-2">
+                    ⚠️ You haven't created any classes yet. Please create a class first from the "Manage Classes" tab to target particular classes.
+                  </p>
+                ) : (
+                  <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
+                    {classes.map((cls) => {
+                      const isChecked = form.targetClassIds.includes(cls._id);
+                      return (
+                        <label
+                          key={cls._id}
+                          className={`flex items-center gap-3 p-3 rounded-lg border transition-all cursor-pointer ${
+                            isChecked
+                              ? 'bg-white dark:bg-[#151C2C] border-primary-400 dark:border-primary-600 shadow-2xs'
+                              : 'bg-white/60 dark:bg-[#151C2C]/60 border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
+                          }`}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={isChecked}
+                            onChange={() => onClassToggle(cls._id)}
+                            className="w-4 h-4 text-primary-600 rounded border-slate-300 dark:border-slate-700 focus:ring-primary-500 cursor-pointer"
+                          />
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2">
+                              <span className="font-semibold text-sm text-slate-900 dark:text-slate-100 truncate">
+                                {cls.className}
+                              </span>
+                              <span className="font-mono text-xs font-bold text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-950/60 px-1.5 py-0.5 rounded">
+                                {cls.classCode}
+                              </span>
+                            </div>
+                            <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
+                              {cls.subject ? `${cls.subject} • ` : ''}{cls.division || 'All Divisions'} • {cls.semester || 'Semester 5'}
+                            </p>
+                          </div>
+                        </label>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
 
           <div className="pt-4 flex items-center justify-end gap-3 border-t border-slate-100 dark:border-slate-800/80">
@@ -188,6 +306,8 @@ function DeadlineForm({ heading, subheading, form, onChange, onSubmit, onCancel,
 // ── Main page ─────────────────────────────────────────────────────────────────
 export function ManageDeadlinesPage() {
   const { deadlines, addDeadline, updateDeadline, deleteDeadline } = useDeadlines();
+  const { classes } = useClasses();
+
   const [view, setView] = useState('list'); // 'list' | 'add' | 'edit'
   const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState(EMPTY_FORM);
@@ -201,8 +321,43 @@ export function ManageDeadlinesPage() {
     if (formError) setFormError(null);
   };
 
+  const handleTargetTypeChange = (targetType) => {
+    setForm((prev) => ({
+      ...prev,
+      targetType,
+      targetClassIds: targetType === 'all_classes' ? classes.map((c) => c._id) : prev.targetClassIds,
+    }));
+    if (formError) setFormError(null);
+  };
+
+  const handleClassToggle = (classId) => {
+    setForm((prev) => {
+      const exists = prev.targetClassIds.includes(classId);
+      const nextIds = exists
+        ? prev.targetClassIds.filter((id) => id !== classId)
+        : [...prev.targetClassIds, classId];
+      return { ...prev, targetClassIds: nextIds };
+    });
+    if (formError) setFormError(null);
+  };
+
+  const handleSelectAllClasses = () => {
+    setForm((prev) => {
+      const allSelected = prev.targetClassIds.length === classes.length;
+      return {
+        ...prev,
+        targetClassIds: allSelected ? [] : classes.map((c) => c._id),
+      };
+    });
+    if (formError) setFormError(null);
+  };
+
   const openAdd = () => {
-    setForm(EMPTY_FORM);
+    setForm({
+      ...EMPTY_FORM,
+      targetType: 'all_classes',
+      targetClassIds: classes.map((c) => c._id),
+    });
     setFormError(null);
     setView('add');
   };
@@ -221,11 +376,23 @@ export function ManageDeadlinesPage() {
         dateStr = deadline.dueDate.includes('T') ? deadline.dueDate.split('T')[0] : deadline.dueDate;
       }
     }
+
+    let initialTargetIds = [];
+    if (Array.isArray(deadline.targetClassIds) && deadline.targetClassIds.length > 0) {
+      initialTargetIds = deadline.targetClassIds.map((c) => (c._id ? c._id.toString() : c.toString()));
+    } else if (deadline.classId) {
+      initialTargetIds = [deadline.classId._id ? deadline.classId._id.toString() : deadline.classId.toString()];
+    }
+
+    const targetType = deadline.targetType || (initialTargetIds.length > 0 && initialTargetIds.length < classes.length ? 'particular_classes' : 'all_classes');
+
     setForm({
       ...EMPTY_FORM,
       ...deadline,
       dueDate: dateStr,
       dueTime: deadline.dueTime || '23:59',
+      targetType,
+      targetClassIds: initialTargetIds.length > 0 ? initialTargetIds : classes.map((c) => c._id),
     });
     setFormError(null);
     setView('edit');
@@ -248,19 +415,32 @@ export function ManageDeadlinesPage() {
       return;
     }
 
+    if (form.targetType === 'particular_classes' && form.targetClassIds.length === 0) {
+      setFormError('Please select at least one class to target.');
+      return;
+    }
+
     try {
       const [yyyy, mm, dd] = form.dueDate.split('-').map(Number);
       const [hours, mins] = (form.dueTime || '23:59').split(':').map(Number);
       const deadlineDate = new Date(yyyy, mm - 1, dd, hours, mins, 0);
 
+      const targetClassIds =
+        form.targetType === 'all_classes'
+          ? classes.map((c) => c._id)
+          : form.targetClassIds;
+
       await addDeadline({
         ...form,
         dueDate: deadlineDate.toISOString(),
+        targetType: form.targetType,
+        targetClassIds,
       });
       setView('list');
+      setForm(EMPTY_FORM);
       setFormError(null);
     } catch (err) {
-      setFormError(err.message || 'Failed to save deadline');
+      setFormError(err.message || 'Failed to create deadline.');
     }
   };
 
@@ -270,8 +450,9 @@ export function ManageDeadlinesPage() {
       setFormError('Please select a due date.');
       return;
     }
-    if (form.dueDate < todayStr) {
-      setFormError('Due date cannot be in the past. Please select today or a future date.');
+
+    if (form.targetType === 'particular_classes' && form.targetClassIds.length === 0) {
+      setFormError('Please select at least one class to target.');
       return;
     }
 
@@ -280,37 +461,49 @@ export function ManageDeadlinesPage() {
       const [hours, mins] = (form.dueTime || '23:59').split(':').map(Number);
       const deadlineDate = new Date(yyyy, mm - 1, dd, hours, mins, 0);
 
+      const targetClassIds =
+        form.targetType === 'all_classes'
+          ? classes.map((c) => c._id)
+          : form.targetClassIds;
+
       await updateDeadline(editingId, {
         ...form,
         dueDate: deadlineDate.toISOString(),
+        targetType: form.targetType,
+        targetClassIds,
       });
       setView('list');
       setEditingId(null);
+      setForm(EMPTY_FORM);
       setFormError(null);
     } catch (err) {
-      setFormError(err.message || 'Failed to update deadline');
+      setFormError(err.message || 'Failed to update deadline.');
     }
   };
 
   const handleDelete = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this deadline?')) return;
     try {
       await deleteDeadline(id);
     } catch (err) {
-      console.error('Delete deadline error:', err);
+      alert(err.message || 'Failed to delete deadline.');
     }
   };
 
-  // ── Form views ──
   if (view === 'add') {
     return (
       <DeadlineForm
-        heading="Add Deadline"
-        subheading="Create a new academic deadline reminder."
+        heading="Add New Deadline"
+        subheading="Publish a deadline reminder for your classes."
         form={form}
+        classes={classes}
         onChange={handleChange}
+        onTargetTypeChange={handleTargetTypeChange}
+        onClassToggle={handleClassToggle}
+        onSelectAllClasses={handleSelectAllClasses}
         onSubmit={handleAdd}
         onCancel={handleCancel}
-        submitLabel="Save Deadline"
+        submitLabel="Publish Deadline"
         error={formError}
         minDate={todayStr}
       />
@@ -321,65 +514,83 @@ export function ManageDeadlinesPage() {
     return (
       <DeadlineForm
         heading="Edit Deadline"
-        subheading="Update this deadline's details."
+        subheading="Update the details or class targeting for this deadline."
         form={form}
+        classes={classes}
         onChange={handleChange}
+        onTargetTypeChange={handleTargetTypeChange}
+        onClassToggle={handleClassToggle}
+        onSelectAllClasses={handleSelectAllClasses}
         onSubmit={handleEdit}
         onCancel={handleCancel}
-        submitLabel="Update Deadline"
+        submitLabel="Save Changes"
         error={formError}
-        minDate={todayStr}
       />
     );
   }
 
-  // ── List view ──
   const formatDue = (d) => {
-    if (!d.dueDate) return '—';
     const date = new Date(d.dueDate);
-    if (isNaN(date.getTime())) return '—';
+    if (isNaN(date.getTime())) return d.dueDate;
     const datePart = date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
-    
-    let timePart = '';
-    if (d.dueTime && d.dueTime.includes(':')) {
-      const [hours, minutes] = d.dueTime.split(':');
-      const dummyDate = new Date();
-      dummyDate.setHours(parseInt(hours, 10), parseInt(minutes, 10), 0, 0);
-      timePart = dummyDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
-    } else {
+    let timePart = d.dueTime;
+    if (!timePart && date.getHours()) {
       timePart = date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
     }
-    return `${datePart} • ${timePart}`;
+    return `${datePart} • ${timePart || '23:59'}`;
   };
 
-  const formatTarget = (d) =>
-    [d.branch?.split(' ').map(w => w[0]).join(''), d.semester, d.division]
-      .filter(Boolean)
-      .join(' • ');
+  const renderTargetBadge = (d) => {
+    if (d.targetType === 'all_classes') {
+      return (
+        <span className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-0.5 rounded-full bg-primary-50 dark:bg-primary-950/60 text-primary-700 dark:text-primary-300 border border-primary-200/60 dark:border-primary-900/40">
+          <span className="w-1.5 h-1.5 rounded-full bg-primary-500"></span>
+          All My Classes
+        </span>
+      );
+    }
+
+    const count = Array.isArray(d.targetClassIds) ? d.targetClassIds.length : (d.classId ? 1 : 0);
+    let classNames = '';
+    if (Array.isArray(d.targetClassIds) && d.targetClassIds.length > 0) {
+      classNames = d.targetClassIds
+        .map((c) => (c.classCode || c.className || 'Class'))
+        .slice(0, 2)
+        .join(', ');
+      if (d.targetClassIds.length > 2) classNames += ` +${d.targetClassIds.length - 2}`;
+    }
+
+    return (
+      <span className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+        <span className="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+        {count > 0 ? `${count} ${count === 1 ? 'Class' : 'Classes'} (${classNames})` : 'All My Classes'}
+      </span>
+    );
+  };
 
   return (
     <div className="max-w-5xl mx-auto space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-200/80 dark:border-slate-800/80 pb-5">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-slate-100 tracking-tight">Manage Deadlines</h1>
-          <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">Create and manage academic deadline reminders.</p>
+          <p className="text-slate-500 dark:text-slate-400 text-sm mt-0.5">Create and target academic deadlines to all your classes or selected classes.</p>
         </div>
         <button
           onClick={openAdd}
-          className="btn-primary gap-2 shrink-0"
+          className="btn-primary gap-2 shrink-0 cursor-pointer shadow-sm hover:shadow"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="12"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           Add Deadline
         </button>
       </div>
 
       {deadlines.length === 0 ? (
         <div className="card p-12 text-center border-dashed border-slate-300 dark:border-slate-800">
-          <p className="text-slate-500 dark:text-slate-400">No deadlines yet. Click <strong className="text-slate-900 dark:text-slate-100">Add Deadline</strong> to create one.</p>
+          <p className="text-slate-500 dark:text-slate-400">No deadlines created yet. Click <strong className="text-slate-900 dark:text-slate-100">Add Deadline</strong> to publish one.</p>
         </div>
       ) : (
         <>
-          {/* ── Mobile card list (hidden on sm+) ─────────────────────── */}
+          {/* Mobile card list */}
           <div className="sm:hidden space-y-3">
             {deadlines.map((deadline) => (
               <div key={deadline.id || deadline._id} className="card p-4 space-y-3">
@@ -404,16 +615,16 @@ export function ManageDeadlinesPage() {
                     deadline.priority === 'Important' ? 'badge-approaching' :
                     'badge-normal'
                   } text-[11px]`}>{deadline.priority}</span>
+                  {renderTargetBadge(deadline)}
                 </div>
-                <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-500 dark:text-slate-400">
-                  <span><span className="font-medium text-slate-700 dark:text-slate-300">Due:</span> {formatDue(deadline)}</span>
-                  <span><span className="font-medium text-slate-700 dark:text-slate-300">Target:</span> {formatTarget(deadline)}</span>
+                <div className="text-xs text-slate-500 dark:text-slate-400">
+                  <span className="font-medium text-slate-700 dark:text-slate-300">Due:</span> {formatDue(deadline)}
                 </div>
               </div>
             ))}
           </div>
 
-          {/* ── Desktop table (hidden below sm) ──────────────────────── */}
+          {/* Desktop table */}
           <div className="card overflow-hidden hidden sm:block">
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
@@ -422,13 +633,13 @@ export function ManageDeadlinesPage() {
                     <th className="p-4">Subject &amp; Title</th>
                     <th className="p-4">Type &amp; Priority</th>
                     <th className="p-4">Due Date</th>
-                    <th className="p-4">Target</th>
+                    <th className="p-4">Targeting</th>
                     <th className="p-4 text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 dark:divide-slate-800/70">
                   {deadlines.map((deadline) => (
-                    <tr key={deadline.id} className="hover:bg-slate-50/70 dark:hover:bg-slate-800/40 transition-colors group">
+                    <tr key={deadline.id || deadline._id} className="hover:bg-slate-50/70 dark:hover:bg-slate-800/40 transition-colors group">
                       <td className="p-4">
                         <p className="font-bold text-slate-900 dark:text-slate-100">{deadline.subject}</p>
                         <p className="text-sm text-slate-500 dark:text-slate-400 mt-0.5">{deadline.title}</p>
@@ -448,14 +659,14 @@ export function ManageDeadlinesPage() {
                         <p className="text-xs text-slate-500 dark:text-slate-400">{formatDue(deadline).split(' • ')[1]}</p>
                       </td>
                       <td className="p-4">
-                        <p className="text-sm text-slate-600 dark:text-slate-400">{formatTarget(deadline)}</p>
+                        {renderTargetBadge(deadline)}
                       </td>
                       <td className="p-4 text-right">
                         <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                           <button onClick={() => openEdit(deadline)} className="p-1.5 text-slate-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-950/50 rounded-lg transition-colors cursor-pointer" title="Edit">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
                           </button>
-                          <button onClick={() => handleDelete(deadline.id)} className="p-1.5 text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/50 rounded-lg transition-colors cursor-pointer" title="Delete">
+                          <button onClick={() => handleDelete(deadline.id || deadline._id)} className="p-1.5 text-slate-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/50 rounded-lg transition-colors cursor-pointer" title="Delete">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
                           </button>
                         </div>
@@ -472,3 +683,4 @@ export function ManageDeadlinesPage() {
   );
 }
 
+export default ManageDeadlinesPage;

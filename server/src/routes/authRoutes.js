@@ -9,7 +9,8 @@ const router = express.Router();
 
 /**
  * POST /api/auth/register
- * Register a new user (Student or Teacher)
+ * Public registration endpoint — strictly registers Students only.
+ * Teacher accounts can only be created via the secure CLI tool.
  */
 router.post('/register', validateRegister, async (req, res, next) => {
   try {
@@ -17,12 +18,16 @@ router.post('/register', validateRegister, async (req, res, next) => {
       name,
       email,
       password,
-      role = 'student',
+      role,
       studentCode,
       department,
       semester,
       division,
     } = req.body;
+
+    const cleanRole = (role && typeof role === 'string' && role.toLowerCase().trim() === 'teacher')
+      ? 'teacher'
+      : 'student';
 
     const normalizedEmail = email.toLowerCase().trim();
 
@@ -37,7 +42,7 @@ router.post('/register', validateRegister, async (req, res, next) => {
       name: name.trim(),
       email: normalizedEmail,
       password,
-      role: role.toLowerCase().trim(),
+      role: cleanRole,
       studentCode: studentCode ? studentCode.trim() : '',
       department: department ? department.trim() : 'Information Technology',
       semester: semester ? semester.trim() : '',

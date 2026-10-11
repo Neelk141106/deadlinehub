@@ -57,11 +57,11 @@ const validateObjectId = (req, res, next) => {
 
 /**
  * POST /api/classes
- * Teacher creates a new class
+  * Teacher creates a new class
  */
 router.post('/', requireRole('teacher'), async (req, res, next) => {
   try {
-    const { className, subject, semester, division, classCode: customCode } = req.body;
+    const { className, subject, department, academicYear, semester, division, classCode: customCode } = req.body;
 
     if (!className || typeof className !== 'string' || !className.trim()) {
       return next(new AppError('Class name is required', 400));
@@ -81,6 +81,8 @@ router.post('/', requireRole('teacher'), async (req, res, next) => {
     const newClass = new Class({
       className: className.trim(),
       subject: subject ? subject.trim() : '',
+      department: department ? department.trim() : 'Information Technology',
+      academicYear: academicYear ? academicYear.trim() : '',
       semester: semester ? semester.trim() : '',
       division: division ? division.trim() : '',
       classCode: finalClassCode,
@@ -103,6 +105,56 @@ router.post('/', requireRole('teacher'), async (req, res, next) => {
       success: true,
       message: 'Class created successfully',
       class: savedClass,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * PUT /api/classes/:id
+ * Teacher updates an existing class they own
+ */
+router.put('/:id', validateObjectId, requireRole('teacher'), async (req, res, next) => {
+  try {
+    const classDoc = await Class.findById(req.params.id);
+
+    if (!classDoc) {
+      return next(new AppError('Class not found', 404));
+    }
+
+    if (classDoc.teacherId.toString() !== req.user.id) {
+      return next(new AppError('Forbidden: you can only edit classes you own', 403));
+    }
+
+    const { className, subject, department, academicYear, semester, division } = req.body;
+
+    if (className !== undefined) {
+      if (!className || typeof className !== 'string' || !className.trim()) {
+        return next(new AppError('Class name cannot be empty', 400));
+      }
+      classDoc.className = className.trim();
+    }
+
+    if (subject !== undefined) classDoc.subject = subject ? subject.trim() : '';
+    if (department !== undefined) classDoc.department = department ? department.trim() : 'Information Technology';
+    if (academicYear !== undefined) classDoc.academicYear = academicYear ? academicYear.trim() : '';
+    if (semester !== undefined) classDoc.semester = semester ? semester.trim() : '';
+    if (division !== undefined) classDoc.division = division ? division.trim() : '';
+
+    const updatedClass = await classDoc.save();
+    await updatedClass.populate('teacherId', 'name email department');
+    await updatedClass.populate('students', 'name email studentCode department semester division');
+
+    const io = req.app.get('io');
+    if (io) {
+      io.emit('class:updated', updatedClass);
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Class updated successfully',
+      class: updatedClass,
     });
   } catch (error) {
     next(error);

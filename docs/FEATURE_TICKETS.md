@@ -983,5 +983,39 @@ Status: DONE
 - Updated `src/components/JoinClass.jsx` to execute real-time code verification against backend API
 - Verified clean build (`npm run build`, 0 errors) and automated testing
 
+### CM-004 — Deadline & Announcement Targeting (All My Classes vs Particular Classes)
+Status: DONE
+
+- Implemented `targetType` ('all_classes' | 'particular_classes') and `targetClassIds` on `Deadline` and `Announcement` schemas with full backward compatibility with `classId`
+- Added `department` and `academicYear` to `Class` model and edit capability (`PUT /api/classes/:id`) for teacher class owners
+- Enforced server-side class ownership validation: teachers can only target classes they own; attempts to inject unauthorized class IDs are rejected with HTTP 403 Forbidden
+- Role-scoped GET endpoints:
+  * Teachers view their created deadlines/announcements and targeted classes
+  * Students only receive deadlines/announcements for classes they have enrolled in
+  * Zero-leak guarantee: unenrolled students receive empty results, and direct unauthorized item requests return HTTP 403 Forbidden
+- Updated `ManageDeadlinesPage.jsx` and `ManageAnnouncementsPage.jsx` with toggle between "All My Classes" and "Particular Classes" with multi-select checkboxes
+- Clear targeting badges rendered across desktop and mobile cards
+- Socket.IO authorized rooms (`class:<classId>`) ensure real-time events reach only relevant class members
+
+### CM-005 — Security Hardening, Verification & Test Suite
+Status: DONE
+
+- Interactive CLI teacher account creation script (`npm run create-teacher` / `server/scripts/createTeacher.js`) with hidden password entry, bcrypt hashing, and duplicate-email prevention
+- Built comprehensive automated test suite (`server/scripts/testSuite.js`) containing 38 unit & security tests (`npm test` passes 38/38)
+- Built live end-to-end integration test suite (`server/scripts/testE2E.js`) executing 18 tests against live database and Express server (`npm run test:e2e` passes 18/18)
+- Production build passes with 0 errors (`npm run build`)
+
+### CM-006 — Public Teacher Registration & Dynamic CORS Configuration
+Status: DONE
+
+- Implemented open Teacher Registration in UI via `TeacherRegistration.jsx` with input validation (name, college email, department, password, confirm password)
+- Added "New teacher? Create Teacher Account" link on `TeacherLogin.jsx`
+- Wired `teacherRegistration` view route in `App2.jsx` with full seamless transitions
+- Updated backend registration in `server/src/routes/authRoutes.js` and `server/src/middleware/validate.js` to support open teacher registration with role="teacher", while preventing role elevation on existing accounts
+- Resolved "Failed to fetch" login bug by implementing dynamic regex-based origin CORS matching in `server/src/server.js` (supporting all localhost ports) and explicit OPTIONS handling
+- Retained administrative CLI teacher creation script (`npm run create-teacher`)
+- Updated and verified all test suites (`testSuite.js` and `testE2E.js`): 56/56 passing tests (100% pass rate)
+
+
 
 

@@ -69,17 +69,25 @@ export function ClassProvider({ children }) {
       );
     };
 
+    const handleClassUpdated = (updatedClass) => {
+      setClasses((prev) =>
+        prev.map((c) => (c._id === updatedClass._id ? updatedClass : c))
+      );
+    };
+
     const handleClassDeleted = ({ _id }) => {
       setClasses((prev) => prev.filter((c) => c._id !== _id));
       setSelectedClassId((current) => (current === _id ? null : current));
     };
 
     socket.on('class:created', handleClassCreated);
+    socket.on('class:updated', handleClassUpdated);
     socket.on('class:student-joined', handleStudentJoined);
     socket.on('class:deleted', handleClassDeleted);
 
     return () => {
       socket.off('class:created', handleClassCreated);
+      socket.off('class:updated', handleClassUpdated);
       socket.off('class:student-joined', handleStudentJoined);
       socket.off('class:deleted', handleClassDeleted);
     };
@@ -121,6 +129,21 @@ export function ClassProvider({ children }) {
     }
   };
 
+  const updateClass = async (id, classData) => {
+    setError(null);
+    try {
+      const res = await classApi.update(id, classData);
+      if (res && res.class) {
+        setClasses((prev) => prev.map((c) => (c._id === id ? res.class : c)));
+        return res.class;
+      }
+      throw new Error(res.message || 'Failed to update class');
+    } catch (err) {
+      setError(err.message);
+      throw err;
+    }
+  };
+
   const deleteClass = async (id) => {
     setError(null);
     try {
@@ -145,6 +168,7 @@ export function ClassProvider({ children }) {
         error,
         fetchClasses,
         createClass,
+        updateClass,
         joinClass,
         deleteClass,
       }}

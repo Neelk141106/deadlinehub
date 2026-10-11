@@ -53,7 +53,11 @@ export function StudentDashboard() {
   const filteredDeadlines = useMemo(() => {
     if (!selectedClassId) return deadlines;
     return deadlines.filter((d) => {
-      if (d.classId === selectedClassId) return true;
+      const directMatch = d.classId === selectedClassId || (d.classId?._id && d.classId._id === selectedClassId);
+      if (directMatch) return true;
+      if (Array.isArray(d.targetClassIds) && d.targetClassIds.some((c) => (c._id || c).toString() === selectedClassId.toString())) {
+        return true;
+      }
       if (activeClass) {
         if (d.division && activeClass.division && d.division.toLowerCase() === activeClass.division.toLowerCase()) {
           return true;
@@ -67,7 +71,11 @@ export function StudentDashboard() {
   const filteredAnnouncements = useMemo(() => {
     if (!selectedClassId) return announcements;
     return announcements.filter((a) => {
-      if (a.classId === selectedClassId) return true;
+      const directMatch = a.classId === selectedClassId || (a.classId?._id && a.classId._id === selectedClassId);
+      if (directMatch) return true;
+      if (Array.isArray(a.targetClassIds) && a.targetClassIds.some((c) => (c._id || c).toString() === selectedClassId.toString())) {
+        return true;
+      }
       if (activeClass) {
         if (a.division && activeClass.division && a.division.toLowerCase() === activeClass.division.toLowerCase()) {
           return true;

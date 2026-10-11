@@ -209,6 +209,15 @@ export const classApi = {
     return handleResponse(res);
   },
 
+  async update(id, classData) {
+    const res = await fetch(`${API_BASE_URL}/classes/${id}`, {
+      method: 'PUT',
+      headers: getAuthHeaders(true),
+      body: JSON.stringify(classData),
+    });
+    return handleResponse(res);
+  },
+
   async delete(id) {
     const res = await fetch(`${API_BASE_URL}/classes/${id}`, {
       method: 'DELETE',

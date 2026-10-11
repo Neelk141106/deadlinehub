@@ -7,6 +7,7 @@ import { WelcomeScreen } from './components/WelcomeScreen';
 import { StudentLogin } from './components/StudentLogin';
 import { StudentRegistration } from './components/StudentRegistration';
 import { TeacherLogin } from './components/TeacherLogin';
+import { TeacherRegistration } from './components/TeacherRegistration';
 import { JoinClass } from './components/JoinClass';
 import { ClassesPage } from './components/ClassesPage';
 import { JoinRequestsPage } from './components/JoinRequestsPage';
@@ -90,6 +91,15 @@ function App() {
         setCurrentView('app');
       }} 
       onBack={() => setCurrentView('welcome')} 
+      onRegisterClick={() => setCurrentView('teacherRegistration')}
+    />;
+  }
+
+  if (currentView === 'teacherRegistration') {
+    return <TeacherRegistration
+      onRegister={() => setCurrentView('teacherLogin')}
+      onLoginClick={() => setCurrentView('teacherLogin')}
+      onBack={() => setCurrentView('teacherLogin')}
     />;
   }
 
