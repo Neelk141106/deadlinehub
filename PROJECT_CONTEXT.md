@@ -478,7 +478,7 @@ The application is an end-to-end full stack college deadline and announcement pl
 ## Not Implemented Yet (Future Enhancements)
 
 - Teacher/Admin advanced analytics dashboard
-- CI/CD & Deployment (Experiment 9)
+- Cloud Production Deployment
 - Docker Containerization (Experiment 10)
 
 ---
@@ -644,3 +644,19 @@ Experiments 1 through 8, Public Teacher Registration, Dynamic CORS handling with
   * Student Dashboard opened cleanly: greeting displayed, summary cards rendered, and enrolled class "Cloud Architecture" (`A-6`) visible.
   * Clicked "Open Class" on "Cloud Architecture": class workspace opened smoothly with Overview, Deadlines, Announcements, and Students tabs fully accessible.
   * Browser recording saved: `student_dashboard_verify_1792345330776.webp`.
+
+### Experiment 9 — Continuous Integration (GitHub Actions) — COMPLETED ✅
+
+#### 1. Implementation Overview
+- Configured `.github/workflows/ci.yml` providing full automated testing and build verification on push and pull requests targeting `main`.
+- **Frontend Job (`frontend`)**:
+  * Runs on `ubuntu-latest` with Node.js 20 and npm cache.
+  * `npm ci` installs clean dependencies.
+  * `npm run lint` executes `oxlint` with 0 errors.
+  * `npm run build` compiles production assets via Vite with 0 errors.
+- **Backend Job (`backend`)**:
+  * Runs on `ubuntu-latest` with Node.js 20, server package-lock caching, and a managed MongoDB 6 service container (`mongo:6` on port `27017:27017`) with health checks.
+  * `npm test` runs 112 unit & security tests with 100% pass rate.
+  * `npm run test:e2e` executes 53 live integration tests against the MongoDB container (`mongodb://127.0.0.1:27017/deadlinehub_ci`) with 100% pass rate.
+- **Concurrency Guard**:
+  * Automatically cancels in-progress runs when new commits are pushed to the same branch.

@@ -1100,3 +1100,29 @@ Status: DONE
 - Extended test coverage in `server/scripts/testSuite.js` (94/94 tests passing, 100%)
 - Verified live integration in `server/scripts/testE2E.js` (53/53 tests passing, 100%)
 - Validated production build (`npm run build`, 81 modules transformed, 0 errors)
+
+---
+
+# Experiment 9 — Continuous Integration (GitHub Actions)
+
+## Goal
+
+Automate linting, testing, and building on every push and pull request via a GitHub Actions CI pipeline.
+
+---
+
+### E9-001 — Save Existing Code Checkpoint & GitHub Push
+Status: DONE
+
+- Audited git status, diff stats, branch (`main`), and remote (`origin`).
+- Verified that all `.env` files, credentials, secrets, node_modules, and build artifacts remain strictly excluded.
+- Validated application with `git diff --check`, `npm run build`, `npm test` (112/112 passed), and `npm run test:e2e` (53/53 passed).
+- Created checkpoint commit `Save DeadlineHub class management and navigation updates` and pushed cleanly to GitHub `origin/main`.
+
+### E9-002 — Configure GitHub Actions CI Workflow
+Status: DONE
+
+- Created `.github/workflows/ci.yml` defining an automated CI pipeline on push and pull requests targeting `main`.
+- Frontend Job: Ubuntu runner, Node.js 20, npm caching, `npm ci`, `oxlint` linting, and `vite build`.
+- Backend Job: Ubuntu runner with MongoDB 6 service container (`mongo:6` on port 27017), Node.js 20, server npm caching, `npm test` (112 unit & security tests), and `npm run test:e2e` (53 live integration tests against MongoDB container).
+- Concurrency management enabled to cancel redundant in-progress runs on new pushes.
