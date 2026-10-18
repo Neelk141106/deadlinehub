@@ -6,7 +6,8 @@ export function DeadlineCard({
   dueDate,
   subject,
   title,
-  priority
+  priority,
+  classLabel,
 }) {
   const { text: urgencyText, variant: urgencyVariant } = useDeadlineUrgency(dueDate);
   
@@ -25,9 +26,14 @@ export function DeadlineCard({
   return (
     <div className={`card-hover p-4 sm:p-5 border-l-4 ${borderColorClass}`}>
       <div className="flex flex-col gap-3">
-        {/* 1. Urgency */}
-        <div>
+        {/* 1. Urgency & Class Label */}
+        <div className="flex items-center justify-between gap-2 flex-wrap">
           <Badge variant={urgencyVariant}>{urgencyText}</Badge>
+          {classLabel && (
+            <span className="inline-flex items-center text-[11px] font-semibold px-2 py-0.5 rounded-full bg-primary-50 dark:bg-primary-950/60 text-primary-700 dark:text-primary-300 border border-primary-200/60 dark:border-primary-900/40 truncate max-w-[200px]" title={classLabel}>
+              📚 {classLabel}
+            </span>
+          )}
         </div>
         
         {/* 2 & 3. Subject and Title */}

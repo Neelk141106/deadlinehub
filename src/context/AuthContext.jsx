@@ -45,6 +45,15 @@ export function AuthProvider({ children }) {
     };
 
     initAuth();
+
+    const handleUnauthorized = () => {
+      logout();
+    };
+
+    window.addEventListener('deadlinehub:unauthorized', handleUnauthorized);
+    return () => {
+      window.removeEventListener('deadlinehub:unauthorized', handleUnauthorized);
+    };
   }, []);
 
   const login = async (email, password) => {
@@ -68,6 +77,15 @@ export function AuthProvider({ children }) {
   const logout = () => {
     localStorage.removeItem('deadlinehub_token');
     localStorage.removeItem('deadlinehub_user');
+    localStorage.removeItem('deadlinehub_active_tab');
+    localStorage.removeItem('deadlinehub_opened_class_id');
+    localStorage.removeItem('deadlinehub_opened_class_tab');
+    localStorage.removeItem('deadlinehub_selected_class_id');
+    if (typeof window !== 'undefined' && window.location.hash && window.location.hash.startsWith('#/class/')) {
+      try {
+        history.replaceState(null, '', window.location.pathname + window.location.search);
+      } catch (_e) {}
+    }
     setToken(null);
     setUser(null);
     setError(null);

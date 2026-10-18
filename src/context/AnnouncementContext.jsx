@@ -1,73 +1,122 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { announcementApi } from '../api/api';
 import { useSocket } from './SocketContext';
+import { useAuth } from './AuthContext';
 
 const AnnouncementContext = createContext();
 
 export function AnnouncementProvider({ children }) {
+  const { user } = useAuth();
   const [announcements, setAnnouncements] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   const { socket } = useSocket();
 
-  const fetchAnnouncements = async () => {
+  const getCanonicalId = (item) => (item?._id || item?.id || '')?.toString();
+
+  const fetchAnnouncements = useCallback(async () => {
+    if (!user) {
+      setAnnouncements([]);
+      setLoading(false);
+      return;
+    }
     try {
       setLoading(true);
       setError(null);
       const data = await announcementApi.getAll();
-      setAnnouncements(data);
+      const seen = new Set();
+      const unique = [];
+      for (const a of (Array.isArray(data) ? data : [])) {
+        const id = getCanonicalId(a);
+        if (id && !seen.has(id)) {
+          seen.add(id);
+          unique.push(a);
+        } else if (!id) {
+          unique.push(a);
+        }
+      }
+      setAnnouncements(unique);
     } catch (err) {
       console.error('Failed to fetch announcements:', err);
       setError(err.message || 'Failed to load announcements');
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
 
   useEffect(() => {
     fetchAnnouncements();
-  }, []);
+  }, [fetchAnnouncements]);
 
   // Real-time Socket.IO event listeners
   useEffect(() => {
     if (!socket) return;
 
     const handleCreated = (announcement) => {
+      const incomingId = getCanonicalId(announcement);
+      if (!incomingId) return;
+
       setAnnouncements((prev) => {
-        // Deduplicate: skip if this _id is already in state (e.g. initiating teacher tab)
-        const exists = prev.some((a) => a._id === announcement._id);
-        if (exists) return prev;
-        return [announcement, ...prev];
+        const exists = prev.some((a) => getCanonicalId(a) === incomingId);
+        if (exists) {
+          return prev.map((a) => (getCanonicalId(a) === incomingId ? { ...a, ...announcement, id: incomingId } : a));
+        }
+        return [{ ...announcement, id: incomingId }, ...prev];
       });
     };
 
     const handleUpdated = (announcement) => {
+      const incomingId = getCanonicalId(announcement);
       setAnnouncements((prev) =>
-        prev.map((a) => (a._id === announcement._id ? announcement : a))
+        prev.map((a) => (getCanonicalId(a) === incomingId ? { ...a, ...announcement, id: incomingId } : a))
       );
     };
 
     const handleDeleted = ({ _id }) => {
-      setAnnouncements((prev) => prev.filter((a) => a._id !== _id));
+      const deletedId = (_id || '').toString();
+      setAnnouncements((prev) => prev.filter((a) => getCanonicalId(a) !== deletedId));
+    };
+
+    const handleMembershipChanged = () => {
+      fetchAnnouncements();
     };
 
     socket.on('announcement:created', handleCreated);
     socket.on('announcement:updated', handleUpdated);
     socket.on('announcement:deleted', handleDeleted);
+    socket.on('class:student-joined', handleMembershipChanged);
+    socket.on('class:student-left', handleMembershipChanged);
+    socket.on('class:student-removed', handleMembershipChanged);
+    socket.on('class:left', handleMembershipChanged);
+    socket.on('class:deleted', handleMembershipChanged);
+    socket.on('join-request:approved', handleMembershipChanged);
 
     return () => {
       socket.off('announcement:created', handleCreated);
       socket.off('announcement:updated', handleUpdated);
       socket.off('announcement:deleted', handleDeleted);
+      socket.off('class:student-joined', handleMembershipChanged);
+      socket.off('class:student-left', handleMembershipChanged);
+      socket.off('class:student-removed', handleMembershipChanged);
+      socket.off('class:left', handleMembershipChanged);
+      socket.off('class:deleted', handleMembershipChanged);
+      socket.off('join-request:approved', handleMembershipChanged);
     };
   }, [socket]);
 
   const addAnnouncement = async (newAnnouncement) => {
     try {
       const created = await announcementApi.create(newAnnouncement);
-      // Add to local state immediately (socket will deduplicate)
-      setAnnouncements((prev) => [created, ...prev]);
+      const createdId = getCanonicalId(created);
+      setAnnouncements((prev) => {
+        if (!createdId) return [created, ...prev];
+        const exists = prev.some((a) => getCanonicalId(a) === createdId);
+        if (exists) {
+          return prev.map((a) => (getCanonicalId(a) === createdId ? created : a));
+        }
+        return [created, ...prev];
+      });
       return created;
     } catch (err) {
       console.error('Failed to add announcement:', err);
@@ -79,8 +128,9 @@ export function AnnouncementProvider({ children }) {
   const updateAnnouncement = async (id, updatedFields) => {
     try {
       const updated = await announcementApi.update(id, updatedFields);
+      const updatedId = (id || '').toString();
       setAnnouncements((prev) =>
-        prev.map((a) => (a.id === id || a._id === id ? updated : a))
+        prev.map((a) => (getCanonicalId(a) === updatedId ? updated : a))
       );
       return updated;
     } catch (err) {
@@ -93,7 +143,8 @@ export function AnnouncementProvider({ children }) {
   const deleteAnnouncement = async (id) => {
     try {
       await announcementApi.delete(id);
-      setAnnouncements((prev) => prev.filter((a) => a.id !== id && a._id !== id));
+      const deleteId = (id || '').toString();
+      setAnnouncements((prev) => prev.filter((a) => getCanonicalId(a) !== deleteId));
     } catch (err) {
       console.error('Failed to delete announcement:', err);
       setError(err.message);

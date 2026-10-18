@@ -5,6 +5,7 @@ const Class = require('../models/Class');
 const AppError = require('../utils/AppError');
 const { validateObjectId, validateAnnouncement } = require('../middleware/validate');
 const requireRole = require('../middleware/roleMiddleware');
+const { createNotificationsForTargetClasses } = require('../services/notificationService');
 
 const router = express.Router();
 
@@ -25,10 +26,14 @@ router.get('/', async (req, res, next) => {
         if (!mongoose.Types.ObjectId.isValid(classId)) {
           return next(new AppError('Invalid class ID format', 400));
         }
+        const targetClass = await Class.findById(classId);
+        const teacherOwnerId = (targetClass?.teacherId?._id || targetClass?.teacherId)?.toString();
+
         filter = {
           $or: [
             { targetClassIds: classId },
             { classId: classId },
+            ...(teacherOwnerId ? [{ targetType: 'all_classes', createdBy: teacherOwnerId }] : []),
           ],
         };
       } else {
@@ -71,10 +76,14 @@ router.get('/', async (req, res, next) => {
         return next(new AppError('Forbidden: you are not enrolled in this class', 403));
       }
 
+      const targetClass = await Class.findById(classId);
+      const teacherOwnerId = (targetClass?.teacherId?._id || targetClass?.teacherId)?.toString();
+
       const announcements = await Announcement.find({
         $or: [
           { targetClassIds: classId },
           { classId: classId },
+          ...(teacherOwnerId ? [{ targetType: 'all_classes', createdBy: teacherOwnerId }] : []),
         ],
       })
         .populate('targetClassIds', 'className subject classCode division semester')
@@ -187,15 +196,26 @@ router.post('/', requireRole('teacher'), validateAnnouncement(false), async (req
     await savedAnnouncement.populate('targetClassIds', 'className subject classCode division semester');
     await savedAnnouncement.populate('classId', 'className subject classCode');
 
-    // Broadcast real-time Socket.IO event
+    // Broadcast real-time Socket.IO event to union of rooms (deduplicates delivery across rooms)
     const io = req.app.get('io');
     if (io) {
-      targetClassIds.forEach((cId) => {
-        io.to(`class:${cId}`).emit('announcement:created', savedAnnouncement);
-      });
-      io.to(`user:${req.user.id}`).emit('announcement:created', savedAnnouncement);
-      io.emit('announcement:created', savedAnnouncement);
+      const rooms = new Set();
+      targetClassIds.forEach((cId) => rooms.add(`class:${cId.toString()}`));
+      rooms.add(`user:${req.user.id.toString()}`);
+      io.to(Array.from(rooms)).emit('announcement:created', savedAnnouncement);
     }
+
+    // Generate persistent in-app notifications for enrolled students in targeted classes
+    await createNotificationsForTargetClasses({
+      senderId: req.user.id,
+      type: 'announcement_created',
+      title: `New Announcement: ${savedAnnouncement.title}`,
+      message: (savedAnnouncement.message || '').slice(0, 120),
+      relatedResource: 'announcement',
+      relatedResourceId: savedAnnouncement._id,
+      targetClassIds,
+      io,
+    });
 
     res.status(201).json(savedAnnouncement);
   } catch (error) {
@@ -318,14 +338,28 @@ router.put('/:id', validateObjectId, requireRole('teacher'), validateAnnouncemen
 
     const io = req.app.get('io');
     if (io) {
+      const rooms = new Set();
       const targetIds = updatedAnnouncement.targetClassIds || [];
       targetIds.forEach((c) => {
         const cId = c._id ? c._id.toString() : c.toString();
-        io.to(`class:${cId}`).emit('announcement:updated', updatedAnnouncement);
+        rooms.add(`class:${cId}`);
       });
-      io.to(`user:${req.user.id}`).emit('announcement:updated', updatedAnnouncement);
-      io.emit('announcement:updated', updatedAnnouncement);
+      rooms.add(`user:${req.user.id.toString()}`);
+      io.to(Array.from(rooms)).emit('announcement:updated', updatedAnnouncement);
     }
+
+    // Generate persistent in-app notifications for enrolled students
+    const targetIdsForNotif = (updatedAnnouncement.targetClassIds || []).map((c) => (c._id ? c._id : c));
+    await createNotificationsForTargetClasses({
+      senderId: req.user.id,
+      type: 'announcement_updated',
+      title: `Announcement Updated: ${updatedAnnouncement.title}`,
+      message: (updatedAnnouncement.message || '').slice(0, 120),
+      relatedResource: 'announcement',
+      relatedResourceId: updatedAnnouncement._id,
+      targetClassIds: targetIdsForNotif,
+      io,
+    });
 
     res.status(200).json(updatedAnnouncement);
   } catch (error) {
@@ -354,12 +388,13 @@ router.delete('/:id', validateObjectId, requireRole('teacher'), async (req, res,
 
     const io = req.app.get('io');
     if (io) {
+      const rooms = new Set();
       const targetIds = announcement.targetClassIds || [];
       targetIds.forEach((cId) => {
-        io.to(`class:${cId}`).emit('announcement:deleted', { _id: id });
+        rooms.add(`class:${cId.toString()}`);
       });
-      io.to(`user:${req.user.id}`).emit('announcement:deleted', { _id: id });
-      io.emit('announcement:deleted', { _id: id });
+      rooms.add(`user:${req.user.id.toString()}`);
+      io.to(Array.from(rooms)).emit('announcement:deleted', { _id: id });
     }
 
     res.status(200).json({

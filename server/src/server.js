@@ -1,4 +1,8 @@
 require('dotenv').config();
+const dns = require('dns');
+if (typeof dns.setDefaultResultOrder === 'function') {
+  dns.setDefaultResultOrder('ipv4first');
+}
 const http = require('http');
 const express = require('express');
 const cors = require('cors');
@@ -9,6 +13,9 @@ const deadlineRoutes = require('./routes/deadlineRoutes');
 const announcementRoutes = require('./routes/announcementRoutes');
 const authRoutes = require('./routes/authRoutes');
 const classRoutes = require('./routes/classRoutes');
+const notificationRoutes = require('./routes/notificationRoutes');
+const joinRequestRoutes = require('./routes/joinRequestRoutes');
+const { checkUpcomingDeadlineReminders } = require('./services/notificationService');
 const authMiddleware = require('./middleware/authMiddleware');
 const errorHandler = require('./middleware/errorHandler');
 const AppError = require('./utils/AppError');
@@ -54,7 +61,7 @@ const corsOptions = {
       callback(new AppError('Not allowed by CORS policy', 403));
     }
   },
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true,
 };
@@ -74,7 +81,7 @@ const io = new Server(httpServer, {
         callback(new Error('Not allowed by CORS'));
       }
     },
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
     credentials: true,
   },
 });
@@ -174,6 +181,8 @@ app.use('/api/auth', authRoutes);
 app.use('/api/classes', authMiddleware, classRoutes);
 app.use('/api/deadlines', authMiddleware, deadlineRoutes);
 app.use('/api/announcements', authMiddleware, announcementRoutes);
+app.use('/api/notifications', authMiddleware, notificationRoutes);
+app.use('/api/join-requests', authMiddleware, joinRequestRoutes);
 
 // 404 Handler for Unmatched Routes
 app.use((req, res, next) => {
@@ -186,6 +195,42 @@ app.use(errorHandler);
 // Port configuration
 const PORT = process.env.PORT || 5000;
 
+let reminderInterval = null;
+
+// Graceful EADDRINUSE and startup error handling
+httpServer.on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    console.error(`\n[Server Error] Port ${PORT} is already in use by another process.`);
+    console.error(`[Server Error] Please stop any existing instance running on port ${PORT} or configure a different PORT.\n`);
+    process.exit(1);
+  } else {
+    console.error('\n[Server Error] Server failed to start:', err.message, '\n');
+    process.exit(1);
+  }
+});
+
+// Graceful process termination
+const gracefulShutdown = async (signal) => {
+  console.log(`\n[Server] Received ${signal}. Shutting down gracefully...`);
+  if (reminderInterval) {
+    clearInterval(reminderInterval);
+  }
+  httpServer.close(async () => {
+    console.log('[Server] HTTP and WebSocket server closed.');
+    try {
+      await mongoose.connection.close();
+      console.log('[Server] MongoDB connection closed.');
+    } catch (err) {
+      console.error('[Server] Error closing database connection:', err.message);
+    }
+    process.exit(0);
+  });
+};
+
+process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+process.once('SIGUSR2', () => gracefulShutdown('SIGUSR2'));
+
 // Connect to Database and Start Server
 const startServer = async () => {
   await connectDB();
@@ -193,6 +238,24 @@ const startServer = async () => {
   httpServer.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
     console.log(`[Socket.IO] WebSocket server ready on port ${PORT}`);
+
+    // Initial check for upcoming 24h deadline reminders
+    checkUpcomingDeadlineReminders(io).catch((err) => {
+      console.error('[NotificationService] Initial reminder check error:', err.message);
+    });
+
+    // Run scheduled reminder check every 5 minutes
+    const REMINDER_INTERVAL_MS = 5 * 60 * 1000;
+    reminderInterval = setInterval(() => {
+      checkUpcomingDeadlineReminders(io).catch((err) => {
+        console.error('[NotificationService] Periodic reminder check error:', err.message);
+      });
+    }, REMINDER_INTERVAL_MS);
+
+    // unref allows clean process exit if all other events complete
+    if (reminderInterval.unref) {
+      reminderInterval.unref();
+    }
   });
 };
 

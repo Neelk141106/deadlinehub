@@ -8,7 +8,8 @@ export function AnnouncementCard({
   title,
   message,
   postedBy,
-  postedTime
+  postedTime,
+  classLabel,
 }) {
   const borderColors = {
     urgent: 'border-l-red-500',
@@ -21,9 +22,16 @@ export function AnnouncementCard({
 
   return (
     <div className={`card-hover p-4 sm:p-5 border-l-4 ${borderColorClass} flex flex-col gap-3 relative`}>
-      {/* 1. Priority / Category & 6. Pinned Indicator */}
-      <div className="flex items-center justify-between">
-        <Badge variant={badgeVariant}>{priorityText}</Badge>
+      {/* 1. Priority / Category & 6. Pinned Indicator & Class Label */}
+      <div className="flex items-center justify-between gap-2 flex-wrap">
+        <div className="flex items-center gap-2">
+          <Badge variant={badgeVariant}>{priorityText}</Badge>
+          {classLabel && (
+            <span className="inline-flex items-center text-[11px] font-semibold px-2 py-0.5 rounded-full bg-primary-50 dark:bg-primary-950/60 text-primary-700 dark:text-primary-300 border border-primary-200/60 dark:border-primary-900/40 truncate max-w-[200px]" title={classLabel}>
+              📢 {classLabel}
+            </span>
+          )}
+        </div>
         {isPinned && (
           <div className="flex items-center gap-1.5 text-xs font-bold text-primary-600 dark:text-primary-400" title="Pinned Announcement">
             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M16 9V4l1-2H7L8 4v5c0 1.12-.42 2.15-1.11 2.98l-1.63 1.96C4.69 14.62 5.11 16 6 16h5v6l1 2 1-2v-6h5c.89 0 1.31-1.38.74-2.06l-1.63-1.96C16.42 11.15 16 10.12 16 9z"/></svg>

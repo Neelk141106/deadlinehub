@@ -10,7 +10,7 @@ export function TeacherLogin({ onLogin, onBack, onRegisterClick }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const { login } = useAuth();
+  const { login, logout } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -24,6 +24,11 @@ export function TeacherLogin({ onLogin, onBack, onRegisterClick }) {
     setLoading(true);
     try {
       const user = await login(email.trim(), password);
+      if (user.role && user.role !== 'teacher') {
+        logout();
+        setError(`This account is registered as a ${user.role.toUpperCase()}. Please use Student Login to sign in.`);
+        return;
+      }
       onLogin(user);
     } catch (err) {
       setError(err.message || 'Invalid email or password');

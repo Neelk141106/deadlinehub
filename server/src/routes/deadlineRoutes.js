@@ -5,6 +5,7 @@ const Class = require('../models/Class');
 const AppError = require('../utils/AppError');
 const { validateObjectId, validateDeadline } = require('../middleware/validate');
 const requireRole = require('../middleware/roleMiddleware');
+const { createNotificationsForTargetClasses } = require('../services/notificationService');
 
 const router = express.Router();
 
@@ -26,10 +27,14 @@ router.get('/', async (req, res, next) => {
         if (!mongoose.Types.ObjectId.isValid(classId)) {
           return next(new AppError('Invalid class ID format', 400));
         }
+        const targetClass = await Class.findById(classId);
+        const teacherOwnerId = (targetClass?.teacherId?._id || targetClass?.teacherId)?.toString();
+
         filter = {
           $or: [
             { targetClassIds: classId },
             { classId: classId },
+            ...(teacherOwnerId ? [{ targetType: 'all_classes', createdBy: teacherOwnerId }] : []),
           ],
         };
       } else {
@@ -72,10 +77,14 @@ router.get('/', async (req, res, next) => {
         return next(new AppError('Forbidden: you are not enrolled in this class', 403));
       }
 
+      const targetClass = await Class.findById(classId);
+      const teacherOwnerId = (targetClass?.teacherId?._id || targetClass?.teacherId)?.toString();
+
       const deadlines = await Deadline.find({
         $or: [
           { targetClassIds: classId },
           { classId: classId },
+          ...(teacherOwnerId ? [{ targetType: 'all_classes', createdBy: teacherOwnerId }] : []),
         ],
       })
         .populate('targetClassIds', 'className subject classCode division semester')
@@ -179,18 +188,31 @@ router.post('/', requireRole('teacher'), validateDeadline(false), async (req, re
     await savedDeadline.populate('targetClassIds', 'className subject classCode division semester');
     await savedDeadline.populate('classId', 'className subject classCode');
 
-    // Broadcast real-time Socket.IO event
+    // Broadcast real-time Socket.IO event to union of rooms (deduplicates delivery across rooms)
     const io = req.app.get('io');
     if (io) {
-      // Emit to class rooms for targeted delivery
-      targetClassIds.forEach((cId) => {
-        io.to(`class:${cId}`).emit('deadline:created', savedDeadline);
-      });
-      // Also emit to initiating teacher's room
-      io.to(`user:${req.user.id}`).emit('deadline:created', savedDeadline);
-      // General broadcast for fallback compatibility
-      io.emit('deadline:created', savedDeadline);
+      const rooms = new Set();
+      targetClassIds.forEach((cId) => rooms.add(`class:${cId.toString()}`));
+      rooms.add(`user:${req.user.id.toString()}`);
+      io.to(Array.from(rooms)).emit('deadline:created', savedDeadline);
     }
+
+    // Generate persistent in-app notifications for enrolled students in targeted classes
+    const dueFormatted = savedDeadline.dueDate
+      ? new Date(savedDeadline.dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+      : '';
+    const dueTimeFormatted = savedDeadline.dueTime ? ` at ${savedDeadline.dueTime}` : '';
+
+    await createNotificationsForTargetClasses({
+      senderId: req.user.id,
+      type: 'deadline_created',
+      title: `New Deadline: ${savedDeadline.title}`,
+      message: `Due ${dueFormatted}${dueTimeFormatted} for ${savedDeadline.subject || 'your class'}.`,
+      relatedResource: 'deadline',
+      relatedResourceId: savedDeadline._id,
+      targetClassIds,
+      io,
+    });
 
     res.status(201).json(savedDeadline);
   } catch (error) {
@@ -308,14 +330,28 @@ router.put('/:id', validateObjectId, requireRole('teacher'), validateDeadline(tr
 
     const io = req.app.get('io');
     if (io) {
+      const rooms = new Set();
       const targetIds = updatedDeadline.targetClassIds || [];
       targetIds.forEach((c) => {
         const cId = c._id ? c._id.toString() : c.toString();
-        io.to(`class:${cId}`).emit('deadline:updated', updatedDeadline);
+        rooms.add(`class:${cId}`);
       });
-      io.to(`user:${req.user.id}`).emit('deadline:updated', updatedDeadline);
-      io.emit('deadline:updated', updatedDeadline);
+      rooms.add(`user:${req.user.id.toString()}`);
+      io.to(Array.from(rooms)).emit('deadline:updated', updatedDeadline);
     }
+
+    // Generate persistent in-app notifications for enrolled students
+    const targetIdsForNotif = (updatedDeadline.targetClassIds || []).map((c) => (c._id ? c._id : c));
+    await createNotificationsForTargetClasses({
+      senderId: req.user.id,
+      type: 'deadline_updated',
+      title: `Deadline Updated: ${updatedDeadline.title}`,
+      message: `Due date or details were updated for ${updatedDeadline.subject || 'your class'}.`,
+      relatedResource: 'deadline',
+      relatedResourceId: updatedDeadline._id,
+      targetClassIds: targetIdsForNotif,
+      io,
+    });
 
     res.status(200).json(updatedDeadline);
   } catch (error) {
@@ -344,12 +380,13 @@ router.delete('/:id', validateObjectId, requireRole('teacher'), async (req, res,
 
     const io = req.app.get('io');
     if (io) {
+      const rooms = new Set();
       const targetIds = deadline.targetClassIds || [];
       targetIds.forEach((cId) => {
-        io.to(`class:${cId}`).emit('deadline:deleted', { _id: id });
+        rooms.add(`class:${cId.toString()}`);
       });
-      io.to(`user:${req.user.id}`).emit('deadline:deleted', { _id: id });
-      io.emit('deadline:deleted', { _id: id });
+      rooms.add(`user:${req.user.id.toString()}`);
+      io.to(Array.from(rooms)).emit('deadline:deleted', { _id: id });
     }
 
     res.status(200).json({

@@ -2,6 +2,9 @@ const express = require('express');
 const mongoose = require('mongoose');
 const Class = require('../models/Class');
 const User = require('../models/User');
+const Deadline = require('../models/Deadline');
+const Announcement = require('../models/Announcement');
+const JoinRequest = require('../models/JoinRequest');
 const AppError = require('../utils/AppError');
 const requireRole = require('../middleware/roleMiddleware');
 
@@ -61,7 +64,7 @@ const validateObjectId = (req, res, next) => {
  */
 router.post('/', requireRole('teacher'), async (req, res, next) => {
   try {
-    const { className, subject, department, academicYear, semester, division, classCode: customCode } = req.body;
+    const { className, subject, department, academicYear, semester, division, classCode: customCode, requiresApproval } = req.body;
 
     if (!className || typeof className !== 'string' || !className.trim()) {
       return next(new AppError('Class name is required', 400));
@@ -87,6 +90,7 @@ router.post('/', requireRole('teacher'), async (req, res, next) => {
       division: division ? division.trim() : '',
       classCode: finalClassCode,
       teacherId: req.user.id,
+      requiresApproval: requiresApproval !== undefined ? Boolean(requiresApproval) : true,
       students: [],
     });
 
@@ -98,7 +102,7 @@ router.post('/', requireRole('teacher'), async (req, res, next) => {
     // Broadcast real-time Socket.IO event if io is available
     const io = req.app.get('io');
     if (io) {
-      io.emit('class:created', savedClass);
+      io.to(`user:${req.user.id}`).emit('class:created', savedClass);
     }
 
     res.status(201).json({
@@ -127,7 +131,7 @@ router.put('/:id', validateObjectId, requireRole('teacher'), async (req, res, ne
       return next(new AppError('Forbidden: you can only edit classes you own', 403));
     }
 
-    const { className, subject, department, academicYear, semester, division } = req.body;
+    const { className, subject, department, academicYear, semester, division, requiresApproval } = req.body;
 
     if (className !== undefined) {
       if (!className || typeof className !== 'string' || !className.trim()) {
@@ -141,6 +145,7 @@ router.put('/:id', validateObjectId, requireRole('teacher'), async (req, res, ne
     if (academicYear !== undefined) classDoc.academicYear = academicYear ? academicYear.trim() : '';
     if (semester !== undefined) classDoc.semester = semester ? semester.trim() : '';
     if (division !== undefined) classDoc.division = division ? division.trim() : '';
+    if (requiresApproval !== undefined) classDoc.requiresApproval = Boolean(requiresApproval);
 
     const updatedClass = await classDoc.save();
     await updatedClass.populate('teacherId', 'name email department');
@@ -227,6 +232,170 @@ router.get('/:id', validateObjectId, async (req, res, next) => {
 });
 
 /**
+ * GET /api/classes/:id/content
+ * Retrieve class details and scoped deadlines and announcements for this class
+ */
+router.get('/:id/content', validateObjectId, async (req, res, next) => {
+  try {
+    const classDoc = await Class.findById(req.params.id)
+      .populate('teacherId', 'name email department')
+      .populate('students', 'name email studentCode department semester division');
+
+    if (!classDoc) {
+      return next(new AppError('Class not found', 404));
+    }
+
+    const teacherOwnerId = classDoc.teacherId?._id ? classDoc.teacherId._id.toString() : classDoc.teacherId?.toString();
+    const isTeacherOwner = teacherOwnerId === req.user.id;
+    const isEnrolledStudent = classDoc.students && classDoc.students.some((s) => (s._id || s).toString() === req.user.id);
+
+    if (!isTeacherOwner && !isEnrolledStudent) {
+      return next(new AppError('Forbidden: you do not have permission to view content for this class', 403));
+    }
+
+    const deadlineFilter = {
+      $or: [
+        { targetClassIds: classDoc._id },
+        { classId: classDoc._id },
+        { targetType: 'all_classes', createdBy: teacherOwnerId },
+      ],
+    };
+
+    const deadlines = await Deadline.find(deadlineFilter)
+      .populate('targetClassIds', 'className subject classCode division semester')
+      .populate('classId', 'className subject classCode')
+      .sort({ dueDate: 1, createdAt: -1 });
+
+    const announcementFilter = {
+      $or: [
+        { targetClassIds: classDoc._id },
+        { classId: classDoc._id },
+        { targetType: 'all_classes', createdBy: teacherOwnerId },
+      ],
+    };
+
+    const announcements = await Announcement.find(announcementFilter)
+      .populate('targetClassIds', 'className subject classCode division semester')
+      .populate('classId', 'className subject classCode')
+      .sort({ isPinned: -1, postedAt: -1, createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      class: classDoc,
+      deadlines,
+      announcements,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * POST /api/classes/:id/leave
+ * Student leaves a class they are currently enrolled in
+ */
+router.post('/:id/leave', validateObjectId, requireRole('student'), async (req, res, next) => {
+  try {
+    const classDoc = await Class.findById(req.params.id);
+    if (!classDoc) {
+      return next(new AppError('Class not found', 404));
+    }
+
+    const studentIndex = classDoc.students.findIndex((sId) => sId.toString() === req.user.id);
+    if (studentIndex === -1) {
+      return next(new AppError('You are not enrolled in this class', 400));
+    }
+
+    // Remove student from class
+    classDoc.students.splice(studentIndex, 1);
+    await classDoc.save();
+
+    // Clean up any associated join requests so student can cleanly re-request if desired
+    await JoinRequest.deleteMany({ studentId: req.user.id, classId: classDoc._id });
+
+    // Broadcast real-time Socket.IO event
+    const io = req.app.get('io');
+    if (io) {
+      io.to(`class:${classDoc._id.toString()}`).emit('class:student-left', {
+        classId: classDoc._id,
+        studentId: req.user.id,
+      });
+      io.to(`user:${req.user.id}`).emit('class:left', {
+        classId: classDoc._id,
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: `Successfully left ${classDoc.className}`,
+      classId: classDoc._id,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
+ * DELETE /api/classes/:id/students/:studentId
+ * Teacher removes an enrolled student from their class
+ */
+router.delete('/:id/students/:studentId', validateObjectId, requireRole('teacher'), async (req, res, next) => {
+  try {
+    const { id, studentId } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(studentId)) {
+      return next(new AppError('Invalid student ID format', 400));
+    }
+
+    const classDoc = await Class.findById(id);
+    if (!classDoc) {
+      return next(new AppError('Class not found', 404));
+    }
+
+    // Ownership check: only class owner can remove students
+    if (classDoc.teacherId.toString() !== req.user.id) {
+      return next(new AppError('Forbidden: you can only manage students for classes you own', 403));
+    }
+
+    const studentIndex = classDoc.students.findIndex((sId) => sId.toString() === studentId);
+    if (studentIndex === -1) {
+      return next(new AppError('Student is not enrolled in this class', 404));
+    }
+
+    // Remove student from class
+    classDoc.students.splice(studentIndex, 1);
+    await classDoc.save();
+
+    // Clean up any associated join requests
+    await JoinRequest.deleteMany({ studentId, classId: classDoc._id });
+
+    await classDoc.populate('teacherId', 'name email department');
+    await classDoc.populate('students', 'name email studentCode department semester division');
+
+    // Broadcast real-time Socket.IO event
+    const io = req.app.get('io');
+    if (io) {
+      io.to(`class:${classDoc._id.toString()}`).emit('class:student-removed', {
+        classId: classDoc._id,
+        studentId,
+      });
+      io.to(`user:${studentId}`).emit('class:student-removed', {
+        classId: classDoc._id,
+        studentId,
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: 'Student removed from class successfully',
+      class: classDoc,
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+/**
  * POST /api/classes/join
  * Student joins a class using a valid class code
  */
@@ -252,7 +421,48 @@ router.post('/join', requireRole('student'), async (req, res, next) => {
       return next(new AppError('You have already joined this class', 400));
     }
 
-    // Add student to class
+    // Enforce class joining policy: if class requires approval (default), create/update pending JoinRequest
+    if (targetClass.requiresApproval !== false) {
+      let joinRequest = await JoinRequest.findOne({
+        studentId: req.user.id,
+        classId: targetClass._id,
+      });
+
+      if (joinRequest) {
+        if (joinRequest.status === 'pending') {
+          return next(new AppError('A join request for this class is already pending approval', 400));
+        }
+        joinRequest.status = 'pending';
+        await joinRequest.save();
+      } else {
+        joinRequest = new JoinRequest({
+          studentId: req.user.id,
+          classId: targetClass._id,
+          teacherId: targetClass.teacherId,
+          status: 'pending',
+        });
+        await joinRequest.save();
+      }
+
+      await joinRequest.populate('studentId', 'name email studentCode department semester division');
+      await joinRequest.populate('classId', 'className subject classCode division semester department');
+
+      const io = req.app.get('io');
+      if (io) {
+        io.to(`user:${targetClass.teacherId.toString()}`).emit('join-request:created', joinRequest);
+        io.to(`user:${req.user.id}`).emit('join-request:created', joinRequest);
+      }
+
+      return res.status(200).json({
+        success: true,
+        requiresApproval: true,
+        status: 'pending',
+        message: 'Join request submitted. This class requires teacher approval before you can access it.',
+        request: joinRequest,
+      });
+    }
+
+    // Direct Join (only when requiresApproval === false)
     targetClass.students.push(req.user.id);
     await targetClass.save();
 
@@ -265,7 +475,13 @@ router.post('/join', requireRole('student'), async (req, res, next) => {
     // Broadcast real-time event to connected clients
     const io = req.app.get('io');
     if (io) {
-      io.emit('class:student-joined', {
+      io.to(`class:${targetClass._id.toString()}`).emit('class:student-joined', {
+        classId: targetClass._id,
+        classCode: targetClass.classCode,
+        className: targetClass.className,
+        student: studentUser || { _id: req.user.id, name: 'Student' },
+      });
+      io.to(`user:${req.user.id}`).emit('class:student-joined', {
         classId: targetClass._id,
         classCode: targetClass.classCode,
         className: targetClass.className,
@@ -275,6 +491,8 @@ router.post('/join', requireRole('student'), async (req, res, next) => {
 
     res.status(200).json({
       success: true,
+      requiresApproval: false,
+      status: 'approved',
       message: `Successfully joined ${targetClass.className}`,
       class: targetClass,
     });

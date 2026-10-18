@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useDeadlines } from '../context/DeadlineContext';
 import { useClasses } from '../context/ClassContext';
 
@@ -40,6 +40,7 @@ function DeadlineForm({
   submitLabel,
   error,
   minDate,
+  submitting = false,
 }) {
   return (
     <div className="max-w-3xl mx-auto">
@@ -289,12 +290,21 @@ function DeadlineForm({
           </div>
 
           <div className="pt-4 flex items-center justify-end gap-3 border-t border-slate-100 dark:border-slate-800/80">
-            <button type="button" onClick={onCancel} className="btn-secondary">
+            <button type="button" onClick={onCancel} disabled={submitting} className="btn-secondary cursor-pointer disabled:opacity-50">
               Cancel
             </button>
-            <button type="submit" className="btn-primary gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-              {submitLabel}
+            <button type="submit" disabled={submitting} className="btn-primary gap-2 cursor-pointer disabled:opacity-50">
+              {submitting ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <span>Saving...</span>
+                </>
+              ) : (
+                <>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                  <span>{submitLabel}</span>
+                </>
+              )}
             </button>
           </div>
         </form>
@@ -312,6 +322,22 @@ export function ManageDeadlinesPage() {
   const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState(EMPTY_FORM);
   const [formError, setFormError] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
+
+  const uniqueDeadlines = useMemo(() => {
+    const seen = new Set();
+    const result = [];
+    for (const d of (deadlines || [])) {
+      const id = (d?._id || d?.id || '')?.toString();
+      if (id && !seen.has(id)) {
+        seen.add(id);
+        result.push(d);
+      } else if (!id) {
+        result.push(d);
+      }
+    }
+    return result;
+  }, [deadlines]);
 
   const todayStr = getTodayDateString();
 
@@ -420,6 +446,7 @@ export function ManageDeadlinesPage() {
       return;
     }
 
+    setSubmitting(true);
     try {
       const [yyyy, mm, dd] = form.dueDate.split('-').map(Number);
       const [hours, mins] = (form.dueTime || '23:59').split(':').map(Number);
@@ -441,6 +468,8 @@ export function ManageDeadlinesPage() {
       setFormError(null);
     } catch (err) {
       setFormError(err.message || 'Failed to create deadline.');
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -456,6 +485,7 @@ export function ManageDeadlinesPage() {
       return;
     }
 
+    setSubmitting(true);
     try {
       const [yyyy, mm, dd] = form.dueDate.split('-').map(Number);
       const [hours, mins] = (form.dueTime || '23:59').split(':').map(Number);
@@ -478,6 +508,8 @@ export function ManageDeadlinesPage() {
       setFormError(null);
     } catch (err) {
       setFormError(err.message || 'Failed to update deadline.');
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -506,6 +538,7 @@ export function ManageDeadlinesPage() {
         submitLabel="Publish Deadline"
         error={formError}
         minDate={todayStr}
+        submitting={submitting}
       />
     );
   }
@@ -525,6 +558,7 @@ export function ManageDeadlinesPage() {
         onCancel={handleCancel}
         submitLabel="Save Changes"
         error={formError}
+        submitting={submitting}
       />
     );
   }
@@ -584,7 +618,7 @@ export function ManageDeadlinesPage() {
         </button>
       </div>
 
-      {deadlines.length === 0 ? (
+      {uniqueDeadlines.length === 0 ? (
         <div className="card p-12 text-center border-dashed border-slate-300 dark:border-slate-800">
           <p className="text-slate-500 dark:text-slate-400">No deadlines created yet. Click <strong className="text-slate-900 dark:text-slate-100">Add Deadline</strong> to publish one.</p>
         </div>
@@ -592,7 +626,7 @@ export function ManageDeadlinesPage() {
         <>
           {/* Mobile card list */}
           <div className="sm:hidden space-y-3">
-            {deadlines.map((deadline) => (
+            {uniqueDeadlines.map((deadline) => (
               <div key={deadline.id || deadline._id} className="card p-4 space-y-3">
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
@@ -638,7 +672,7 @@ export function ManageDeadlinesPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 dark:divide-slate-800/70">
-                  {deadlines.map((deadline) => (
+                  {uniqueDeadlines.map((deadline) => (
                     <tr key={deadline.id || deadline._id} className="hover:bg-slate-50/70 dark:hover:bg-slate-800/40 transition-colors group">
                       <td className="p-4">
                         <p className="font-bold text-slate-900 dark:text-slate-100">{deadline.subject}</p>

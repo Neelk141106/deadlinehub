@@ -77,7 +77,10 @@ function App() {
         setUserRole(role);
         // Returning students who already have a division go straight to the app.
         // New students (no division yet) are directed to join a class first.
-        if (loggedInUser?.division && loggedInUser.division.trim()) {
+        if (role === 'teacher') {
+          setActiveTab('classes');
+          setCurrentView('app');
+        } else if (loggedInUser?.division && loggedInUser.division.trim()) {
           setActiveTab('dashboard');
           setCurrentView('app');
         } else {

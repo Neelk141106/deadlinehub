@@ -1,142 +1,235 @@
 import React, { createContext, useContext, useState, useEffect, useRef, useCallback } from 'react';
 import { useSocket } from './SocketContext';
+import { useAuth } from './AuthContext';
+import { notificationApi } from '../api/api';
 
-const NotificationContext = createContext();
+const NotificationContext = createContext(null);
 
 export function NotificationProvider({ children }) {
-  const [notifications, setNotifications] = useState([]);
-  const { socket } = useSocket();
-  const processedKeysRef = useRef(new Set());
+  const { user } = useAuth();
+  const { socket, status } = useSocket();
 
-  const removeNotification = useCallback((id) => {
-    setNotifications((prev) => prev.filter((n) => n.id !== id));
+  const [notifications, setNotifications] = useState([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [toasts, setToasts] = useState([]);
+
+  const processedToastIdsRef = useRef(new Set());
+
+  // Toast removal helper
+  const removeToast = useCallback((id) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
   }, []);
 
-  const addNotification = useCallback(({ type, action, title, message }) => {
+  // Toast adder helper (transient popups)
+  const addToast = useCallback(({ type, action, title, message }) => {
     const id = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    const newNotification = {
+    const newToast = {
       id,
-      type, // 'deadline' | 'announcement'
-      action, // 'created' | 'updated' | 'deleted'
+      type: type || 'general',
+      action: action || 'info',
       title,
       message,
       timestamp: new Date(),
     };
 
-    setNotifications((prev) => [newNotification, ...prev.slice(0, 4)]);
+    setToasts((prev) => [newToast, ...prev.slice(0, 4)]);
 
-    // Auto-dismiss after 4 seconds
+    // Auto-dismiss after 4.5 seconds
     setTimeout(() => {
-      removeNotification(id);
-    }, 4000);
+      removeToast(id);
+    }, 4500);
 
     return id;
-  }, [removeNotification]);
+  }, [removeToast]);
 
-  // Listen to Socket.IO real-time events for activity notifications
+  // Backward-compatible aliases
+  const addNotification = addToast;
+  const removeNotification = removeToast;
+
+  // Fetch persistent notifications and unread count from API
+  const fetchNotifications = useCallback(async () => {
+    if (!user) {
+      setNotifications([]);
+      setUnreadCount(0);
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError(null);
+      const data = await notificationApi.getAll({ limit: 50 });
+      if (data && data.success) {
+        setNotifications(data.notifications || []);
+        setUnreadCount(data.unreadCount || 0);
+      }
+    } catch (err) {
+      console.error('Failed to fetch notifications:', err);
+      setError(err.message || 'Failed to load notifications');
+    } finally {
+      setLoading(false);
+    }
+  }, [user]);
+
+  // Fetch unread count directly
+  const fetchUnreadCount = useCallback(async () => {
+    if (!user) {
+      setUnreadCount(0);
+      return;
+    }
+    try {
+      const data = await notificationApi.getUnreadCount();
+      if (data && data.success) {
+        setUnreadCount(data.unreadCount || 0);
+      }
+    } catch (err) {
+      console.warn('Failed to fetch unread notification count:', err.message);
+    }
+  }, [user]);
+
+  // Load notifications whenever authenticated user changes
   useEffect(() => {
-    if (!socket) return;
+    if (user) {
+      fetchNotifications();
+    } else {
+      setNotifications([]);
+      setUnreadCount(0);
+      setToasts([]);
+    }
+  }, [user, fetchNotifications]);
 
-    const handleEvent = (eventKey, type, action, title, message) => {
-      // Prevent duplicate notifications for the exact same event
-      if (processedKeysRef.current.has(eventKey)) return;
-      processedKeysRef.current.add(eventKey);
+  // Refetch on socket reconnection
+  useEffect(() => {
+    if (user && status === 'connected') {
+      fetchNotifications();
+    }
+  }, [user, status, fetchNotifications]);
 
-      // Clean up key after 5 seconds
+  // Socket.IO real-time notification listener
+  useEffect(() => {
+    if (!socket || !user) return;
+
+    const handleNewNotification = (notif) => {
+      if (!notif || !notif._id) return;
+
+      // Prevent duplicate processing
+      if (processedToastIdsRef.current.has(notif._id)) return;
+      processedToastIdsRef.current.add(notif._id);
       setTimeout(() => {
-        processedKeysRef.current.delete(eventKey);
-      }, 5000);
+        processedToastIdsRef.current.delete(notif._id);
+      }, 10000);
 
-      addNotification({ type, action, title, message });
+      // Prepend to persistent notifications list
+      setNotifications((prev) => {
+        const exists = prev.some((n) => n._id === notif._id);
+        if (exists) return prev;
+        return [notif, ...prev];
+      });
+
+      // Increment unread count if unread
+      if (!notif.isRead) {
+        setUnreadCount((prev) => prev + 1);
+      }
+
+      // Display floating toast banner
+      addToast({
+        type: notif.type.includes('announcement') ? 'announcement' : 'deadline',
+        action: notif.type.includes('reminder') ? 'reminder' : 'created',
+        title: notif.title,
+        message: notif.message,
+      });
     };
 
-    const onDeadlineCreated = (deadline) => {
-      const eventKey = `deadline:created:${deadline._id || deadline.id}`;
-      handleEvent(eventKey, 'deadline', 'created', 'New deadline added', deadline.title);
-    };
-
-    const onDeadlineUpdated = (deadline) => {
-      const eventKey = `deadline:updated:${deadline._id || deadline.id}:${deadline.updatedAt || Date.now()}`;
-      handleEvent(eventKey, 'deadline', 'updated', 'Deadline updated', deadline.title);
-    };
-
-    const onDeadlineDeleted = ({ _id }) => {
-      const eventKey = `deadline:deleted:${_id}`;
-      handleEvent(eventKey, 'deadline', 'deleted', 'Deadline removed', 'A deadline was deleted');
-    };
-
-    const onAnnouncementCreated = (announcement) => {
-      const eventKey = `announcement:created:${announcement._id || announcement.id}`;
-      handleEvent(eventKey, 'announcement', 'created', 'Announcement added', announcement.title);
-    };
-
-    const onAnnouncementUpdated = (announcement) => {
-      const eventKey = `announcement:updated:${announcement._id || announcement.id}:${announcement.updatedAt || Date.now()}`;
-      handleEvent(eventKey, 'announcement', 'updated', 'Announcement updated', announcement.title);
-    };
-
-    const onAnnouncementDeleted = ({ _id }) => {
-      const eventKey = `announcement:deleted:${_id}`;
-      handleEvent(eventKey, 'announcement', 'deleted', 'Announcement removed', 'An announcement was deleted');
-    };
-
-    socket.on('deadline:created', onDeadlineCreated);
-    socket.on('deadline:updated', onDeadlineUpdated);
-    socket.on('deadline:deleted', onDeadlineDeleted);
-    socket.on('announcement:created', onAnnouncementCreated);
-    socket.on('announcement:updated', onAnnouncementUpdated);
-    socket.on('announcement:deleted', onAnnouncementDeleted);
+    socket.on('notification:new', handleNewNotification);
 
     return () => {
-      socket.off('deadline:created', onDeadlineCreated);
-      socket.off('deadline:updated', onDeadlineUpdated);
-      socket.off('deadline:deleted', onDeadlineDeleted);
-      socket.off('announcement:created', onAnnouncementCreated);
-      socket.off('announcement:updated', onAnnouncementUpdated);
-      socket.off('announcement:deleted', onAnnouncementDeleted);
+      socket.off('notification:new', handleNewNotification);
     };
-  }, [socket, addNotification]);
+  }, [socket, user, addToast]);
+
+  // Mark an individual notification as read
+  const markAsRead = async (id) => {
+    if (!id) return;
+
+    // Optimistic UI update
+    setNotifications((prev) =>
+      prev.map((n) => (n._id === id ? { ...n, isRead: true } : n))
+    );
+    setUnreadCount((prev) => Math.max(0, prev - 1));
+
+    try {
+      const res = await notificationApi.markAsRead(id);
+      if (res && res.success && typeof res.unreadCount === 'number') {
+        setUnreadCount(res.unreadCount);
+      }
+    } catch (err) {
+      console.error('Failed to mark notification as read:', err);
+      // Revert if API failed
+      fetchUnreadCount();
+    }
+  };
+
+  // Mark all notifications as read
+  const markAllAsRead = async () => {
+    // Optimistic UI update
+    setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
+    setUnreadCount(0);
+
+    try {
+      await notificationApi.markAllAsRead();
+    } catch (err) {
+      console.error('Failed to mark all notifications as read:', err);
+      fetchNotifications();
+    }
+  };
 
   return (
     <NotificationContext.Provider
       value={{
         notifications,
+        unreadCount,
+        loading,
+        error,
+        markAsRead,
+        markAllAsRead,
+        fetchNotifications,
+        fetchUnreadCount,
         addNotification,
         removeNotification,
+        addToast,
+        removeToast,
+        toasts,
       }}
     >
       {children}
-      <NotificationToasts
-        notifications={notifications}
-        onDismiss={removeNotification}
-      />
+      <NotificationToasts toasts={toasts} onDismiss={removeToast} />
     </NotificationContext.Provider>
   );
 }
 
-function NotificationToasts({ notifications, onDismiss }) {
-  if (!notifications || notifications.length === 0) return null;
+function NotificationToasts({ toasts, onDismiss }) {
+  if (!toasts || toasts.length === 0) return null;
 
   return (
     <div
       aria-live="polite"
       className="fixed bottom-5 right-5 z-50 flex flex-col gap-2.5 max-w-sm w-full sm:w-80 pointer-events-none"
     >
-      {notifications.map((item) => (
-        <NotificationToastItem key={item.id} notification={item} onDismiss={onDismiss} />
+      {toasts.map((item) => (
+        <NotificationToastItem key={item.id} toast={item} onDismiss={onDismiss} />
       ))}
     </div>
   );
 }
 
-function NotificationToastItem({ notification, onDismiss }) {
-  const isDeadline = notification.type === 'deadline';
-  const isDeleted = notification.action === 'deleted';
+function NotificationToastItem({ toast, onDismiss }) {
+  const isDeadline = toast.type === 'deadline';
+  const isReminder = toast.action === 'reminder';
 
-  // Badge/icon styling based on event type
   let badgeClasses = 'bg-primary-50 text-primary-700 dark:bg-primary-950/60 dark:text-primary-300 border border-primary-200/70 dark:border-primary-900/50';
-  if (isDeleted) {
-    badgeClasses = 'bg-red-50 text-red-700 dark:bg-red-950/60 dark:text-red-300 border border-red-200/70 dark:border-red-900/50';
+  if (isReminder) {
+    badgeClasses = 'bg-rose-50 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200/70 dark:border-rose-900/50';
   } else if (!isDeadline) {
     badgeClasses = 'bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-200/70 dark:border-amber-900/50';
   }
@@ -146,7 +239,6 @@ function NotificationToastItem({ notification, onDismiss }) {
       className="pointer-events-auto flex items-start gap-3 p-3.5 bg-white dark:bg-[#151C2C] text-slate-900 dark:text-slate-100 rounded-xl shadow-lg shadow-slate-900/10 dark:shadow-black/40 border border-slate-200/80 dark:border-slate-800/80 transition-all duration-200 animate-in fade-in slide-in-from-bottom-2"
       role="status"
     >
-      {/* Icon */}
       <div className={`p-2 rounded-lg shrink-0 ${badgeClasses}`}>
         {isDeadline ? (
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -159,24 +251,22 @@ function NotificationToastItem({ notification, onDismiss }) {
         )}
       </div>
 
-      {/* Content */}
       <div className="flex-1 min-w-0 pr-1">
         <p className="text-xs font-semibold text-slate-900 dark:text-slate-100">
-          {notification.title}
+          {toast.title}
         </p>
-        {notification.message && (
+        {toast.message && (
           <p className="text-xs text-slate-500 dark:text-slate-400 truncate mt-0.5">
-            {notification.message}
+            {toast.message}
           </p>
         )}
       </div>
 
-      {/* Dismiss button */}
       <button
         type="button"
-        onClick={() => onDismiss(notification.id)}
+        onClick={() => onDismiss(toast.id)}
         className="shrink-0 p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
-        aria-label="Dismiss notification"
+        aria-label="Dismiss toast"
       >
         <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

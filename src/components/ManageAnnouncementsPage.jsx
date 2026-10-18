@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useAnnouncements } from '../context/AnnouncementContext';
 import { useClasses } from '../context/ClassContext';
 import { useAuth } from '../context/AuthContext';
@@ -30,6 +30,7 @@ function AnnouncementForm({
   onCancel,
   submitLabel,
   error,
+  submitting = false,
 }) {
   return (
     <div className="max-w-3xl mx-auto">
@@ -253,12 +254,21 @@ function AnnouncementForm({
           </div>
 
           <div className="pt-4 flex items-center justify-end gap-3 border-t border-slate-100 dark:border-slate-800/80">
-            <button type="button" onClick={onCancel} className="btn-secondary">
+            <button type="button" onClick={onCancel} disabled={submitting} className="btn-secondary cursor-pointer disabled:opacity-50">
               Cancel
             </button>
-            <button type="submit" className="btn-primary gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-              {submitLabel}
+            <button type="submit" disabled={submitting} className="btn-primary gap-2 cursor-pointer disabled:opacity-50">
+              {submitting ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <span>Saving...</span>
+                </>
+              ) : (
+                <>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                  <span>{submitLabel}</span>
+                </>
+              )}
             </button>
           </div>
         </form>
@@ -277,6 +287,22 @@ export function ManageAnnouncementsPage() {
   const [editingId, setEditingId] = useState(null);
   const [form, setForm] = useState(EMPTY_FORM);
   const [formError, setFormError] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
+
+  const uniqueAnnouncements = useMemo(() => {
+    const seen = new Set();
+    const result = [];
+    for (const a of (announcements || [])) {
+      const id = (a?._id || a?.id || '')?.toString();
+      if (id && !seen.has(id)) {
+        seen.add(id);
+        result.push(a);
+      } else if (!id) {
+        result.push(a);
+      }
+    }
+    return result;
+  }, [announcements]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -372,6 +398,7 @@ export function ManageAnnouncementsPage() {
     const pLower = form.priority ? form.priority.toLowerCase() : 'normal';
     const pUpper = form.priority ? form.priority.toUpperCase() : 'NORMAL';
 
+    setSubmitting(true);
     try {
       const targetClassIds =
         form.targetType === 'all_classes'
@@ -393,6 +420,8 @@ export function ManageAnnouncementsPage() {
       setFormError(null);
     } catch (err) {
       setFormError(err.message || 'Failed to save announcement');
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -415,6 +444,7 @@ export function ManageAnnouncementsPage() {
     const pLower = form.priority ? form.priority.toLowerCase() : 'normal';
     const pUpper = form.priority ? form.priority.toUpperCase() : 'NORMAL';
 
+    setSubmitting(true);
     try {
       const targetClassIds =
         form.targetType === 'all_classes'
@@ -434,6 +464,8 @@ export function ManageAnnouncementsPage() {
       setFormError(null);
     } catch (err) {
       setFormError(err.message || 'Failed to update announcement');
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -469,6 +501,7 @@ export function ManageAnnouncementsPage() {
         onCancel={handleCancel}
         submitLabel="Publish Announcement"
         error={formError}
+        submitting={submitting}
       />
     );
   }
@@ -488,6 +521,7 @@ export function ManageAnnouncementsPage() {
         onCancel={handleCancel}
         submitLabel="Save Changes"
         error={formError}
+        submitting={submitting}
       />
     );
   }
@@ -536,7 +570,7 @@ export function ManageAnnouncementsPage() {
         </button>
       </div>
 
-      {announcements.length === 0 ? (
+      {uniqueAnnouncements.length === 0 ? (
         <div className="card p-12 text-center border-dashed border-slate-300 dark:border-slate-800">
           <p className="text-slate-500 dark:text-slate-400">No announcements posted yet. Click <strong className="text-slate-900 dark:text-slate-100">Add Announcement</strong> to post one.</p>
         </div>
@@ -544,7 +578,7 @@ export function ManageAnnouncementsPage() {
         <>
           {/* Mobile card list */}
           <div className="sm:hidden space-y-3">
-            {announcements.map((announcement) => (
+            {uniqueAnnouncements.map((announcement) => (
               <div key={announcement.id || announcement._id} className="card p-4 space-y-3">
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
@@ -597,7 +631,7 @@ export function ManageAnnouncementsPage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 dark:divide-slate-800/70">
-                  {announcements.map((announcement) => (
+                  {uniqueAnnouncements.map((announcement) => (
                     <tr key={announcement.id || announcement._id} className="hover:bg-slate-50/70 dark:hover:bg-slate-800/40 transition-colors group">
                       <td className="p-4 max-w-sm">
                         <div className="flex items-center gap-2">

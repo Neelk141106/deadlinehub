@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { io } from 'socket.io-client';
+import { useAuth } from './AuthContext';
 
 const SOCKET_URL = 'http://localhost:5000';
 
@@ -11,6 +12,7 @@ const SocketContext = createContext(null);
  * Exposes { socket, connected } via context.
  */
 export function SocketProvider({ children }) {
+  const { token, user } = useAuth();
   const socketRef = useRef(null);
   const [status, setStatus] = useState('connecting'); // 'connected' | 'reconnecting' | 'disconnected' | 'connecting'
   const [socketInstance, setSocketInstance] = useState(null);
@@ -31,9 +33,9 @@ export function SocketProvider({ children }) {
     setSocketInstance(socket);
 
     const sendAuth = () => {
-      const token = localStorage.getItem('deadlinehub_token');
-      if (token) {
-        socket.emit('authenticate', { token });
+      const activeToken = token || localStorage.getItem('deadlinehub_token');
+      if (activeToken) {
+        socket.emit('authenticate', { token: activeToken });
       }
     };
 
@@ -89,6 +91,23 @@ export function SocketProvider({ children }) {
       setSocketInstance(null);
     };
   }, []);
+
+  // When token or user changes (e.g. login/logout), authenticate or reset rooms
+  useEffect(() => {
+    if (!socketInstance) return;
+
+    if (token) {
+      if (socketInstance.connected) {
+        socketInstance.emit('authenticate', { token });
+      }
+    } else {
+      // User logged out: reconnect clean socket to leave all previous user rooms
+      if (socketInstance.connected) {
+        socketInstance.disconnect();
+        socketInstance.connect();
+      }
+    }
+  }, [socketInstance, token, user]);
 
   const connected = status === 'connected';
 

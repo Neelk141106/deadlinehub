@@ -50,6 +50,10 @@ const classSchema = new mongoose.Schema(
         ref: 'User',
       },
     ],
+    requiresApproval: {
+      type: Boolean,
+      default: true,
+    },
   },
   {
     timestamps: true,

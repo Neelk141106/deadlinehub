@@ -3,9 +3,22 @@ import { useClasses } from '../context/ClassContext';
 import { useAuth } from '../context/AuthContext';
 import { Input } from './ui/Input';
 import { Button } from './ui/Button';
+import { ClassDetailView } from './ClassDetailView';
 
 export function ClassesPage() {
-  const { classes, loading, error, createClass, updateClass, deleteClass } = useClasses();
+  const {
+    classes,
+    loading,
+    error,
+    createClass,
+    updateClass,
+    deleteClass,
+    openedClassId,
+    openedClassTab,
+    openClassWorkspace,
+    closeClassWorkspace,
+    setOpenedClassTab,
+  } = useClasses();
 
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [editingClass, setEditingClass] = useState(null);
@@ -112,6 +125,21 @@ export function ClassesPage() {
     }
   };
 
+  if (openedClassId) {
+    return (
+      <ClassDetailView
+        classId={openedClassId}
+        initialTab={openedClassTab || 'overview'}
+        onTabChange={setOpenedClassTab}
+        onBack={closeClassWorkspace}
+        onEditClass={(cls) => {
+          closeClassWorkspace();
+          openEditModal(cls);
+        }}
+      />
+    );
+  }
+
   return (
     <div className="max-w-7xl mx-auto space-y-6">
       {/* Top Header */}
@@ -189,7 +217,10 @@ export function ClassesPage() {
                 className="bg-white dark:bg-[#151C2C] rounded-2xl border border-slate-200/80 dark:border-slate-800/80 shadow-xs hover:shadow-md transition-all duration-200 flex flex-col justify-between overflow-hidden"
               >
                 {/* Header banner */}
-                <div className="p-6 pb-4">
+                <div
+                  className="p-6 pb-4 cursor-pointer hover:bg-slate-50/50 dark:hover:bg-slate-800/20 transition-colors"
+                  onClick={() => openClassWorkspace(cls._id, 'overview')}
+                >
                   <div className="flex justify-between items-start gap-2 mb-2 flex-wrap">
                     <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
                       {cls.division || 'All Divisions'} • {cls.semester || 'Semester 5'}
@@ -253,6 +284,18 @@ export function ClassesPage() {
 
                 {/* Actions Footer */}
                 <div className="p-6 pt-4 border-t border-slate-100 dark:border-slate-800/80 mt-3 flex flex-col gap-2">
+                  <button
+                    onClick={() => openClassWorkspace(cls._id, 'overview')}
+                    className="w-full btn-primary justify-center gap-1.5 text-xs font-semibold py-2 cursor-pointer shadow-xs"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                      <polyline points="15 3 21 3 21 9" />
+                      <line x1="10" y1="14" x2="21" y2="3" />
+                    </svg>
+                    Open Class Dashboard
+                  </button>
+
                   <div className="grid grid-cols-2 gap-2">
                     <button
                       onClick={() => setSelectedClassForStudents(cls)}

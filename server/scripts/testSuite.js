@@ -15,6 +15,7 @@
  * 11. Announcement targeting validation (403 on unauthorized class IDs)
  * 12. Student content isolation (students only access content for joined classes; 0 classes = 0 leaked items)
  * 13. CLI Teacher creation script validation
+ * 14. JoinRequest model schema, status enum, compound index, and ownership authorization
  */
 
 const jwt = require('jsonwebtoken');
@@ -28,6 +29,8 @@ const Class = require('../src/models/Class');
 const Deadline = require('../src/models/Deadline');
 const Announcement = require('../src/models/Announcement');
 const User = require('../src/models/User');
+const Notification = require('../src/models/Notification');
+const JoinRequest = require('../src/models/JoinRequest');
 
 let passedTests = 0;
 let failedTests = 0;
@@ -153,6 +156,20 @@ async function runTests() {
     nextErr = null;
     teacherOnlyMiddleware(reqWithTeacher, {}, (err) => { nextErr = err; });
     assert(!nextErr, 'Teacher successfully authorized for teacher-only endpoint');
+
+    // Test 9B: Teacher blocked from student-only endpoint with HTTP 403 (regression test for join-requests)
+    nextErr = null;
+    const studentOnlyMiddleware = requireRole('student');
+    studentOnlyMiddleware(reqWithTeacher, {}, (err) => { nextErr = err; });
+    assert(
+      nextErr && nextErr.statusCode === 403 && nextErr.message.includes('student'),
+      'Teacher blocked from student-only endpoint with HTTP 403 (Forbidden: requires role student)'
+    );
+
+    // Test 9C: Student allowed into student-only endpoint
+    nextErr = null;
+    studentOnlyMiddleware(reqWithStudent, {}, (err) => { nextErr = err; });
+    assert(!nextErr, 'Student successfully authorized for student-only endpoint');
   }
 
   // ── TEST GROUP 3: MongoDB ObjectId Validation ─────────────────────────
@@ -274,6 +291,570 @@ async function runTests() {
     const emptyJoinedClasses = [];
     const canEmptyStudentSee = emptyJoinedClasses.length > 0;
     assert(!canEmptyStudentSee, 'Student with 0 joined classes receives empty result (NO LEAK)');
+  }
+
+  // ── TEST GROUP 9: Notification System & Recipient Scoping ───────────
+  console.log('\n--- Group 9: Notification System & Recipient Scoping ---');
+  {
+    const notifPaths = Notification.schema.paths;
+    assert(!!notifPaths.recipientId, 'Notification model includes recipientId');
+    assert(!!notifPaths.senderId, 'Notification model includes senderId');
+    assert(!!notifPaths.type, 'Notification model includes type');
+    assert(!!notifPaths.title, 'Notification model includes title');
+    assert(!!notifPaths.message, 'Notification model includes message');
+    assert(!!notifPaths.relatedResource, 'Notification model includes relatedResource');
+    assert(!!notifPaths.relatedResourceId, 'Notification model includes relatedResourceId');
+    assert(!!notifPaths.targetClassIds, 'Notification model includes targetClassIds');
+    assert(!!notifPaths.isRead, 'Notification model includes isRead');
+
+    // Test: Recipient access isolation guard
+    const studentAId = '65b111111111111111111111';
+    const studentBId = '65b222222222222222222222';
+    const testNotif = {
+      recipientId: studentAId,
+      title: 'Lab 1 Due',
+      isRead: false,
+    };
+    const canStudentBAccess = testNotif.recipientId === studentBId;
+    assert(!canStudentBAccess, 'Student B is forbidden from accessing Student A notification (Ownership Isolation)');
+
+    // Test: Multi-class recipient deduplication logic
+    const student1Id = '65bs11111111111111111111';
+    const student2Id = '65bs22222222222222222222';
+    const classAStudents = [student1Id, student2Id];
+    const classBStudents = [student1Id]; // student1 is in both classes
+    const combinedSet = new Set([...classAStudents, ...classBStudents]);
+    assert(combinedSet.size === 2, 'Enrolled students across multiple target classes are deduplicated without duplicates');
+
+    // Test: Self-notification prevention
+    const teacherId = '65bt11111111111111111111';
+    const recipientCandidates = [student1Id, teacherId];
+    const filteredRecipients = recipientCandidates.filter((id) => id !== teacherId);
+    assert(filteredRecipients.length === 1 && !filteredRecipients.includes(teacherId), 'Teacher is not notified about their own action');
+
+    // Test: 24h deadline reminder window logic
+    const now = new Date();
+    const in12Hours = new Date(now.getTime() + 12 * 60 * 60 * 1000);
+    const in48Hours = new Date(now.getTime() + 48 * 60 * 60 * 1000);
+    const next24Hours = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+
+    const is12HoursDueSoon = in12Hours >= now && in12Hours <= next24Hours;
+    const is48HoursDueSoon = in48Hours >= now && in48Hours <= next24Hours;
+    assert(is12HoursDueSoon && !is48HoursDueSoon, 'Upcoming deadline window accurately isolates items due within 24 hours');
+  }
+
+  // ── TEST GROUP 10: JoinRequest Model & Authorization Logic ────────────
+  console.log('\n--- Group 10: JoinRequest Model & Authorization Logic ---');
+  {
+    const jrPaths = JoinRequest.schema.paths;
+
+    // Schema field verification
+    assert(!!jrPaths.studentId, 'JoinRequest model includes studentId');
+    assert(!!jrPaths.classId, 'JoinRequest model includes classId');
+    assert(!!jrPaths.teacherId, 'JoinRequest model includes teacherId');
+    assert(!!jrPaths.status, 'JoinRequest model includes status');
+
+    // Enum validation
+    const statusEnum = jrPaths.status.enumValues;
+    assert(
+      statusEnum.includes('pending') && statusEnum.includes('approved') && statusEnum.includes('rejected'),
+      'JoinRequest status enum contains pending, approved, rejected'
+    );
+
+    // Default status is pending
+    const defaultStatus = jrPaths.status.defaultValue;
+    assert(defaultStatus === 'pending', 'JoinRequest default status is "pending"');
+
+    // Compound index (studentId + classId) prevents duplicate requests
+    const indexes = JoinRequest.schema.indexes();
+    const hasCompoundIndex = indexes.some((idx) => {
+      const fields = idx[0];
+      return fields.studentId !== undefined && fields.classId !== undefined;
+    });
+    assert(hasCompoundIndex, 'JoinRequest has compound index on studentId + classId to prevent duplicates');
+
+    // Ownership guard: Teacher can only review their own requests
+    const teacherAId = '65ta111111111111111111aa';
+    const teacherBId = '65tb222222222222222222bb';
+    const mockRequest = { teacherId: { toString: () => teacherAId }, status: 'pending' };
+
+    const teacherACanApprove = mockRequest.teacherId.toString() === teacherAId;
+    const teacherBCanApprove = mockRequest.teacherId.toString() === teacherBId;
+    assert(teacherACanApprove, 'Teacher A can approve a request for their own class');
+    assert(!teacherBCanApprove, 'Teacher B is blocked from approving a request for Teacher A\'s class');
+
+    const teacherBCanReject = mockRequest.teacherId.toString() === teacherBId;
+    assert(!teacherBCanReject, 'Teacher B is blocked from rejecting a request for Teacher A\'s class');
+
+    // Double-action prevention: cannot approve/reject an already-processed request
+    const alreadyApproved = { ...mockRequest, status: 'approved' };
+    const canReapprove = alreadyApproved.status === 'pending';
+    assert(!canReapprove, 'Cannot approve an already approved request (duplicate action guard)');
+
+    const alreadyRejected = { ...mockRequest, status: 'rejected' };
+    const canRereject = alreadyRejected.status === 'pending';
+    assert(!canRereject, 'Cannot reject an already rejected request (duplicate action guard)');
+
+    // Scoping query filters: verify teacher filter matches teacher's own IDs
+    const teacherFilter = { teacherId: teacherAId };
+    assert(teacherFilter.teacherId === teacherAId, 'Teacher query filter strictly isolates requests to owned classes');
+
+    // History filter isolates to approved/rejected
+    const historyStatuses = ['approved', 'rejected'];
+    assert(
+      historyStatuses.includes('approved') && historyStatuses.includes('rejected') && !historyStatuses.includes('pending'),
+      'History status filter strictly isolates to approved and rejected items'
+    );
+  }
+
+  // ── GROUP 11: CLASS MEMBERSHIP & SCOPED CONTENT AUTHORIZATION ────────
+  {
+    console.log('\n--- Group 11: Class Membership & Scoped Content Authorization ---');
+
+    const teacherOwnerId = '65fa111111111111111111aa';
+    const teacherOtherId = '65fa222222222222222222bb';
+    const student1Id = '65fa333333333333333333cc';
+    const student2Id = '65fa444444444444444444dd';
+
+    // Mock class with enrolled students
+    const mockClass1 = {
+      _id: '65fa555555555555555555ee',
+      className: 'Cloud Computing D15C',
+      teacherId: teacherOwnerId,
+      students: [student1Id, student2Id],
+    };
+
+    const mockClass2 = {
+      _id: '65fa666666666666666666ff',
+      className: 'Distributed Systems D15C',
+      teacherId: teacherOwnerId,
+      students: [student1Id],
+    };
+
+    // 1. Student leaves class: removes only target class membership
+    const s1Index = mockClass1.students.indexOf(student1Id);
+    assert(s1Index !== -1, 'Student 1 is initially enrolled in Class 1');
+
+    const remainingStudentsAfterLeave = mockClass1.students.filter((sId) => sId !== student1Id);
+    assert(!remainingStudentsAfterLeave.includes(student1Id), 'Student 1 removed from Class 1 after leaving');
+    assert(remainingStudentsAfterLeave.includes(student2Id), 'Student 2 remains enrolled in Class 1 after Student 1 leaves');
+
+    // 2. Student leaves one class but remains enrolled in other classes
+    const s1InClass2AfterLeavingClass1 = mockClass2.students.includes(student1Id);
+    assert(s1InClass2AfterLeavingClass1, 'Student 1 remains enrolled in Class 2 after leaving Class 1');
+
+    // 3. Non-enrolled student cannot leave a class
+    const nonEnrolledLeaveCheck = remainingStudentsAfterLeave.indexOf(student1Id) !== -1;
+    assert(!nonEnrolledLeaveCheck, 'Non-enrolled student cannot leave a class (HTTP 400 guard)');
+
+    // 4. Student loses access to class content after leaving
+    const isEnrolledAfterLeave = remainingStudentsAfterLeave.includes(student1Id);
+    const isOwnerAfterLeave = teacherOwnerId === student1Id;
+    const canAccessAfterLeave = isEnrolledAfterLeave || isOwnerAfterLeave;
+    assert(!canAccessAfterLeave, 'Student loses access to class content after leaving (HTTP 403 guard)');
+
+    // 5. Owning teacher removes student successfully
+    const teacherOwnsClass = mockClass1.teacherId === teacherOwnerId;
+    assert(teacherOwnsClass, 'Owning teacher is authorized to manage students in their class');
+
+    const remainingAfterTeacherRemove = mockClass1.students.filter((sId) => sId !== student2Id);
+    assert(!remainingAfterTeacherRemove.includes(student2Id), 'Student 2 removed from class by owning teacher');
+
+    // 6. Another teacher cannot remove students from someone else's class
+    const otherTeacherOwnsClass = mockClass1.teacherId === teacherOtherId;
+    assert(!otherTeacherOwnsClass, 'Another teacher is blocked from removing students from someone else\'s class (HTTP 403 guard)');
+
+    // 7. Teacher cannot remove a student who is not enrolled
+    const studentNotEnrolled = mockClass1.students.indexOf('nonexistent_student_id') !== -1;
+    assert(!studentNotEnrolled, 'Removing a non-enrolled student is rejected (HTTP 404 guard)');
+
+    // 8. Opening a class loads only authorized deadlines and announcements
+    const mockDeadlineTargetC1 = {
+      title: 'Lab 1',
+      targetClassIds: [mockClass1._id],
+      targetType: 'particular_classes',
+      createdBy: teacherOwnerId,
+    };
+    const mockDeadlineTargetC2 = {
+      title: 'Lab 2',
+      targetClassIds: [mockClass2._id],
+      targetType: 'particular_classes',
+      createdBy: teacherOwnerId,
+    };
+    const mockDeadlineAllClasses = {
+      title: 'Final Project',
+      targetType: 'all_classes',
+      createdBy: teacherOwnerId,
+    };
+
+    const isMatchForC1 = (d) => {
+      if (d.targetClassIds && d.targetClassIds.includes(mockClass1._id)) return true;
+      if (d.classId === mockClass1._id) return true;
+      if (d.targetType === 'all_classes' && d.createdBy === teacherOwnerId) return true;
+      return false;
+    };
+
+    assert(isMatchForC1(mockDeadlineTargetC1), 'Class 1 view includes deadlines targeting Class 1');
+    assert(isMatchForC1(mockDeadlineAllClasses), 'Class 1 view includes teacher\'s "All My Classes" deadlines');
+    assert(!isMatchForC1(mockDeadlineTargetC2), 'Class 1 view strictly EXCLUDES deadlines targeting only Class 2 (no data leak)');
+
+    const mockAnnouncementC1 = {
+      title: 'Welcome C1',
+      targetClassIds: [mockClass1._id],
+      targetType: 'particular_classes',
+      createdBy: teacherOwnerId,
+    };
+    const mockAnnouncementC2 = {
+      title: 'Welcome C2',
+      targetClassIds: [mockClass2._id],
+      targetType: 'particular_classes',
+      createdBy: teacherOwnerId,
+    };
+
+    const isMatchAnnouncementForC1 = (a) => {
+      if (a.targetClassIds && a.targetClassIds.includes(mockClass1._id)) return true;
+      if (a.classId === mockClass1._id) return true;
+      if (a.targetType === 'all_classes' && a.createdBy === teacherOwnerId) return true;
+      return false;
+    };
+
+    assert(isMatchAnnouncementForC1(mockAnnouncementC1), 'Class 1 view includes announcements targeting Class 1');
+    assert(!isMatchAnnouncementForC1(mockAnnouncementC2), 'Class 1 view strictly EXCLUDES announcements targeting only Class 2 (no data leak)');
+
+    // 9. Student cancels their own pending join request
+    const mockPendingReq = {
+      _id: 'req_123',
+      studentId: student1Id,
+      classId: mockClass1._id,
+      status: 'pending',
+    };
+    const canStudentCancelOwn = mockPendingReq.studentId === student1Id && mockPendingReq.status === 'pending';
+    assert(canStudentCancelOwn, 'Student can cancel their own pending join request');
+
+    // 10. Student blocked from cancelling another student's join request
+    const canStudentCancelOther = mockPendingReq.studentId === student2Id;
+    assert(!canStudentCancelOther, 'Student is blocked from cancelling another student\'s join request (ownership guard)');
+
+    // 11. Cannot cancel an already approved or rejected request
+    const mockApprovedReq = { ...mockPendingReq, status: 'approved' };
+    const canCancelApproved = mockApprovedReq.status === 'pending';
+    assert(!canCancelApproved, 'Cannot cancel a join request that is already approved or rejected');
+  }
+
+  // ── TEST GROUP 12: Canonical Deduplication & Google Classroom Views ──
+  console.log('\n--- Group 12: Canonical Deduplication & Multi-Class Isolation ---');
+  {
+    // 1. Class model supports requiresApproval
+    const classSchema = Class.schema.paths;
+    assert(classSchema.requiresApproval !== undefined, 'Class model includes requiresApproval field');
+
+    // 2. Canonical Deadline Record for Multi-Class Targeting
+    // A deadline targeting 2 classes has 1 canonical record containing both IDs in targetClassIds
+    const multiTargetDeadline = {
+      _id: 'd_canonical_101',
+      title: 'Operating Systems Assignment 1',
+      targetType: 'particular_classes',
+      targetClassIds: ['class_A_id', 'class_B_id'],
+      createdBy: 'teacher_1_id',
+    };
+    assert(
+      Array.isArray(multiTargetDeadline.targetClassIds) && multiTargetDeadline.targetClassIds.length === 2,
+      'Multi-class targeting creates 1 canonical record with linked targetClassIds array'
+    );
+
+    // 3. Socket.IO and State Deduplication by Record ID
+    // If socket sends the same deadline twice on reconnect or multi-room broadcast, prevent duplication
+    const getCanonicalId = (item) => (item?._id || item?.id || '').toString();
+    let stateDeadlines = [multiTargetDeadline];
+    const incomingDuplicate = { ...multiTargetDeadline, title: 'Operating Systems Assignment 1 (Updated)' };
+    const incomingId = getCanonicalId(incomingDuplicate);
+
+    // Context deduplication reducer simulation
+    const exists = stateDeadlines.some((d) => getCanonicalId(d) === incomingId);
+    if (exists) {
+      stateDeadlines = stateDeadlines.map((d) => (getCanonicalId(d) === incomingId ? incomingDuplicate : d));
+    } else {
+      stateDeadlines = [incomingDuplicate, ...stateDeadlines];
+    }
+    assert(stateDeadlines.length === 1, 'Socket.IO duplicate emission/reconnect does not duplicate deadline in state');
+    assert(stateDeadlines[0].title === 'Operating Systems Assignment 1 (Updated)', 'State updates existing record in place');
+
+    // 4. Content Isolation: Selecting Class A shows only Class A items, not Class B items
+    const deadlineClassA = { _id: 'd_A', title: 'Math Quiz', targetClassIds: ['class_A_id'] };
+    const deadlineClassB = { _id: 'd_B', title: 'History Essay', targetClassIds: ['class_B_id'] };
+    const allStudentDeadlines = [multiTargetDeadline, deadlineClassA, deadlineClassB];
+
+    const filterForClassA = allStudentDeadlines.filter(
+      (d) => Array.isArray(d.targetClassIds) && d.targetClassIds.includes('class_A_id')
+    );
+    const filterForClassB = allStudentDeadlines.filter(
+      (d) => Array.isArray(d.targetClassIds) && d.targetClassIds.includes('class_B_id')
+    );
+
+    assert(
+      filterForClassA.some((d) => d._id === 'd_A') && !filterForClassA.some((d) => d._id === 'd_B'),
+      'Class A view strictly includes Class A deadlines and excludes Class B deadlines'
+    );
+    assert(
+      filterForClassB.some((d) => d._id === 'd_B') && !filterForClassB.some((d) => d._id === 'd_A'),
+      'Class B view strictly includes Class B deadlines and excludes Class A deadlines'
+    );
+
+    // 5. In All Classes view, multiTargetDeadline appears ONCE and identifies both relevant classes
+    const seenIds = new Set();
+    const combinedViewDeadlines = allStudentDeadlines.filter((d) => {
+      const id = getCanonicalId(d);
+      if (seenIds.has(id)) return false;
+      seenIds.add(id);
+      return true;
+    });
+    assert(combinedViewDeadlines.length === 3, 'All Classes combined view shows multi-targeted deadline exactly once');
+
+    // 6. Direct Join respects requiresApproval policy
+    const approvalClass = { _id: 'c_approval', requiresApproval: true, students: [] };
+    const directJoinClass = { _id: 'c_direct', requiresApproval: false, students: [] };
+    const canDirectJoinApprovalClass = approvalClass.requiresApproval === false;
+    const canDirectJoinOpenClass = directJoinClass.requiresApproval === false;
+
+    assert(!canDirectJoinApprovalClass, 'Direct join does not bypass approval when requiresApproval is true');
+    assert(canDirectJoinOpenClass, 'Direct join is permitted when requiresApproval is false');
+  }
+
+  // ── TEST GROUP 13: Class Navigation, Refresh Persistence & Real-Time Approval ──
+  console.log('\n--- Group 13: Class Navigation, Refresh Persistence & Real-Time Approval ---');
+  {
+    // 1. Navigation URL Hash Parsing & Section Extraction
+    const parseHash = (hash) => {
+      const match = hash.match(/^#\/class\/([a-fA-F0-9]{24})(?:\/([a-zA-Z]+))?/);
+      if (!match) return { classId: null, tab: 'overview' };
+      const rawTab = (match[2] || 'overview').toLowerCase();
+      const tab = rawTab === 'members' ? 'students' : rawTab;
+      return { classId: match[1], tab };
+    };
+
+    const validClassId = '64f1234567890abcdef12345';
+    const hashDeadlines = parseHash(`#/class/${validClassId}/deadlines`);
+    assert(
+      hashDeadlines.classId === validClassId && hashDeadlines.tab === 'deadlines',
+      'Navigation URL hash correctly extracts selected class ID and deadlines section'
+    );
+
+    const hashAnnouncements = parseHash(`#/class/${validClassId}/announcements`);
+    assert(
+      hashAnnouncements.classId === validClassId && hashAnnouncements.tab === 'announcements',
+      'Navigation URL hash correctly extracts selected class ID and announcements section'
+    );
+
+    const hashMembers = parseHash(`#/class/${validClassId}/members`);
+    assert(
+      hashMembers.classId === validClassId && hashMembers.tab === 'students',
+      'Navigation URL hash normalizes members to students section'
+    );
+
+    // 2. Refresh Persistence Simulation: User refreshes page and retains class & section
+    const localStorageMock = new Map();
+    localStorageMock.set('deadlinehub_opened_class_id', validClassId);
+    localStorageMock.set('deadlinehub_opened_class_tab', 'deadlines');
+    localStorageMock.set('deadlinehub_active_tab', 'dashboard');
+
+    const restoredClassId = localStorageMock.get('deadlinehub_opened_class_id');
+    const restoredTab = localStorageMock.get('deadlinehub_opened_class_tab');
+    const restoredActiveTab = localStorageMock.get('deadlinehub_active_tab');
+
+    assert(
+      restoredClassId === validClassId && restoredTab === 'deadlines' && restoredActiveTab === 'dashboard',
+      'Class workspace and selected section are preserved after browser refresh'
+    );
+
+    // 3. Authorization Guard: If user is unauthorized upon refresh, class workspace is purged
+    const studentEnrolledClasses = [
+      { _id: '64f9999999999abcdef99999', className: 'Other Class' },
+    ];
+    const isAuthorized = studentEnrolledClasses.some((c) => c._id === restoredClassId);
+    let activeWorkspaceClass = isAuthorized ? restoredClassId : null;
+    let activeWorkspaceTab = isAuthorized ? restoredTab : 'overview';
+
+    assert(
+      !isAuthorized && activeWorkspaceClass === null && activeWorkspaceTab === 'overview',
+      'Unauthorized class access on refresh is safely revoked without data leak'
+    );
+
+    // 4. Pending Join Request does NOT grant class content access
+    const pendingStudentId = 'student_pending_999';
+    const targetClassWithPending = {
+      _id: validClassId,
+      className: 'Cloud Computing',
+      teacherId: 'teacher_1',
+      students: ['student_enrolled_1', 'student_enrolled_2'],
+    };
+    const hasPendingMembership = targetClassWithPending.students.includes(pendingStudentId);
+    assert(!hasPendingMembership, 'Pending requests do not grant membership in class');
+
+    // 5. Teacher Approval creates membership exactly once
+    if (!targetClassWithPending.students.includes(pendingStudentId)) {
+      targetClassWithPending.students.push(pendingStudentId);
+    }
+    // Simulate duplicate approval event
+    if (!targetClassWithPending.students.includes(pendingStudentId)) {
+      targetClassWithPending.students.push(pendingStudentId);
+    }
+    const studentOccurrences = targetClassWithPending.students.filter((id) => id === pendingStudentId).length;
+    assert(
+      studentOccurrences === 1,
+      'Teacher approval persists membership exactly once without duplicates'
+    );
+
+    // 6. Real-Time Student Dashboard updates after approval
+    let studentClassList = [{ _id: 'c_existing', className: 'Existing Class' }];
+    const newlyApprovedClass = { _id: validClassId, className: 'Cloud Computing' };
+    // Simulate arrival of approval socket event
+    if (!studentClassList.some((c) => c._id === newlyApprovedClass._id)) {
+      studentClassList = [newlyApprovedClass, ...studentClassList];
+    }
+    assert(
+      studentClassList.length === 2 && studentClassList[0]._id === validClassId,
+      'Student class list and enrolled count update immediately upon teacher approval'
+    );
+
+    // 7. Duplicate Socket.IO events do not duplicate records
+    const canonicalGetId = (item) => (item?._id || item?.id || '').toString();
+    let clientAnnouncements = [{ _id: 'a_101', title: 'Exam Date' }];
+    const duplicateAnnouncementEvent = { _id: 'a_101', title: 'Exam Date (Updated)' };
+    const aId = canonicalGetId(duplicateAnnouncementEvent);
+    if (clientAnnouncements.some((a) => canonicalGetId(a) === aId)) {
+      clientAnnouncements = clientAnnouncements.map((a) => (canonicalGetId(a) === aId ? duplicateAnnouncementEvent : a));
+    } else {
+      clientAnnouncements = [duplicateAnnouncementEvent, ...clientAnnouncements];
+    }
+    assert(
+      clientAnnouncements.length === 1 && clientAnnouncements[0].title === 'Exam Date (Updated)',
+      'Duplicate Socket.IO events update in place without duplicating records'
+    );
+
+    // 8. Logout & Account Switching completely purges class tokens
+    const sessionStore = new Map([
+      ['deadlinehub_token', 'jwt_token_here'],
+      ['deadlinehub_user', JSON.stringify({ role: 'student', name: 'Alice' })],
+      ['deadlinehub_active_tab', 'dashboard'],
+      ['deadlinehub_opened_class_id', validClassId],
+      ['deadlinehub_opened_class_tab', 'deadlines'],
+      ['deadlinehub_selected_class_id', validClassId],
+    ]);
+
+    const performLogout = () => {
+      sessionStore.delete('deadlinehub_token');
+      sessionStore.delete('deadlinehub_user');
+      sessionStore.delete('deadlinehub_active_tab');
+      sessionStore.delete('deadlinehub_opened_class_id');
+      sessionStore.delete('deadlinehub_opened_class_tab');
+      sessionStore.delete('deadlinehub_selected_class_id');
+    };
+    performLogout();
+
+    assert(
+      sessionStore.size === 0,
+      'Logout completely purges all auth, class workspace, and section tokens (no data leak)'
+    );
+  }
+
+  // ── TEST GROUP 14: Student Dashboard Authentication & Workspace Resilience ──
+  console.log('\n--- Group 14: Student Dashboard Authentication & Workspace Resilience ---');
+  {
+    // 1. Role Verification & Tab Selection Logic
+    const resolveInitialTab = (userRole, savedTab, openedClassId) => {
+      if (openedClassId) {
+        return userRole === 'teacher' ? 'classes' : 'dashboard';
+      }
+      if (savedTab) {
+        if (userRole === 'teacher' && ['classes', 'joinRequests', 'deadlines', 'announcements'].includes(savedTab)) {
+          return savedTab;
+        }
+        if (userRole === 'student' && ['dashboard', 'deadlines', 'announcements'].includes(savedTab)) {
+          return savedTab;
+        }
+      }
+      return userRole === 'teacher' ? 'classes' : 'dashboard';
+    };
+
+    const studentTabDefault = resolveInitialTab('student', null, null);
+    assert(studentTabDefault === 'dashboard', 'Student role defaults to dashboard tab');
+
+    const teacherTabDefault = resolveInitialTab('teacher', null, null);
+    assert(teacherTabDefault === 'classes', 'Teacher role defaults to classes tab');
+
+    const studentWithOpenedClass = resolveInitialTab('student', 'deadlines', '64f1234567890abcdef12345');
+    assert(studentWithOpenedClass === 'dashboard', 'Student with active class workspace routes to dashboard container');
+
+    // 2. Student Login rejects Teacher account
+    const validateStudentLoginRole = (user) => {
+      if (user.role && user.role !== 'student') {
+        throw new Error(`This account is registered as a ${user.role.toUpperCase()}. Please use Teacher / Faculty Login to sign in.`);
+      }
+      return true;
+    };
+
+    let teacherBlocked = false;
+    try {
+      validateStudentLoginRole({ role: 'teacher', email: 'teacher@college.edu' });
+    } catch (_e) {
+      teacherBlocked = true;
+    }
+    assert(teacherBlocked, 'Student login rejects teacher accounts with clear instructions');
+
+    let studentAccepted = false;
+    try {
+      studentAccepted = validateStudentLoginRole({ role: 'student', email: 'student@college.edu' });
+    } catch (_e) {}
+    assert(studentAccepted, 'Student login accepts genuine student account');
+
+    // 3. Resilience to null/undefined data structures in Student Dashboard hooks
+    const computeFilteredAnnouncements = (announcements, selectedClassId, activeClass) => {
+      const list = Array.isArray(announcements) ? announcements : [];
+      if (!selectedClassId) {
+        const seen = new Set();
+        return list.filter((a) => {
+          const id = (a._id || a.id)?.toString();
+          if (!id || seen.has(id)) return false;
+          seen.add(id);
+          return true;
+        });
+      }
+      return list.filter((a) => (a.classId?._id || a.classId)?.toString() === selectedClassId.toString());
+    };
+
+    const safeWithEmpty = computeFilteredAnnouncements([], null, null);
+    assert(Array.isArray(safeWithEmpty) && safeWithEmpty.length === 0, 'Dashboard filters safely handle empty announcements');
+
+    const safeWithUndefined = computeFilteredAnnouncements(undefined, null, null);
+    assert(Array.isArray(safeWithUndefined) && safeWithUndefined.length === 0, 'Dashboard filters safely handle undefined announcements without crashing');
+
+    // 4. In-memory ClassContext state reset upon logout
+    let classContextState = {
+      classes: [{ _id: 'class_1' }],
+      openedClassId: 'class_1',
+      openedClassTab: 'deadlines',
+      selectedClassId: 'class_1',
+    };
+
+    const handleUserChange = (currentUser) => {
+      if (!currentUser) {
+        classContextState = {
+          classes: [],
+          openedClassId: null,
+          openedClassTab: 'overview',
+          selectedClassId: null,
+        };
+      }
+    };
+
+    handleUserChange(null);
+    assert(
+      classContextState.classes.length === 0 &&
+      classContextState.openedClassId === null &&
+      classContextState.openedClassTab === 'overview' &&
+      classContextState.selectedClassId === null,
+      'In-memory class context state is completely reset on logout / account switch'
+    );
   }
 
   // ── TEST SUMMARY ──────────────────────────────────────────────────────

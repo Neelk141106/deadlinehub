@@ -1,4 +1,4 @@
-# DeadlineHub — Feature Tickets
+# DeadlineHub â€” Feature Tickets
 
 ## Ticket Rules
 
@@ -10,7 +10,7 @@
 
 ---
 
-# Experiment 1 — Tailwind CSS
+# Experiment 1 â€” Tailwind CSS
 
 ## Goal
 
@@ -22,9 +22,9 @@ No backend, database, authentication logic, APIs or real-time functionality shou
 
 ---
 
-## Phase 1 — Foundation
+## Phase 1 â€” Foundation
 
-### DH-001 — Configure Tailwind CSS
+### DH-001 â€” Configure Tailwind CSS
 Status: DONE
 
 - Install required Tailwind dependencies
@@ -32,7 +32,7 @@ Status: DONE
 - Verify Tailwind utility classes work
 - Do not build application screens yet
 
-### DH-002 — Clean Vite Starter
+### DH-002 â€” Clean Vite Starter
 Status: DONE
 
 - Remove default Vite demo content
@@ -40,7 +40,7 @@ Status: DONE
 - Keep the React application working
 - Create a clean application starting point
 
-### DH-003 — Establish DeadlineHub Design System
+### DH-003 â€” Establish DeadlineHub Design System
 Status: DONE
 
 Define reusable frontend styling for:
@@ -61,9 +61,9 @@ Follow FRONTEND_DOC.md.
 
 ---
 
-# Phase 2 — Shared Layout
+# Phase 2 â€” Shared Layout
 
-### DH-004 — Responsive Student Navigation
+### DH-004 â€” Responsive Student Navigation
 Status: DONE
 
 Create static navigation containing:
@@ -84,7 +84,7 @@ Secondary actions may include:
 - Settings
 - Logout
 
-### DH-005 — Shared UI Components
+### DH-005 â€” Shared UI Components
 Status: DONE
 
 Create reusable static UI components where appropriate, such as:
@@ -99,9 +99,9 @@ Avoid unnecessary abstraction.
 
 ---
 
-# Phase 3 — Student Dashboard
+# Phase 3 â€” Student Dashboard
 
-### DH-006 — Deadline Card
+### DH-006 â€” Deadline Card
 Status: DONE
 
 Create reusable deadline card UI.
@@ -123,7 +123,7 @@ Do NOT include:
 - Turn In
 - Assignment completion actions
 
-### DH-007 — Announcement Card
+### DH-007 â€” Announcement Card
 Status: DONE
 
 Create reusable announcement card UI.
@@ -137,7 +137,7 @@ Display:
 - Posted time
 - Pinned indicator when applicable
 
-### DH-008 — Student Dashboard
+### DH-008 â€” Student Dashboard
 Status: DONE
 
 Build the static student dashboard.
@@ -152,11 +152,11 @@ Include:
 
 Example class:
 
-IT • Semester 5 • D15C
+IT â€¢ Semester 5 â€¢ D15C
 
 Use realistic hardcoded academic data.
 
-### DH-009 — Dashboard Responsiveness
+### DH-009 â€” Dashboard Responsiveness
 Status: DONE
 
 Verify dashboard on:
@@ -169,9 +169,9 @@ No horizontal scrolling.
 
 ---
 
-# Phase 4 — Student Pages
+# Phase 4 â€” Student Pages
 
-### DH-010 — All Deadlines Page
+### DH-010 â€” All Deadlines Page
 Status: DONE
 
 Create static deadlines page.
@@ -185,7 +185,7 @@ Include:
 
 Filters are visual only during Experiment 1.
 
-### DH-011 — Announcements Page
+### DH-011 â€” Announcements Page
 Status: DONE
 
 Create static announcement board.
@@ -201,9 +201,9 @@ Filters are visual only during Experiment 1.
 
 ---
 
-# Phase 5 — Entry & Class Joining UI
+# Phase 5 â€” Entry & Class Joining UI
 
-### DH-012 — Welcome / Role Selection
+### DH-012 â€” Welcome / Role Selection
 Status: DONE
 
 Create a simple welcome screen with:
@@ -211,14 +211,14 @@ Create a simple welcome screen with:
 - Student entry
 - Teacher/Admin entry
 
-### DH-013 — Student Login UI
+### DH-013 â€” Student Login UI
 Status: DONE
 
 Create student login interface.
 
 No real authentication.
 
-### DH-014 — Student Registration UI
+### DH-014 â€” Student Registration UI
 Status: DONE
 
 Fields:
@@ -231,14 +231,14 @@ Fields:
 
 No real registration logic.
 
-### DH-015 — Teacher/Admin Login UI
+### DH-015 â€” Teacher/Admin Login UI
 Status: DONE
 
 Create separate Teacher/Admin login interface.
 
 No real authentication.
 
-### DH-016 — Join Class UI
+### DH-016 â€” Join Class UI
 Status: DONE
 
 Create static class joining flow.
@@ -258,16 +258,16 @@ No real join logic.
 
 ---
 
-# Phase 6 — Teacher/Admin UI
+# Phase 6 â€” Teacher/Admin UI
 
-### DH-017 — Teacher/Admin Layout
+### DH-017 â€” Teacher/Admin Layout
 Status: DONE
 
 Create basic administrative navigation/layout.
 
 Keep it simple and consistent with the student interface.
 
-### DH-018 — Classes Page
+### DH-018 â€” Classes Page
 Status: DONE
 
 Display hardcoded class cards.
@@ -280,7 +280,7 @@ Semester 5
 72 Students
 Class Code: D15C-5IT
 
-### DH-019 — Join Requests UI
+### DH-019 â€” Join Requests UI
 Status: DONE
 
 Display hardcoded join requests.
@@ -298,7 +298,7 @@ Static actions:
 
 No actual approval logic.
 
-### DH-020 — Deadline Management UI
+### DH-020 â€” Deadline Management UI
 Status: DONE
 
 Create static Teacher/Admin deadline management interface.
@@ -311,7 +311,7 @@ Include:
 
 No persistence.
 
-### DH-021 — Announcement Management UI
+### DH-021 â€” Announcement Management UI
 Status: DONE
 
 Create static announcement management interface.
@@ -327,9 +327,9 @@ No persistence.
 
 ---
 
-# Phase 7 — Final Experiment 1 Quality
+# Phase 7 â€” Final Experiment 1 Quality
 
-### DH-022 — Responsive Review
+### DH-022 â€” Responsive Review
 Status: DONE
 
 Review all Experiment 1 screens on:
@@ -346,7 +346,7 @@ Fix:
 - Broken layouts
 - Inconsistent navigation
 
-### DH-023 — UI Consistency Review
+### DH-023 â€” UI Consistency Review
 Status: DONE
 
 Verify consistent:
@@ -360,7 +360,7 @@ Verify consistent:
 - Spacing
 - Navigation
 
-### DH-024 — Scope Review
+### DH-024 â€” Scope Review
 Status: DONE
 
 Confirm Experiment 1 contains NO:
@@ -394,7 +394,7 @@ Experiment 1 is complete when:
 
 ---
 
-# Experiment 2 — React Hooks
+# Experiment 2 â€” React Hooks
 
 ## Goal
 
@@ -404,15 +404,15 @@ No backend, database, APIs, JWT or Socket.IO should be implemented.
 
 ---
 
-## Phase 1 — Setup & Data Calculation
+## Phase 1 â€” Setup & Data Calculation
 
-### EH-001 — Experiment 2 Setup
+### EH-001 â€” Experiment 2 Setup
 Status: DONE
 
 - Update project documentation for Experiment 2
 - Establish feature ticket list
 
-### EH-002 — Deadline Urgency Calculation
+### EH-002 â€” Deadline Urgency Calculation
 Status: DONE
 
 - Create utility to calculate deadline urgency (e.g., 'Due Today', 'Due Tomorrow', 'Past')
@@ -420,27 +420,27 @@ Status: DONE
 
 ---
 
-## Phase 2 — Search and Filtering
+## Phase 2 â€” Search and Filtering
 
-### EH-003 — Deadline Search
+### EH-003 â€” Deadline Search
 Status: DONE
 
 - Implement text search for deadlines
 - Filter list dynamically based on input
 
-### EH-004 — Deadline Filters
+### EH-004 â€” Deadline Filters
 Status: DONE
 
 - Implement status/priority/type filters for deadlines
 - Update UI to reflect active filters
 
-### EH-005 — Announcement Search
+### EH-005 â€” Announcement Search
 Status: DONE
 
 - Implement text search for announcements
 - Filter list dynamically based on input
 
-### EH-006 — Announcement Filters
+### EH-006 â€” Announcement Filters
 Status: DONE
 
 - Implement category/priority filters for announcements
@@ -448,21 +448,21 @@ Status: DONE
 
 ---
 
-## Phase 3 — Forms & Dynamic UI
+## Phase 3 â€” Forms & Dynamic UI
 
-### EH-007 — Add/Edit Forms with useState
+### EH-007 â€” Add/Edit Forms with useState
 Status: DONE
 
 - Implement controlled components for forms
 - Add static form validation
 
-### EH-008 — Dashboard Derived Data
+### EH-008 â€” Dashboard Derived Data
 Status: DONE
 
 - Update dashboard to show actual counts (e.g., '2 Due Soon') based on mock data
 - Ensure 'Needs Attention' section updates dynamically
 
-### EH-009 — useEffect-based UI Updates
+### EH-009 â€” useEffect-based UI Updates
 Status: DONE
 
 - Use useEffect to handle component mounting or mock data loading
@@ -470,9 +470,9 @@ Status: DONE
 
 ---
 
-## Phase 4 — Final Review
+## Phase 4 â€” Final Review
 
-### EH-010 — Experiment 2 Final Review
+### EH-010 â€” Experiment 2 Final Review
 Status: DONE
 
 - Review all dynamic behavior
@@ -483,7 +483,7 @@ Status: DONE
 
 # UI Enhancements (Post-Experiment 2)
 
-### UI-ENH-001 — Public Landing Page
+### UI-ENH-001 â€” Public Landing Page
 Status: DONE
 
 - Add clean, modern, minimal hero-style intro landing page before Role Selection
@@ -496,7 +496,7 @@ Status: DONE
 
 ---
 
-# Experiment 3 — Context API
+# Experiment 3 â€” Context API
 
 ## Goal
 
@@ -506,13 +506,13 @@ No Redux, backend, database, REST APIs, JWT, or WebSockets should be introduced.
 
 ---
 
-### E3-001 — Experiment 3 Setup
+### E3-001 â€” Experiment 3 Setup
 Status: DONE
 
 - Update PROJECT_CONTEXT.md to show Experiment 3 in progress
 - Add Experiment 3 ticket list to docs/FEATURE_TICKETS.md
 
-### E3-002 — Global Deadline Context
+### E3-002 â€” Global Deadline Context
 Status: DONE
 
 - Create DeadlineContext foundation (createContext, useContext, useState)
@@ -520,49 +520,49 @@ Status: DONE
 - Expose deadlines, addDeadline, updateDeadline, and deleteDeadline / removeDeadline functions
 - Wrap application with DeadlineProvider
 
-### E3-003 — Connect Deadline Views to Context
+### E3-003 â€” Connect Deadline Views to Context
 Status: TODO
 
 - Connect Deadlines page to DeadlineContext
 
-### E3-004 — Global Deadline Add/Edit
+### E3-004 â€” Global Deadline Add/Edit
 Status: TODO
 
 - Connect Teacher/Admin Deadline Management to DeadlineContext
 
-### E3-005 — Global Announcement Context
+### E3-005 â€” Global Announcement Context
 Status: TODO
 
 - Create AnnouncementContext foundation
 
-### E3-006 — Connect Announcement Views to Context
+### E3-006 â€” Connect Announcement Views to Context
 Status: TODO
 
 - Connect Announcements page to AnnouncementContext
 
-### E3-007 — Global Announcement Add/Edit
+### E3-007 â€” Global Announcement Add/Edit
 Status: TODO
 
 - Connect Teacher/Admin Announcement Management to AnnouncementContext
 
-### E3-008 — Connect Dashboard to Global State
+### E3-008 â€” Connect Dashboard to Global State
 Status: TODO
 
 - Connect Student Dashboard to consume global deadline and announcement contexts
 
-### E3-009 — Remove Duplicate Local Data
+### E3-009 â€” Remove Duplicate Local Data
 Status: TODO
 
 - Clean up isolated local states and unused duplicate initial mock data in individual components
 
-### E3-010 — Experiment 3 Final Review
+### E3-010 â€” Experiment 3 Final Review
 Status: DONE
 
 - Conduct complete verification of global state management across all roles and screens
 
 ---
 
-# Experiment 4 — MongoDB + Mongoose Integration
+# Experiment 4 â€” MongoDB + Mongoose Integration
 
 ## Goal
 
@@ -570,7 +570,7 @@ REST API Design with MongoDB + Mongoose Integration. Replace in-memory mock data
 
 ---
 
-### E4-001 — Backend + Express Setup
+### E4-001 â€” Backend + Express Setup
 Status: DONE
 
 - Configure minimal Express backend in server/
@@ -578,28 +578,28 @@ Status: DONE
 - Core middleware (cors, express.json)
 - Base routes: GET / and GET /api/health
 
-### E4-002 — MongoDB + Mongoose Connection
+### E4-002 â€” MongoDB + Mongoose Connection
 Status: DONE
 
 - Mongoose connection utility (server/src/config/db.js)
 - Explicit DNS resolvers for MongoDB Atlas SRV record resolution
 - Clean error handling and server startup integration
 
-### E4-003 — Deadline Model & REST API
+### E4-003 â€” Deadline Model & REST API
 Status: DONE
 
 - Deadline Mongoose schema with timestamps and required validation
 - REST endpoints: GET, POST, GET /:id, PUT /:id, DELETE /:id
 - Appropriate HTTP status codes (200, 201, 400, 404, 500)
 
-### E4-004 — Announcement Model & REST API
+### E4-004 â€” Announcement Model & REST API
 Status: DONE
 
 - Announcement Mongoose schema with timestamps and required validation
 - REST endpoints: GET, POST, GET /:id, PUT /:id, DELETE /:id
 - Appropriate HTTP status codes (200, 201, 400, 404, 500)
 
-### E4-005 — Connect Deadline Context to REST API
+### E4-005 â€” Connect Deadline Context to REST API
 Status: DONE
 
 - Connect DeadlineContext to backend REST API endpoints
@@ -607,14 +607,14 @@ Status: DONE
 - Fix "Invalid Date" bug by standardizing dueDate ISO parsing
 - Implement dynamic minDate and past-date validation for new deadlines
 
-### E4-006 — Connect Announcement Context to REST API
+### E4-006 â€” Connect Announcement Context to REST API
 Status: DONE
 
 - Connect AnnouncementContext to backend REST API endpoints
 - Persist add, update, delete, and togglePin operations to MongoDB
 - Re-sort announcements dynamically (pinned first, then chronological)
 
-### E4-007 — Persistence & Error Handling
+### E4-007 â€” Persistence & Error Handling
 Status: DONE
 
 - Robust error handling across DeadlineContext, AnnouncementContext, and native fetch API service
@@ -622,16 +622,16 @@ Status: DONE
 - Standardized REST response codes across Express routes (200, 201, 400, 404, 500)
 - Single source of truth in MongoDB without duplicate storage or localStorage
 
-### E4-008 — Experiment 4 Final Review
+### E4-008 â€” Experiment 4 Final Review
 Status: DONE
 
 - Comprehensive review of complete Experiment 4 architecture
-- Verified end-to-end data flow: React Components → Context API → REST API → Express → Mongoose → MongoDB Atlas
+- Verified end-to-end data flow: React Components â†’ Context API â†’ REST API â†’ Express â†’ Mongoose â†’ MongoDB Atlas
 - Verified complete CRUD operations, persistence, date formatting, and input validation
 
 ---
 
-# Experiment 5 — Secure REST APIs
+# Experiment 5 â€” Secure REST APIs
 
 ## Goal
 
@@ -639,7 +639,7 @@ Strengthen backend REST APIs with input validation, centralized error handling, 
 
 ---
 
-### E5-001 — Request Validation
+### E5-001 â€” Request Validation
 Status: DONE
 
 - Validate Deadline payloads (title required/non-empty, dueDate valid date format, preserve model defaults)
@@ -648,7 +648,7 @@ Status: DONE
 - Malformed payloads and invalid inputs return structured 400 Bad Request
 - Existing overdue deadlines are not invalidated
 
-### E5-002 — Centralized Error Handling
+### E5-002 â€” Centralized Error Handling
 Status: DONE
 
 - Centralized error handling middleware catching Mongoose ValidationErrors, CastErrors, JSON SyntaxErrors, and custom AppErrors
@@ -657,14 +657,14 @@ Status: DONE
 - Zero exposure of internal stack traces, DB details, or environment secrets
 - Backend remains stable and running across all error conditions
 
-### E5-003 — Security Middleware
+### E5-003 â€” Security Middleware
 Status: DONE
 
 - Installed and configured `helmet` with custom cross-origin resource policy
 - Explicitly disabled `x-powered-by` header
 - Added security headers (X-Content-Type-Options, X-Frame-Options, Strict-Transport-Security)
 
-### E5-004 — Safer CORS & Request Limits
+### E5-004 â€” Safer CORS & Request Limits
 Status: DONE
 
 - Explicit CORS configuration allowing only trusted Vite frontend origin (`http://localhost:5173`, `http://127.0.0.1:5173`)
@@ -674,7 +674,7 @@ Status: DONE
 
 ---
 
-# Experiment 6 — JWT Authentication & Role-Based Access
+# Experiment 6 â€” JWT Authentication & Role-Based Access
 
 ## Goal
 
@@ -682,7 +682,7 @@ Implement secure user registration, authentication with JSON Web Tokens (JWT), p
 
 ---
 
-### E6-001 — User Model + Authentication Structure
+### E6-001 â€” User Model + Authentication Structure
 Status: DONE
 
 - Mongoose User schema with name, email, password, role (student/teacher), and student metadata (studentCode, department, semester, division)
@@ -690,7 +690,7 @@ Status: DONE
 - Timestamps and sanitized toJSON transform (never serializes password or hash)
 - Auth route structure established at `/api/auth`
 
-### E6-002 — User Registration + Password Hashing
+### E6-002 â€” User Registration + Password Hashing
 Status: DONE
 
 - Password hashing using bcryptjs with 10 salt rounds before storing in MongoDB
@@ -700,7 +700,7 @@ Status: DONE
 - Passwords and hashes strictly excluded from API responses
 - Student registration form connected to registration API with feedback states
 
-### E6-003 — Login + JWT Generation
+### E6-003 â€” Login + JWT Generation
 Status: DONE
 
 - User login endpoint `POST /api/auth/login`
@@ -709,7 +709,7 @@ Status: DONE
 - Return token and user metadata (never password or hash)
 - Student and Teacher login forms connected to backend authentication
 
-### E6-004 — Auth Middleware & Protected Routes
+### E6-004 â€” Auth Middleware & Protected Routes
 Status: DONE
 
 - `authMiddleware` created to parse and verify `Authorization: Bearer <token>`
@@ -719,17 +719,17 @@ Status: DONE
 - Persistent login support via `localStorage`
 - Native `api.js` updated to inject `Authorization` header on all requests
 
-### E6-005 — Role-Based Access Control
+### E6-005 â€” Role-Based Access Control
 Status: DONE
 
 - `requireRole` middleware in `server/src/middleware/roleMiddleware.js`
 - POST, PUT, DELETE on deadlines and announcements restricted to `teacher` role
 - Students retain read-only (GET) access to all resource endpoints
 - 403 Forbidden returned for unauthorized write attempts
-- Frontend derives role from backend JWT — no manual role selection permitted
+- Frontend derives role from backend JWT â€” no manual role selection permitted
 - Mobile management table action buttons always visible on touch devices
 
-### E6-006 — Logout + Persistent Session + Real Profile
+### E6-006 â€” Logout + Persistent Session + Real Profile
 Status: DONE
 
 - Logout clears token, user state, and resets activeTab to prevent stale navigation state
@@ -738,7 +738,7 @@ Status: DONE
 - Mobile avatar initial letter derived from real user name
 - Announcement `postedBy` field uses real authenticated teacher name from AuthContext
 
-### E6-007 — Final Auth / Mobile / UX Verification
+### E6-007 â€” Final Auth / Mobile / UX Verification
 Status: DONE
 
 - Verified Student role authentication, read-only API access, and UI restriction from administrative controls
@@ -747,7 +747,7 @@ Status: DONE
 - Verified authenticated user profile display with zero password/hash exposure
 - Verified mobile viewport layouts, card rendering, unclipped action buttons, and safe bottom navigation padding
 
-### E6-008 — Final Documentation / Completion Status
+### E6-008 â€” Final Documentation / Completion Status
 Status: DONE
 
 - Updated PROJECT_CONTEXT.md and docs/FEATURE_TICKETS.md with complete Experiment 6 deliverables
@@ -755,7 +755,7 @@ Status: DONE
 
 ---
 
-# Experiment 7 — Validating RESTful APIs using Postman
+# Experiment 7 â€” Validating RESTful APIs using Postman
 
 ## Goal
 
@@ -763,7 +763,7 @@ Validate DeadlineHub RESTful APIs using Postman. Test authentication, deadlines,
 
 ---
 
-### E7-001 — Postman Collection & API Testing Setup
+### E7-001 â€” Postman Collection & API Testing Setup
 Status: DONE
 
 - Created complete Postman v2.1.0 collection (`postman/DeadlineHub_API.postman_collection.json`)
@@ -775,7 +775,7 @@ Status: DONE
 - Created Postman environment file (`postman/DeadlineHub_Environment.postman_environment.json`) with conceptual variables: `baseUrl = http://localhost:5000`, `token = <JWT>`
 - Ensured zero exposure of secrets, database credentials, passwords, or MongoDB URIs
 
-### E7-002 — Validate GET APIs
+### E7-002 â€” Validate GET APIs
 Status: DONE
 
 - Validated `GET /api/deadlines` with Bearer token authentication (Expected: 200, Actual: 200)
@@ -787,7 +787,7 @@ Status: DONE
 - Validated nonexistent valid ObjectId error handling (Expected: 404, Actual: 404)
 - Documented all test execution results in `docs/POSTMAN_API_TESTING.md`
 
-### E7-003 — Validate POST APIs
+### E7-003 â€” Validate POST APIs
 Status: DONE
 
 - Validated `POST /api/deadlines` with Teacher JWT creating deadline (Expected: 201, Actual: 201)
@@ -799,7 +799,7 @@ Status: DONE
 - Validated Student JWT attempting creation returning 403 Forbidden via RBAC middleware
 - Documented all test results in `docs/POSTMAN_API_TESTING.md`
 
-### E7-004 — Validate PUT and DELETE APIs
+### E7-004 â€” Validate PUT and DELETE APIs
 Status: DONE
 
 - Created dedicated temporary test documents to protect existing application data
@@ -813,7 +813,7 @@ Status: DONE
 - Validated missing JWT returning 401 Unauthorized on PUT and DELETE
 - Documented all test results in `docs/POSTMAN_API_TESTING.md`
 
-### E7-005 — JWT Authentication Testing
+### E7-005 â€” JWT Authentication Testing
 Status: DONE
 
 - Validated `POST /api/auth/login` with valid Student credentials (Expected: 200, Actual: 200, JWT returned)
@@ -827,7 +827,7 @@ Status: DONE
 - Validated `GET /api/auth/me` with valid Teacher JWT (Expected: 200, Actual: 200)
 - Documented all test results in `docs/POSTMAN_API_TESTING.md`
 
-### E7-006 — Role-Based Authorization Testing
+### E7-006 â€” Role-Based Authorization Testing
 Status: DONE
 
 - Configured Postman collection and environment to support distinct `{{studentToken}}` and `{{teacherToken}}`
@@ -839,7 +839,7 @@ Status: DONE
 
 ---
 
-# Experiment 8 — Real-Time Communication using WebSockets / Socket.IO
+# Experiment 8 â€” Real-Time Communication using WebSockets / Socket.IO
 
 ## Goal
 
@@ -847,7 +847,7 @@ Integrate Socket.IO into DeadlineHub for real-time communication between server 
 
 ---
 
-### E8-001 — Socket.IO Backend Setup
+### E8-001 â€” Socket.IO Backend Setup
 Status: DONE
 
 - Installed `socket.io` dependency on the Express backend server
@@ -858,7 +858,7 @@ Status: DONE
 - Attached `io` instance to Express app (`app.set('io', io)`) for route-level broadcasting
 - Kept all existing REST APIs, JWT authentication, RBAC, MongoDB, validation, and error handling intact
 
-### E8-002 — Socket.IO Frontend Connection
+### E8-002 â€” Socket.IO Frontend Connection
 Status: DONE
 
 - Installed `socket.io-client` dependency on React frontend
@@ -867,7 +867,7 @@ Status: DONE
 - Integrated `SocketProvider` into `src/main.jsx` provider tree
 - Exposed live connection status (`connected`) and socket instance to downstream components
 
-### E8-003 — Real-Time Deadline & Announcement Updates
+### E8-003 â€” Real-Time Deadline & Announcement Updates
 Status: DONE
 
 - Connected backend REST handlers to Socket.IO via `req.app.get('io')`
@@ -885,7 +885,7 @@ Status: DONE
 - Ensured unmount cleanup using `socket.off(...)` to prevent event listener leakage
 - Confirmed full build correctness (`npm run build`) and verified with end-to-end automated socket event test suite
 
-### E8-004 — Real-Time Notifications / Activity
+### E8-004 â€” Real-Time Notifications / Activity
 Status: DONE
 
 - Built `src/context/NotificationContext.jsx` with `NotificationProvider` and `useNotification` hook
@@ -903,7 +903,7 @@ Status: DONE
 - Integrated into `DeadlineProvider` tree wrapping `{children}` so notifications function globally across all views without page refresh
 - Production build verified (`npm run build`)
 
-### E8-005 — Socket.IO Disconnect / Reconnect / Error Handling
+### E8-005 â€” Socket.IO Disconnect / Reconnect / Error Handling
 Status: DONE
 
 - Configured Socket.IO client automatic reconnection with exponential backoff options in `src/context/SocketContext.jsx`:
@@ -931,10 +931,10 @@ Status: DONE
 - Confirmed the React application remains fully responsive and does not crash when the backend server disconnects, restarts, or fails to connect
 - Verified disconnect and reconnect behavior with automated script test
 
-### E8-006 — Final Testing and Documentation
+### E8-006 â€” Final Testing and Documentation
 Status: DONE
 
-- Tested Socket.IO connection and handshake endpoints (`/socket.io/?EIO=4&transport=polling` → 200 OK)
+- Tested Socket.IO connection and handshake endpoints (`/socket.io/?EIO=4&transport=polling` â†’ 200 OK)
 - Verified real-time deadline CRUD events (`deadline:created`, `deadline:updated`, `deadline:deleted`) broadcast instantly to connected clients
 - Verified real-time announcement CRUD events (`announcement:created`, `announcement:updated`, `announcement:deleted`) broadcast instantly to connected clients
 - Verified real-time notifications via `NotificationContext` display toast alerts without page refresh
@@ -955,25 +955,25 @@ Provide a Google Classroom-style authentication and class management flow where 
 
 ---
 
-### CM-001 — Class Entity & Database Relationships
+### CM-001 â€” Class Entity & Database Relationships
 Status: DONE
 
 - Implemented `server/src/models/Class.js` with `className`, `subject`, `semester`, `division`, unique uppercase `classCode`, `teacherId` (ref User), and `students` ([ref User])
 - Added indexing on `teacherId` and `students` for query efficiency
 - Added optional `classId` reference to `server/src/models/Deadline.js` and `server/src/models/Announcement.js` with full backward compatibility
 
-### CM-002 — Backend Class REST APIs & RBAC Authorization
+### CM-002 â€” Backend Class REST APIs & RBAC Authorization
 Status: DONE
 
 - Implemented `server/src/routes/classRoutes.js` and mounted on `/api/classes` with `authMiddleware`
-- `POST /api/classes` — Teacher creates a class with auto-generated unique class code (e.g. `D15C-5IT`) or optional custom code (201 Created)
-- `GET /api/classes` & `GET /api/classes/my-classes` — Returns teacher's owned classes or student's enrolled classes
-- `GET /api/classes/:id` — Returns class details with 403 authorization guard for non-enrolled students or non-owner teachers
-- `POST /api/classes/join` — Student joins class with class code; enforces role remains 'student', rejects duplicate joining (400), and validates existence (404)
-- `DELETE /api/classes/:id` — Teacher deletes own class; student or non-owner teacher rejected with 403 Forbidden
+- `POST /api/classes` â€” Teacher creates a class with auto-generated unique class code (e.g. `D15C-5IT`) or optional custom code (201 Created)
+- `GET /api/classes` & `GET /api/classes/my-classes` â€” Returns teacher's owned classes or student's enrolled classes
+- `GET /api/classes/:id` â€” Returns class details with 403 authorization guard for non-enrolled students or non-owner teachers
+- `POST /api/classes/join` â€” Student joins class with class code; enforces role remains 'student', rejects duplicate joining (400), and validates existence (404)
+- `DELETE /api/classes/:id` â€” Teacher deletes own class; student or non-owner teacher rejected with 403 Forbidden
 - Real-time events broadcast via Socket.IO: `class:created`, `class:student-joined`, `class:deleted`
 
-### CM-003 — Frontend Class Management & Student Dashboard
+### CM-003 â€” Frontend Class Management & Student Dashboard
 Status: DONE
 
 - Added `classApi` in `src/api/api.js` supporting all CRUD and join actions
@@ -983,7 +983,7 @@ Status: DONE
 - Updated `src/components/JoinClass.jsx` to execute real-time code verification against backend API
 - Verified clean build (`npm run build`, 0 errors) and automated testing
 
-### CM-004 — Deadline & Announcement Targeting (All My Classes vs Particular Classes)
+### CM-004 â€” Deadline & Announcement Targeting (All My Classes vs Particular Classes)
 Status: DONE
 
 - Implemented `targetType` ('all_classes' | 'particular_classes') and `targetClassIds` on `Deadline` and `Announcement` schemas with full backward compatibility with `classId`
@@ -997,7 +997,7 @@ Status: DONE
 - Clear targeting badges rendered across desktop and mobile cards
 - Socket.IO authorized rooms (`class:<classId>`) ensure real-time events reach only relevant class members
 
-### CM-005 — Security Hardening, Verification & Test Suite
+### CM-005 â€” Security Hardening, Verification & Test Suite
 Status: DONE
 
 - Interactive CLI teacher account creation script (`npm run create-teacher` / `server/scripts/createTeacher.js`) with hidden password entry, bcrypt hashing, and duplicate-email prevention
@@ -1005,7 +1005,7 @@ Status: DONE
 - Built live end-to-end integration test suite (`server/scripts/testE2E.js`) executing 18 tests against live database and Express server (`npm run test:e2e` passes 18/18)
 - Production build passes with 0 errors (`npm run build`)
 
-### CM-006 — Public Teacher Registration & Dynamic CORS Configuration
+### CM-006 â€” Public Teacher Registration & Dynamic CORS Configuration
 Status: DONE
 
 - Implemented open Teacher Registration in UI via `TeacherRegistration.jsx` with input validation (name, college email, department, password, confirm password)
@@ -1016,6 +1016,87 @@ Status: DONE
 - Retained administrative CLI teacher creation script (`npm run create-teacher`)
 - Updated and verified all test suites (`testSuite.js` and `testE2E.js`): 56/56 passing tests (100% pass rate)
 
+---
 
+# Real-Time Notification System
 
-
+### NT-001 â€” In-App Notifications, Bell Dropdown & 24h Deadline Reminders
+Status: DONE
+
+- Implemented `Notification` Mongoose model (`server/src/models/Notification.js`) with compound indexes for fast unread queries and reminder deduplication
+- Built authenticated REST APIs in `server/src/routes/notificationRoutes.js`:
+  * `GET /api/notifications` (scoped to user, paginated, sorted newest first)
+  * `GET /api/notifications/unread-count` (fast count for unread badge)
+  * `PATCH /api/notifications/:id/read` (validates ObjectId and verifies recipient ownership with 403 guard)
+  * `PATCH /api/notifications/read-all` (batch updates all unread notifications for authenticated user)
+- Implemented `notificationService.js` with multi-class student resolution, deduplication across overlapping class targets, and exclusion of self-notifications
+- Built persistent, idempotent 24-hour upcoming deadline reminder mechanism with periodic background check (every 5 minutes)
+- Emits real-time `notification:new` events to authenticated user rooms (`user:<userId>`) via Socket.IO
+- Frontend `NotificationContext.jsx`: synced with backend REST APIs, live Socket.IO listener, unread count badge state, optimistic updates, and toast banners
+- Built `NotificationBell.jsx` component: bell button with unread count badge, dropdown panel, All/Unread filter tabs, relative timestamps, navigation handler, and individual/batch mark-as-read
+- Integrated `NotificationBell` in desktop top header bar and mobile header in `src/App2.jsx`
+- Verified: `npm test` passes 51/51 tests, `npm run test:e2e` passes 26/26 tests, and `npm run build` succeeds with 0 errors
+
+---
+
+# Join Requests System
+
+### JR-001 â€” Student Join Requests, Teacher Approval/Rejection & Ownership Enforcement
+Status: DONE
+
+- Implemented `JoinRequest` Mongoose model (`server/src/models/JoinRequest.js`) with compound index on `(studentId, classId)` to prevent duplicate pending requests
+- Built authenticated REST APIs in `server/src/routes/joinRequestRoutes.js`:
+  * `POST /api/join-requests` (student submits join request by class code, checks existing membership/pending status)
+  * `GET /api/join-requests` (teacher fetches pending join requests for classes they own, with populated student and class details)
+  * `GET /api/join-requests/history` (teacher fetches approved/rejected historical requests)
+  * `PATCH /api/join-requests/:id/approve` (validates request, verifies teacher ownership of target class, enlists student in class, sends notification to student)
+  * `PATCH /api/join-requests/:id/reject` (marks request rejected, notifies student)
+- Mounted `/api/join-requests` in `server/src/server.js`
+- Added frontend API methods in `src/api/api.js`: `submitJoinRequest`, `getPendingJoinRequests`, `getJoinRequestHistory`, `approveJoinRequest`, `rejectJoinRequest`
+- Updated `src/components/JoinClass.jsx` with direct join and request-to-join workflows
+- Updated `src/components/JoinRequestsPage.jsx` to consume real backend endpoints with empty states and teacher ownership safeguards
+- Added unit and security test suite (Group 10 in `server/scripts/testSuite.js`, 11 tests)
+- Added live end-to-end test suite (Section 9 in `server/scripts/testE2E.js`, 8 tests)
+- Verified: 62/62 unit tests passing, 34/34 E2E tests passing, 0 errors on production build
+
+---
+
+# Class Management UX & Membership Improvements
+
+### CM-007 — Zero-Refresh UI State Synchronization, Dedicated Class Detail & Membership Actions
+Status: DONE
+
+- Fixed state-management and refetch issues across class workflows without requiring browser refreshes
+- Created dedicated `ClassDetailView.jsx` showing class metadata, class-scoped deadlines and announcements, teacher info, and enrolled students roster
+- Integrated "Open Class" and clickable cards into `ClassesPage.jsx` and `StudentDashboard.jsx` with clear navigation breadcrumbs back to all classes
+- Implemented Student "Leave Class" workflow (`POST /api/classes/:id/leave`) with confirmation dialogs both inside the opened class and on dashboard cards
+- Implemented Teacher "Remove Student from Class" workflow (`DELETE /api/classes/:id/students/:studentId`) with teacher-ownership enforcement and confirmation modals
+- Implemented Student "Cancel Join Request" workflow (`DELETE /api/join-requests/:id`) with ownership checks and instant UI cleanup
+- Added duplicate click guards to prevent race conditions during request submission
+- Connected `DeadlineContext` and `AnnouncementContext` to class membership Socket.IO events (`class:student-joined`, `class:student-left`, `class:student-removed`, `class:left`, `class:deleted`, `join-request:approved`) for instantaneous content synchronization
+- Added 401 session expiration handling with automatic logout fallback via `deadlinehub:unauthorized` custom event
+- Added unit and security test assertions in `server/scripts/testSuite.js` (85/85 tests passing)
+- Added live integration test cases in `server/scripts/testE2E.js` (53/53 tests passing)
+- Verified clean production build (`npm run build`, 81 modules transformed, 0 errors)
+
+---
+
+### CM-008 — Approval Policy Enforcement, Canonical Deduplication & Google Classroom Experience
+Status: DONE
+
+- Enforced `requiresApproval` field on `Class` model and route handlers (`POST /api/classes`, `PUT /api/classes/:id`)
+- Unified `POST /api/classes/join` so that classes requiring approval create/update pending `JoinRequest` without early membership grant; direct enrollment only proceeds if `requiresApproval === false`
+- Streamlined `src/components/JoinClass.jsx` to unified class code entry with clear "Pending Approval" status transition
+- Diagnosed and resolved deadline duplication in `ManageDeadlinesPage.jsx` and real-time feeds:
+  * Backend room deduplication using a `Set` of target rooms and `io.to(Array.from(rooms)).emit(...)`
+  * Frontend canonical ID extraction and in-place state updating in `DeadlineContext.jsx` and `AnnouncementContext.jsx`
+  * Form `submitting` state guards to prevent double-click submissions
+  * Memoized deduplication rendering for desktop table and mobile card views
+- Fixed content leak in `StudentDashboard.jsx` by removing loose division matching and enforcing strict class targeting
+- Built Google Classroom-style filter pills bar in `StudentDashboard.jsx` (All Classes + enrolled class pills)
+- Implemented combined "All Classes" view deduplicating multi-target items and labeling relevant target classes
+- Enhanced `ClassDetailView.jsx` with 4 distinct tabs: Overview (hero summary, stats, upcoming deadlines preview, latest announcements preview, instructor card, class metadata), Deadlines, Announcements, and Students
+- Added Teacher "Delete Class" action with ownership checks and confirmation modal
+- Extended test coverage in `server/scripts/testSuite.js` (94/94 tests passing, 100%)
+- Verified live integration in `server/scripts/testE2E.js` (53/53 tests passing, 100%)
+- Validated production build (`npm run build`, 81 modules transformed, 0 errors)
