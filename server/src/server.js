@@ -35,8 +35,12 @@ app.use(
   })
 );
 
-// Dynamic CORS Configuration allowing local development origins and configured frontend URLs
-const allowedOrigins = [
+// Trust reverse proxy (e.g. Render, Vercel, Cloudflare)
+app.set('trust proxy', 1);
+
+// Allowed origins (production and local development)
+const staticAllowedOrigins = [
+  'https://deadlinehub-one.vercel.app',
   'http://localhost:5173',
   'http://127.0.0.1:5173',
   'http://localhost:5174',
@@ -45,11 +49,36 @@ const allowedOrigins = [
   'http://127.0.0.1:3000',
 ];
 
+const getDynamicOrigins = () => {
+  const dynamic = [];
+  if (process.env.CLIENT_URL) dynamic.push(process.env.CLIENT_URL);
+  if (process.env.FRONTEND_URL) dynamic.push(process.env.FRONTEND_URL);
+  if (process.env.ALLOWED_ORIGINS) {
+    process.env.ALLOWED_ORIGINS.split(',').forEach((o) => {
+      const trimmed = o.trim();
+      if (trimmed) dynamic.push(trimmed);
+    });
+  }
+  return dynamic.map((u) => u.replace(/\/+$/, ''));
+};
+
 const isAllowedOrigin = (origin) => {
   if (!origin) return true;
-  // Match localhost or 127.0.0.1 on any port during development
-  if (/^https?:\/\/(localhost|127\.0\.0\.1)(:[0-9]+)?$/.test(origin)) return true;
-  return allowedOrigins.includes(origin);
+  const cleanOrigin = origin.trim().replace(/\/+$/, '');
+
+  // 1. Match exact allowed origins (including production Vercel frontend)
+  if (staticAllowedOrigins.includes(cleanOrigin)) return true;
+
+  // 2. Match environment-configured frontend origins (e.g. Render CLIENT_URL)
+  if (getDynamicOrigins().includes(cleanOrigin)) return true;
+
+  // 3. Match localhost or 127.0.0.1 on any port during local development
+  if (/^https?:\/\/(localhost|127\.0\.0\.1)(:[0-9]+)?$/.test(cleanOrigin)) return true;
+
+  // 4. Match Vercel deployment preview domains for deadlinehub
+  if (/^https:\/\/deadlinehub(-[a-z0-9-]+)?\.vercel\.app$/i.test(cleanOrigin)) return true;
+
+  return false;
 };
 
 const corsOptions = {
@@ -58,32 +87,39 @@ const corsOptions = {
     if (isAllowedOrigin(origin)) {
       callback(null, true);
     } else {
-      callback(new AppError('Not allowed by CORS policy', 403));
+      callback(new AppError(`Not allowed by CORS policy: ${origin}`, 403));
     }
   },
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
+  exposedHeaders: ['Content-Range', 'X-Content-Range'],
   credentials: true,
+  optionsSuccessStatus: 200,
+  maxAge: 86400,
 };
 
+// Enable CORS for all incoming requests (including OPTIONS preflight)
 app.use(cors(corsOptions));
 
 // JSON Body Parser with Request Size Limit (100kb)
 app.use(express.json({ limit: '100kb' }));
 
-// Socket.IO — attached to HTTP server with matching CORS policy
+// Socket.IO — attached to HTTP server with matching CORS policy and transports
 const io = new Server(httpServer, {
   cors: {
     origin: (origin, callback) => {
       if (isAllowedOrigin(origin)) {
         callback(null, true);
       } else {
-        callback(new Error('Not allowed by CORS'));
+        callback(new Error(`Not allowed by CORS: ${origin}`));
       }
     },
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
     credentials: true,
   },
+  transports: ['websocket', 'polling'],
+  allowEIO3: true,
 });
 
 const jwt = require('jsonwebtoken');
@@ -259,5 +295,17 @@ const startServer = async () => {
   });
 };
 
-startServer();
+if (require.main === module) {
+  startServer();
+}
+
+module.exports = {
+  app,
+  httpServer,
+  io,
+  isAllowedOrigin,
+  staticAllowedOrigins,
+  corsOptions,
+};
+
 

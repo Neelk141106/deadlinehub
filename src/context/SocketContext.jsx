@@ -2,11 +2,14 @@ import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { io } from 'socket.io-client';
 import { useAuth } from './AuthContext';
 
-const SOCKET_URL = (
+const rawSocketUrl = (
   import.meta.env.VITE_SOCKET_URL ||
   import.meta.env.VITE_API_BASE_URL?.replace(/\/api\/?$/, '') ||
+  import.meta.env.VITE_API_URL?.replace(/\/api\/?$/, '') ||
   'http://localhost:5000'
-).replace(/\/$/, '');
+).trim().replace(/\/+$/, '');
+
+const SOCKET_URL = rawSocketUrl;
 
 const SocketContext = createContext(null);
 
@@ -31,6 +34,7 @@ export function SocketProvider({ children }) {
       reconnectionDelayMax: 5000,
       timeout: 20000,
       transports: ['websocket', 'polling'],
+      withCredentials: true,
     });
 
     socketRef.current = socket;

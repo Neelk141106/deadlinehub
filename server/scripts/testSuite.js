@@ -857,6 +857,48 @@ async function runTests() {
     );
   }
 
+  // ── TEST GROUP 15: Production CORS & Security Policy ──
+  console.log('\n--- Group 15: Production CORS & Security Policy ---');
+  {
+    const { isAllowedOrigin, staticAllowedOrigins, corsOptions } = require('../src/server');
+
+    // 1. Production frontend origin is allowed
+    const prodOrigin = 'https://deadlinehub-one.vercel.app';
+    assert(isAllowedOrigin(prodOrigin), 'Production Vercel frontend origin is explicitly allowed');
+    assert(isAllowedOrigin(`${prodOrigin}/`), 'Production origin with trailing slash is properly normalized and allowed');
+    assert(staticAllowedOrigins.includes(prodOrigin), 'Static allowed origins list contains exact production origin');
+
+    // 2. Development origins are preserved
+    assert(isAllowedOrigin('http://localhost:5173'), 'Vite default localhost:5173 is allowed');
+    assert(isAllowedOrigin('http://127.0.0.1:5173'), 'Vite 127.0.0.1:5173 is allowed');
+    assert(isAllowedOrigin('http://localhost:5174'), 'Localhost alternative port 5174 is allowed');
+    assert(isAllowedOrigin('http://localhost:3000'), 'Localhost alternative port 3000 is allowed');
+    assert(isAllowedOrigin('http://localhost:8080'), 'Any development localhost port matches regex pattern');
+
+    // 3. Vercel deployment preview subdomains for deadlinehub
+    assert(isAllowedOrigin('https://deadlinehub-git-feature.vercel.app'), 'Vercel preview subdomains for deadlinehub are allowed');
+
+    // 4. Unauthorized origins are strictly rejected (no wildcard leak)
+    assert(!isAllowedOrigin('https://malicious-website.com'), 'Malicious origins are strictly rejected');
+    assert(!isAllowedOrigin('https://other-vercel-app.vercel.app'), 'Unrelated Vercel applications are rejected');
+    assert(!isAllowedOrigin('http://attacker.localhost.evil.com'), 'Subdomain spoofing attempts are rejected');
+
+    // 5. Preflight OPTIONS request configuration
+    assert(Array.isArray(corsOptions.methods) && corsOptions.methods.includes('OPTIONS'), 'CORS configuration allows OPTIONS preflight method');
+    assert(corsOptions.methods.includes('POST') && corsOptions.methods.includes('GET'), 'CORS configuration allows POST and GET methods');
+    assert(corsOptions.allowedHeaders.includes('Content-Type') && corsOptions.allowedHeaders.includes('Authorization'), 'CORS allows Content-Type and Authorization headers');
+    assert(corsOptions.credentials === true, 'CORS permits credentials');
+    assert(corsOptions.optionsSuccessStatus === 200, 'Preflight optionsSuccessStatus is set to 200 for broad browser compatibility');
+
+    // 6. Dynamic environment origins support
+    process.env.CLIENT_URL = 'https://custom-domain.edu';
+    assert(isAllowedOrigin('https://custom-domain.edu'), 'Custom environment CLIENT_URL is dynamically allowed');
+    delete process.env.CLIENT_URL;
+
+    // 7. Request with no origin (curl, mobile, server-to-server)
+    assert(isAllowedOrigin(undefined), 'Server-to-server / curl requests without Origin header are allowed');
+  }
+
   // ── TEST SUMMARY ──────────────────────────────────────────────────────
   console.log('\n====================================================');
   console.log(`   TEST RESULTS: ${passedTests} PASSED, ${failedTests} FAILED`);
