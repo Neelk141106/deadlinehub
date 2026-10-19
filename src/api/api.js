@@ -41,8 +41,9 @@ const normalizeAnnouncement = (item) => {
 async function handleResponse(res) {
   if (!res.ok) {
     let errorMessage = `Request failed with status ${res.status}`;
+    let errorData = null;
     try {
-      const errorData = await res.json();
+      errorData = await res.json();
       if (errorData.error) {
         errorMessage = errorData.error;
       } else if (errorData.message) {
@@ -53,13 +54,25 @@ async function handleResponse(res) {
     }
 
     if (res.status === 401 && typeof window !== 'undefined') {
-      const isAuthPath = res.url && (res.url.includes('/api/auth/login') || res.url.includes('/api/auth/register'));
+      const isAuthPath = res.url && (
+        res.url.includes('/api/auth/login') ||
+        res.url.includes('/api/auth/register') ||
+        res.url.includes('/api/auth/verify-otp') ||
+        res.url.includes('/api/auth/resend-otp')
+      );
       if (!isAuthPath) {
         window.dispatchEvent(new CustomEvent('deadlinehub:unauthorized'));
       }
     }
 
-    throw new Error(errorMessage);
+    const error = new Error(errorMessage);
+    error.status = res.status;
+    if (errorData) {
+      error.data = errorData;
+      error.unverified = Boolean(errorData.unverified);
+      error.email = errorData.email;
+    }
+    throw error;
   }
   return res.json();
 }
@@ -162,6 +175,24 @@ export const authApi = {
       method: 'POST',
       headers: getAuthHeaders(true),
       body: JSON.stringify(userData),
+    });
+    return handleResponse(res);
+  },
+
+  async verifyOtp({ email, otp }) {
+    const res = await fetch(`${API_BASE_URL}/auth/verify-otp`, {
+      method: 'POST',
+      headers: getAuthHeaders(true),
+      body: JSON.stringify({ email, otp }),
+    });
+    return handleResponse(res);
+  },
+
+  async resendOtp({ email }) {
+    const res = await fetch(`${API_BASE_URL}/auth/resend-otp`, {
+      method: 'POST',
+      headers: getAuthHeaders(true),
+      body: JSON.stringify({ email }),
     });
     return handleResponse(res);
   },

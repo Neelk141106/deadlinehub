@@ -13,11 +13,17 @@ import { JoinRequestsPage } from './components/JoinRequestsPage';
 import { ManageDeadlinesPage } from './components/ManageDeadlinesPage';
 import { ManageAnnouncementsPage } from './components/ManageAnnouncementsPage';
 import { ThemeToggle } from './components/ui/ThemeToggle';
+import { VerifyOtp } from './components/VerifyOtp';
 import { useAuth } from './context/AuthContext';
 
 function App() {
   const { user, logout, loading: authLoading } = useAuth();
   const [currentView, setCurrentView] = useState('landing');
+  const [verificationTarget, setVerificationTarget] = useState({
+    email: '',
+    role: 'student',
+    notice: '',
+  });
   const [activeTab, setActiveTab] = useState('deadlines');
   const [userRole, setUserRole] = useState('student');
 
@@ -71,12 +77,10 @@ function App() {
 
   if (currentView === 'studentLogin') {
     return <StudentLogin 
+      prefilledEmail={verificationTarget.email}
       onLogin={(loggedInUser) => {
-        // Role comes from the authenticated user returned by the backend
         const role = loggedInUser?.role || 'student';
         setUserRole(role);
-        // Returning students who already have a division go straight to the app.
-        // New students (no division yet) are directed to join a class first.
         if (role === 'teacher') {
           setActiveTab('classes');
           setCurrentView('app');
@@ -88,29 +92,72 @@ function App() {
         }
       }} 
       onBack={() => setCurrentView('welcome')} 
-      onRegisterClick={() => setCurrentView('studentRegistration')} 
+      onRegisterClick={() => setCurrentView('studentRegistration')}
+      onVerifyClick={({ email, role }) => {
+        setVerificationTarget({
+          email: email || '',
+          role: role || 'student',
+          notice: 'Please enter the 6-digit verification code sent to your email.',
+        });
+        setCurrentView('verifyOtp');
+      }}
     />;
   }
 
   if (currentView === 'teacherLogin') {
     return <TeacherLogin 
+      prefilledEmail={verificationTarget.email}
       onLogin={(loggedInUser) => {
-        // Role comes from the authenticated user returned by the backend — never hardcoded
         const role = loggedInUser?.role || 'teacher';
         setUserRole(role);
         setActiveTab('classes');
         setCurrentView('app');
       }} 
-      onBack={() => setCurrentView('welcome')} 
+      onBack={() => setCurrentView('welcome')}
+      onVerifyClick={({ email, role }) => {
+        setVerificationTarget({
+          email: email || '',
+          role: role || 'teacher',
+          notice: 'Please enter the 6-digit verification code sent to your email.',
+        });
+        setCurrentView('verifyOtp');
+      }}
     />;
   }
 
   if (currentView === 'studentRegistration') {
     return <StudentRegistration 
-      onRegister={() => setCurrentView('joinClass')} 
-      onLoginClick={() => setCurrentView('studentLogin')} 
-      onBack={() => setCurrentView('studentLogin')} 
+      onRegister={({ email, role, notice }) => {
+        setVerificationTarget({
+          email: email || '',
+          role: role || 'student',
+          notice: notice || '',
+        });
+        setCurrentView('verifyOtp');
+      }}
+      onLoginClick={() => setCurrentView('studentLogin')}
+      onBack={() => setCurrentView('studentLogin')}
     />;
+  }
+
+  if (currentView === 'verifyOtp') {
+    return (
+      <VerifyOtp
+        initialEmail={verificationTarget.email}
+        initialRole={verificationTarget.role}
+        infoNotice={verificationTarget.notice}
+        onVerified={({ email, role }) => {
+          setVerificationTarget((prev) => ({ ...prev, email }));
+          setCurrentView(role === 'teacher' ? 'teacherLogin' : 'studentLogin');
+        }}
+        onBack={() => {
+          setCurrentView(verificationTarget.role === 'teacher' ? 'teacherLogin' : 'studentLogin');
+        }}
+        onNavigateLogin={() => {
+          setCurrentView(verificationTarget.role === 'teacher' ? 'teacherLogin' : 'studentLogin');
+        }}
+      />
+    );
   }
 
   if (currentView === 'joinClass') {

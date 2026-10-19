@@ -17,11 +17,17 @@ import { ThemeToggle } from './components/ui/ThemeToggle';
 import { ConnectionStatus } from './components/ui/ConnectionStatus';
 import { NotificationBell } from './components/NotificationBell';
 import { ProfileModal } from './components/ProfileModal';
+import { VerifyOtp } from './components/VerifyOtp';
 import { useAuth } from './context/AuthContext';
 
 function App() {
   const { user, logout, loading: authLoading } = useAuth();
   const [currentView, setCurrentView] = useState('landing');
+  const [verificationTarget, setVerificationTarget] = useState({
+    email: '',
+    role: 'student',
+    notice: '',
+  });
   const [activeTab, setActiveTab] = useState(() => {
     try {
       const openedClass = localStorage.getItem('deadlinehub_opened_class_id');
@@ -123,6 +129,7 @@ function App() {
 
   if (currentView === 'studentLogin') {
     return <StudentLogin 
+      prefilledEmail={verificationTarget.email}
       onLogin={(loggedInUser) => {
         const role = loggedInUser?.role || 'student';
         setUserRole(role);
@@ -130,12 +137,21 @@ function App() {
         setCurrentView('app');
       }} 
       onBack={() => setCurrentView('welcome')} 
-      onRegisterClick={() => setCurrentView('studentRegistration')} 
+      onRegisterClick={() => setCurrentView('studentRegistration')}
+      onVerifyClick={({ email, role }) => {
+        setVerificationTarget({
+          email: email || '',
+          role: role || 'student',
+          notice: 'Please enter the 6-digit verification code sent to your email.',
+        });
+        setCurrentView('verifyOtp');
+      }}
     />;
   }
 
   if (currentView === 'teacherLogin') {
     return <TeacherLogin 
+      prefilledEmail={verificationTarget.email}
       onLogin={(loggedInUser) => {
         const role = loggedInUser?.role || 'teacher';
         setUserRole(role);
@@ -144,12 +160,27 @@ function App() {
       }} 
       onBack={() => setCurrentView('welcome')} 
       onRegisterClick={() => setCurrentView('teacherRegistration')}
+      onVerifyClick={({ email, role }) => {
+        setVerificationTarget({
+          email: email || '',
+          role: role || 'teacher',
+          notice: 'Please enter the 6-digit verification code sent to your email.',
+        });
+        setCurrentView('verifyOtp');
+      }}
     />;
   }
 
   if (currentView === 'teacherRegistration') {
     return <TeacherRegistration
-      onRegister={() => setCurrentView('teacherLogin')}
+      onRegister={({ email, role, notice }) => {
+        setVerificationTarget({
+          email: email || '',
+          role: role || 'teacher',
+          notice: notice || '',
+        });
+        setCurrentView('verifyOtp');
+      }}
       onLoginClick={() => setCurrentView('teacherLogin')}
       onBack={() => setCurrentView('teacherLogin')}
     />;
@@ -157,10 +188,37 @@ function App() {
 
   if (currentView === 'studentRegistration') {
     return <StudentRegistration 
-      onRegister={() => setCurrentView('studentLogin')} 
-      onLoginClick={() => setCurrentView('studentLogin')} 
-      onBack={() => setCurrentView('studentLogin')} 
+      onRegister={({ email, role, notice }) => {
+        setVerificationTarget({
+          email: email || '',
+          role: role || 'student',
+          notice: notice || '',
+        });
+        setCurrentView('verifyOtp');
+      }}
+      onLoginClick={() => setCurrentView('studentLogin')}
+      onBack={() => setCurrentView('studentLogin')}
     />;
+  }
+
+  if (currentView === 'verifyOtp') {
+    return (
+      <VerifyOtp
+        initialEmail={verificationTarget.email}
+        initialRole={verificationTarget.role}
+        infoNotice={verificationTarget.notice}
+        onVerified={({ email, role }) => {
+          setVerificationTarget((prev) => ({ ...prev, email }));
+          setCurrentView(role === 'teacher' ? 'teacherLogin' : 'studentLogin');
+        }}
+        onBack={() => {
+          setCurrentView(verificationTarget.role === 'teacher' ? 'teacherLogin' : 'studentLogin');
+        }}
+        onNavigateLogin={() => {
+          setCurrentView(verificationTarget.role === 'teacher' ? 'teacherLogin' : 'studentLogin');
+        }}
+      />
+    );
   }
 
   if (currentView === 'joinClass') {

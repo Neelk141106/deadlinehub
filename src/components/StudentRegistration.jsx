@@ -50,16 +50,21 @@ export function StudentRegistration({ onRegister, onLoginClick, onBack }) {
 
     setLoading(true);
     try {
-      await authApi.register({
+      const res = await authApi.register({
         name: formData.name.trim(),
         email: formData.email.trim(),
         password: formData.password,
         role: 'student',
         studentCode: formData.studentCode.trim(),
       });
-      setSuccess('Account created successfully! Setting up your workspace...');
+      setSuccess(res.message || 'Account created! Please enter the 6-digit code sent to your email.');
       setTimeout(() => {
-        onRegister();
+        onRegister({
+          email: formData.email.trim(),
+          role: 'student',
+          notice: res.message,
+          requiresVerification: true,
+        });
       }, 1000);
     } catch (err) {
       setError(err.message || 'Registration failed. Please try again.');

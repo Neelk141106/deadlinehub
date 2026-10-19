@@ -133,6 +133,7 @@ async function main() {
     password,
     role: 'teacher',
     department,
+    isVerified: true,
   });
 
   await teacher.save();

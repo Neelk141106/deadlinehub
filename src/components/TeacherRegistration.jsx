@@ -65,21 +65,26 @@ export function TeacherRegistration({ onRegister, onLoginClick, onBack }) {
 
     setLoading(true);
     try {
-      await authApi.register({
+      const res = await authApi.register({
         name: formData.name.trim(),
         email: formData.email.trim().toLowerCase(),
         password: formData.password,
         role: 'teacher',
         department: formData.department,
       });
-      setSuccess('Teacher account created successfully! Redirecting to login...');
+      setSuccess(res.message || 'Teacher account created! Please verify your email with the 6-digit code.');
       setTimeout(() => {
         if (onRegister) {
-          onRegister();
+          onRegister({
+            email: formData.email.trim().toLowerCase(),
+            role: 'teacher',
+            notice: res.message,
+            requiresVerification: true,
+          });
         } else if (onLoginClick) {
           onLoginClick();
         }
-      }, 1200);
+      }, 1000);
     } catch (err) {
       setError(err.message || 'Teacher registration failed. Please try again.');
     } finally {

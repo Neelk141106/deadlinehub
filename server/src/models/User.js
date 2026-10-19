@@ -53,12 +53,36 @@ const userSchema = new mongoose.Schema(
       trim: true,
       default: '',
     },
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
+    verificationOtp: {
+      type: String,
+      default: null,
+    },
+    verificationOtpExpires: {
+      type: Date,
+      default: null,
+    },
+    verificationOtpAttempts: {
+      type: Number,
+      default: 0,
+    },
+    verificationOtpLastSent: {
+      type: Date,
+      default: null,
+    },
   },
   {
     timestamps: true,
     toJSON: {
       transform(doc, ret) {
         delete ret.password;
+        delete ret.verificationOtp;
+        delete ret.verificationOtpExpires;
+        delete ret.verificationOtpAttempts;
+        delete ret.verificationOtpLastSent;
         return ret;
       },
     },

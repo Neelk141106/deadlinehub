@@ -660,3 +660,45 @@ Experiments 1 through 8, Public Teacher Registration, Dynamic CORS handling with
   * `npm run test:e2e` executes 53 live integration tests against the MongoDB container (`mongodb://127.0.0.1:27017/deadlinehub_ci`) with 100% pass rate.
 - **Concurrency Guard**:
   * Automatically cancels in-progress runs when new commits are pushed to the same branch.
+
+---
+
+### Real Email Verification & OTP Authentication System — COMPLETED ✅
+
+#### 1. Architecture & Security Design
+- **Signup in Unverified State**:
+  * Registration (`POST /api/auth/register`) creates new student or teacher accounts with `isVerified: false`.
+  * Generates a cryptographically secure 6-digit numeric OTP (`crypto.randomInt(100000, 1000000)`).
+  * Stores a SHA-256 hash of the OTP (`verificationOtp`), a 10-minute expiry timestamp (`verificationOtpExpires`), an attempt counter (`verificationOtpAttempts = 0`), and rate-limit tracking (`verificationOtpLastSent`).
+  * Never returns or exposes the OTP code or its hash in API responses or production logs. Sanitized `toJSON` eliminates sensitive verification fields.
+- **Real Email Delivery (`server/src/services/emailService.js`)**:
+  * Uses `nodemailer` with standard SMTP configuration (`SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS`, `EMAIL_FROM`).
+  * Delivers a responsive HTML and plaintext email template matching DeadlineHub's purple aesthetic.
+  * Detects missing SMTP configuration (`isEmailConfigured()`) and reports exact requirements without claiming delivery succeeded.
+  * Added documentation and variable placeholders to `.env.example` in `server/` and project root.
+- **Verification Endpoint (`POST /api/auth/verify-otp`)**:
+  * Validates email normalization and 6-digit OTP code against the stored SHA-256 hash.
+  * Enforces a 10-minute expiry window.
+  * Caps incorrect attempts at 5. On the 5th failed attempt, the code is invalidated (`verificationOtp = null`) and the user receives HTTP 429.
+  * On success, marks `isVerified = true` and purges OTP tokens from the user document.
+- **Resend Endpoint (`POST /api/auth/resend-otp`)**:
+  * Enforces a 60-second cooldown timer between requests (`verificationOtpLastSent`).
+  * Generates a fresh 6-digit code, resets attempt counter, and sends email via the configured provider.
+- **Access Control & Login Blocking**:
+  * `POST /api/auth/login` strictly blocks unverified accounts (`isVerified === false`), returning HTTP 403 with `unverified: true` and the email for quick verification redirection.
+  * Normal authenticated JWT tokens are issued only after verification.
+  * `authMiddleware` validates `isVerified !== false`, rejecting any unverified tokens with HTTP 403.
+  * Legacy accounts (with `isVerified` undefined or true) and CLI-created teacher accounts continue functioning without disruption.
+- **Frontend Verification UI (`src/components/VerifyOtp.jsx`)**:
+  * Aesthetic 6-digit input component styled with DeadlineHub purple accent colors and dark mode support.
+  * Auto-advance, backspace navigation, and clipboard paste support.
+  * 60-second countdown cooldown timer on resend button.
+  * Clear feedback for incorrect attempts remaining, code expiry, and unconfigured server email warnings.
+  * Seamlessly integrated into `App.jsx` and `App2.jsx` navigation flows with prefilled email and direct verification links from login screens.
+
+#### 2. Verification Results
+- **Automated Test Suite (`npm test`)**: **152 / 152 PASSED (100%)** across 16 test groups (11 new tests in Group 16).
+- **Frontend Production Bundle (`npm run build`)**: Vite built 82 modules in ~500ms with **0 errors**.
+- **Formatting & Whitespace (`git diff --check`)**: **0 formatting/whitespace errors**.
+- **Credentials & Secrets**: `.env` strictly protected, never staged or committed.
+

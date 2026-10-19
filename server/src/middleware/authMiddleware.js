@@ -24,6 +24,9 @@ const authMiddleware = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, secret);
+    if (decoded.isVerified === false) {
+      return next(new AppError('Email verification required. Access denied.', 403));
+    }
     req.user = decoded;
     next();
   } catch (err) {

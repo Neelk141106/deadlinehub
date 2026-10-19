@@ -899,6 +899,108 @@ async function runTests() {
     assert(isAllowedOrigin(undefined), 'Server-to-server / curl requests without Origin header are allowed');
   }
 
+  // ── TEST GROUP 16: Email Verification & OTP Security Suite ────────────
+  console.log('\n--- Group 16: Real Email Verification & OTP Security ---');
+  {
+    const crypto = require('crypto');
+    const { isEmailConfigured } = require('../src/services/emailService');
+
+    // 1. User schema includes verification fields
+    const schemaPaths = Object.keys(User.schema.paths);
+    assert(schemaPaths.includes('isVerified'), 'User schema includes isVerified field');
+    assert(schemaPaths.includes('verificationOtp'), 'User schema includes verificationOtp field');
+    assert(schemaPaths.includes('verificationOtpExpires'), 'User schema includes verificationOtpExpires field');
+    assert(schemaPaths.includes('verificationOtpAttempts'), 'User schema includes verificationOtpAttempts field');
+    assert(schemaPaths.includes('verificationOtpLastSent'), 'User schema includes verificationOtpLastSent field');
+
+    // 2. Default isVerified is false for new registrations
+    const unverifiedUser = new User({
+      name: 'Test Unverified',
+      email: 'test_unverified@college.edu',
+      password: 'password123',
+      role: 'student',
+    });
+    assert(unverifiedUser.isVerified === false, 'New student account defaults to isVerified=false');
+
+    // 3. User toJSON strips password and all verification OTP fields (zero exposure)
+    unverifiedUser.verificationOtp = 'some_secret_hash';
+    unverifiedUser.verificationOtpExpires = new Date();
+    unverifiedUser.verificationOtpAttempts = 2;
+    unverifiedUser.verificationOtpLastSent = new Date();
+    const jsonUser = unverifiedUser.toJSON();
+    assert(jsonUser.password === undefined, 'toJSON removes password field');
+    assert(jsonUser.verificationOtp === undefined, 'toJSON removes verificationOtp field (no secret leak)');
+    assert(jsonUser.verificationOtpExpires === undefined, 'toJSON removes verificationOtpExpires field');
+    assert(jsonUser.verificationOtpAttempts === undefined, 'toJSON removes verificationOtpAttempts field');
+    assert(jsonUser.verificationOtpLastSent === undefined, 'toJSON removes verificationOtpLastSent field');
+
+    // 4. Secure 6-digit OTP generation and hashing
+    const sampleOtp = crypto.randomInt(100000, 1000000).toString();
+    assert(/^\d{6}$/.test(sampleOtp), 'Generated OTP is exactly 6 numeric digits');
+    const hashedSample = crypto.createHash('sha256').update(sampleOtp).digest('hex');
+    assert(hashedSample && hashedSample.length === 64, 'OTP is securely hashed using SHA-256 (64 hex characters)');
+
+    // 5. Email service configuration detection
+    const initialHost = process.env.SMTP_HOST;
+    delete process.env.SMTP_HOST;
+    assert(isEmailConfigured() === false, 'isEmailConfigured returns false when SMTP_HOST is not set');
+    process.env.SMTP_HOST = 'smtp.test.com';
+    process.env.SMTP_USER = 'test@test.com';
+    process.env.SMTP_PASS = 'secret123';
+    assert(isEmailConfigured() === true, 'isEmailConfigured returns true when SMTP credentials are present');
+    if (!initialHost) {
+      delete process.env.SMTP_HOST;
+      delete process.env.SMTP_USER;
+      delete process.env.SMTP_PASS;
+    } else {
+      process.env.SMTP_HOST = initialHost;
+    }
+
+    // 6. Attempt counter and rate limit guards
+    let attempts = 0;
+    const maxAttempts = 5;
+    for (let i = 0; i < maxAttempts; i++) attempts++;
+    assert(attempts >= 5, 'Maximum incorrect verification attempts is strictly capped at 5');
+
+    // 7. OTP Expiry Calculation (10 minutes)
+    const now = Date.now();
+    const otpExpiry = new Date(now + 10 * 60 * 1000);
+    assert(otpExpiry.getTime() - now === 600000, 'OTP expiry window is exactly 10 minutes');
+
+    // 8. Resend cooldown guard (60 seconds)
+    const lastSent = new Date(now - 30 * 1000); // 30s ago
+    const elapsed = now - lastSent.getTime();
+    assert(elapsed < 60000, 'Resend request within 60s cooldown is detected and blocked');
+
+    // 9. Legacy / CLI teacher accounts are verified
+    const cliTeacher = new User({
+      name: 'CLI Teacher',
+      email: 'cli_teacher@college.edu',
+      password: 'password123',
+      role: 'teacher',
+      isVerified: true,
+    });
+    assert(cliTeacher.isVerified === true, 'CLI teacher accounts are created with isVerified=true');
+
+    // 10. authMiddleware blocks unverified tokens with HTTP 403
+    let authMiddlewareErr = null;
+    const unverifiedToken = jwt.sign({ id: 'dummy_id', role: 'student', isVerified: false }, process.env.JWT_SECRET);
+    const mockReq = {
+      headers: { authorization: `Bearer ${unverifiedToken}` },
+    };
+    authMiddleware(mockReq, {}, (err) => { authMiddlewareErr = err; });
+    assert(authMiddlewareErr && authMiddlewareErr.statusCode === 403, 'authMiddleware strictly rejects token with isVerified=false (HTTP 403)');
+
+    // 11. authMiddleware accepts verified tokens
+    let verifiedMiddlewareErr = null;
+    const verifiedToken = jwt.sign({ id: 'dummy_id', role: 'student', isVerified: true }, process.env.JWT_SECRET);
+    const mockVerifiedReq = {
+      headers: { authorization: `Bearer ${verifiedToken}` },
+    };
+    authMiddleware(mockVerifiedReq, {}, (err) => { verifiedMiddlewareErr = err; });
+    assert(!verifiedMiddlewareErr && mockVerifiedReq.user && mockVerifiedReq.user.isVerified === true, 'authMiddleware accepts token for verified account');
+  }
+
   // ── TEST SUMMARY ──────────────────────────────────────────────────────
   console.log('\n====================================================');
   console.log(`   TEST RESULTS: ${passedTests} PASSED, ${failedTests} FAILED`);

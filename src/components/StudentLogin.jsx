@@ -3,18 +3,20 @@ import { Input } from './ui/Input';
 import { Button } from './ui/Button';
 import { useAuth } from '../context/AuthContext';
 
-export function StudentLogin({ onLogin, onBack, onRegisterClick }) {
-  const [email, setEmail] = useState('');
+export function StudentLogin({ onLogin, onBack, onRegisterClick, onVerifyClick, prefilledEmail = '' }) {
+  const [email, setEmail] = useState(prefilledEmail);
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [unverifiedEmail, setUnverifiedEmail] = useState('');
 
   const { login, logout } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setUnverifiedEmail('');
 
     if (!email.trim() || !password) {
       setError('Please provide email and password');
@@ -31,6 +33,10 @@ export function StudentLogin({ onLogin, onBack, onRegisterClick }) {
       }
       onLogin(user);
     } catch (err) {
+      const isUnverified = Boolean(err.unverified || err.data?.unverified || err.message?.toLowerCase().includes('verify'));
+      if (isUnverified) {
+        setUnverifiedEmail(email.trim());
+      }
       setError(err.message || 'Invalid email or password');
     } finally {
       setLoading(false);
@@ -90,24 +96,35 @@ export function StudentLogin({ onLogin, onBack, onRegisterClick }) {
 
         {/* Error Alert */}
         {error && (
-          <div className="mb-4 p-3 rounded-lg bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/50 text-red-700 dark:text-red-400 text-sm flex items-start gap-2">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="mt-0.5 shrink-0"
-            >
-              <circle cx="12" cy="12" r="10" />
-              <line x1="12" y1="8" x2="12" y2="12" />
-              <line x1="12" y1="16" x2="12.01" y2="16" />
-            </svg>
-            <span>{error}</span>
+          <div className="mb-4 p-3 rounded-lg bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/50 text-red-700 dark:text-red-400 text-sm flex flex-col gap-2">
+            <div className="flex items-start gap-2">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="mt-0.5 shrink-0"
+              >
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="12" />
+                <line x1="12" y1="16" x2="12.01" y2="16" />
+              </svg>
+              <span>{error}</span>
+            </div>
+            {unverifiedEmail && onVerifyClick && (
+              <button
+                type="button"
+                onClick={() => onVerifyClick({ email: unverifiedEmail, role: 'student' })}
+                className="self-start text-xs font-semibold text-primary-600 dark:text-primary-400 hover:underline cursor-pointer ml-6"
+              >
+                Verify your email with OTP now &rarr;
+              </button>
+            )}
           </div>
         )}
 
