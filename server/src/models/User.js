@@ -53,26 +53,6 @@ const userSchema = new mongoose.Schema(
       trim: true,
       default: '',
     },
-    isVerified: {
-      type: Boolean,
-      default: false,
-    },
-    verificationOtp: {
-      type: String,
-      default: null,
-    },
-    verificationOtpExpires: {
-      type: Date,
-      default: null,
-    },
-    verificationOtpAttempts: {
-      type: Number,
-      default: 0,
-    },
-    verificationOtpLastSent: {
-      type: Date,
-      default: null,
-    },
   },
   {
     timestamps: true,

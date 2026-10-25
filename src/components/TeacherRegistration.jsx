@@ -72,15 +72,10 @@ export function TeacherRegistration({ onRegister, onLoginClick, onBack }) {
         role: 'teacher',
         department: formData.department,
       });
-      setSuccess(res.message || 'Teacher account created! Please verify your email with the 6-digit code.');
+      setSuccess(res.message || 'Teacher account created successfully! Redirecting to login...');
       setTimeout(() => {
         if (onRegister) {
-          onRegister({
-            email: formData.email.trim().toLowerCase(),
-            role: 'teacher',
-            notice: res.message,
-            requiresVerification: true,
-          });
+          onRegister({ email: formData.email.trim().toLowerCase() });
         } else if (onLoginClick) {
           onLoginClick();
         }
@@ -117,7 +112,7 @@ export function TeacherRegistration({ onRegister, onLoginClick, onBack }) {
         </button>
       </div>
 
-      <div className="w-full max-w-md card p-8 sm:p-10">
+      <div className="w-full max-w-md card p-5 sm:p-8 sm:p-10">
         {/* Header */}
         <div className="text-center mb-8">
           <div className="w-12 h-12 bg-primary-600 rounded-xl flex items-center justify-center mx-auto mb-5 shadow-md shadow-primary-500/20">
@@ -315,7 +310,7 @@ export function TeacherRegistration({ onRegister, onLoginClick, onBack }) {
             type="submit"
             variant="primary"
             disabled={loading}
-            className="w-full justify-center py-2.5 mt-4"
+            className="w-full justify-center py-2.5 min-h-[44px] mt-4"
           >
             {loading ? 'Creating account...' : 'Create Teacher Account'}
           </Button>

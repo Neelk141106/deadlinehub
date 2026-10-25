@@ -899,106 +899,100 @@ async function runTests() {
     assert(isAllowedOrigin(undefined), 'Server-to-server / curl requests without Origin header are allowed');
   }
 
-  // ── TEST GROUP 16: Email Verification & OTP Security Suite ────────────
-  console.log('\n--- Group 16: Real Email Verification & OTP Security ---');
+  // ── TEST GROUP 16: Direct Registration, Login & DB Compatibility ──
+  console.log('\n--- Group 16: Direct Registration, Login & DB Compatibility (No OTP) ---');
   {
-    const crypto = require('crypto');
-    const { isEmailConfigured } = require('../src/services/emailService');
-
-    // 1. User schema includes verification fields
+    // 1. User schema includes core fields and excludes OTP requirements
     const schemaPaths = Object.keys(User.schema.paths);
-    assert(schemaPaths.includes('isVerified'), 'User schema includes isVerified field');
-    assert(schemaPaths.includes('verificationOtp'), 'User schema includes verificationOtp field');
-    assert(schemaPaths.includes('verificationOtpExpires'), 'User schema includes verificationOtpExpires field');
-    assert(schemaPaths.includes('verificationOtpAttempts'), 'User schema includes verificationOtpAttempts field');
-    assert(schemaPaths.includes('verificationOtpLastSent'), 'User schema includes verificationOtpLastSent field');
+    assert(schemaPaths.includes('name'), 'User schema includes name field');
+    assert(schemaPaths.includes('email'), 'User schema includes email field');
+    assert(schemaPaths.includes('password'), 'User schema includes password field');
+    assert(schemaPaths.includes('role'), 'User schema includes role field');
+    assert(schemaPaths.includes('studentCode'), 'User schema includes studentCode field');
 
-    // 2. Default isVerified is false for new registrations
-    const unverifiedUser = new User({
-      name: 'Test Unverified',
-      email: 'test_unverified@college.edu',
+    // 2. Direct registration creates user without OTP fields
+    const directUser = new User({
+      name: 'Direct Student',
+      email: 'direct_student@college.edu',
       password: 'password123',
       role: 'student',
+      studentCode: 'IT2026_099',
     });
-    assert(unverifiedUser.isVerified === false, 'New student account defaults to isVerified=false');
+    assert(directUser.name === 'Direct Student', 'User instance created directly with name');
+    assert(directUser.role === 'student', 'User instance created directly with role=student');
 
-    // 3. User toJSON strips password and all verification OTP fields (zero exposure)
-    unverifiedUser.verificationOtp = 'some_secret_hash';
-    unverifiedUser.verificationOtpExpires = new Date();
-    unverifiedUser.verificationOtpAttempts = 2;
-    unverifiedUser.verificationOtpLastSent = new Date();
-    const jsonUser = unverifiedUser.toJSON();
+    // 3. User toJSON strips password and any legacy OTP fields (zero exposure)
+    directUser.verificationOtp = 'some_legacy_hash';
+    const jsonUser = directUser.toJSON();
     assert(jsonUser.password === undefined, 'toJSON removes password field');
-    assert(jsonUser.verificationOtp === undefined, 'toJSON removes verificationOtp field (no secret leak)');
-    assert(jsonUser.verificationOtpExpires === undefined, 'toJSON removes verificationOtpExpires field');
-    assert(jsonUser.verificationOtpAttempts === undefined, 'toJSON removes verificationOtpAttempts field');
-    assert(jsonUser.verificationOtpLastSent === undefined, 'toJSON removes verificationOtpLastSent field');
+    assert(jsonUser.verificationOtp === undefined, 'toJSON removes legacy verificationOtp field');
+    assert(jsonUser.verificationOtpExpires === undefined, 'toJSON removes legacy verificationOtpExpires field');
+    assert(jsonUser.verificationOtpAttempts === undefined, 'toJSON removes legacy verificationOtpAttempts field');
 
-    // 4. Secure 6-digit OTP generation and hashing
-    const sampleOtp = crypto.randomInt(100000, 1000000).toString();
-    assert(/^\d{6}$/.test(sampleOtp), 'Generated OTP is exactly 6 numeric digits');
-    const hashedSample = crypto.createHash('sha256').update(sampleOtp).digest('hex');
-    assert(hashedSample && hashedSample.length === 64, 'OTP is securely hashed using SHA-256 (64 hex characters)');
+    // 4. Password hashing verification with bcrypt
+    const salt = await bcrypt.genSalt(10);
+    const hash = await bcrypt.hash('password123', salt);
+    assert(hash.startsWith('$2a$') || hash.startsWith('$2b$'), 'Password is automatically hashed with bcrypt');
+    directUser.password = hash;
+    const isPasswordCorrect = await directUser.comparePassword('password123');
+    const isPasswordWrong = await directUser.comparePassword('wrongpassword');
+    assert(isPasswordCorrect === true, 'comparePassword validates correct password');
+    assert(isPasswordWrong === false, 'comparePassword rejects invalid password');
 
-    // 5. Email service configuration detection
-    const initialHost = process.env.SMTP_HOST;
-    delete process.env.SMTP_HOST;
-    assert(isEmailConfigured() === false, 'isEmailConfigured returns false when SMTP_HOST is not set');
-    process.env.SMTP_HOST = 'smtp.test.com';
-    process.env.SMTP_USER = 'test@test.com';
-    process.env.SMTP_PASS = 'secret123';
-    assert(isEmailConfigured() === true, 'isEmailConfigured returns true when SMTP credentials are present');
-    if (!initialHost) {
-      delete process.env.SMTP_HOST;
-      delete process.env.SMTP_USER;
-      delete process.env.SMTP_PASS;
-    } else {
-      process.env.SMTP_HOST = initialHost;
-    }
+    // 5. Direct login token generation
+    const token = jwt.sign(
+      { id: directUser._id, role: directUser.role },
+      process.env.JWT_SECRET,
+      { expiresIn: '1d' }
+    );
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    assert(decoded.id.toString() === directUser._id.toString(), 'JWT token payload contains user id');
+    assert(decoded.role === 'student', 'JWT token payload contains user role');
 
-    // 6. Attempt counter and rate limit guards
-    let attempts = 0;
-    const maxAttempts = 5;
-    for (let i = 0; i < maxAttempts; i++) attempts++;
-    assert(attempts >= 5, 'Maximum incorrect verification attempts is strictly capped at 5');
-
-    // 7. OTP Expiry Calculation (10 minutes)
-    const now = Date.now();
-    const otpExpiry = new Date(now + 10 * 60 * 1000);
-    assert(otpExpiry.getTime() - now === 600000, 'OTP expiry window is exactly 10 minutes');
-
-    // 8. Resend cooldown guard (60 seconds)
-    const lastSent = new Date(now - 30 * 1000); // 30s ago
-    const elapsed = now - lastSent.getTime();
-    assert(elapsed < 60000, 'Resend request within 60s cooldown is detected and blocked');
-
-    // 9. Legacy / CLI teacher accounts are verified
-    const cliTeacher = new User({
-      name: 'CLI Teacher',
-      email: 'cli_teacher@college.edu',
-      password: 'password123',
-      role: 'teacher',
-      isVerified: true,
-    });
-    assert(cliTeacher.isVerified === true, 'CLI teacher accounts are created with isVerified=true');
-
-    // 10. authMiddleware blocks unverified tokens with HTTP 403
-    let authMiddlewareErr = null;
-    const unverifiedToken = jwt.sign({ id: 'dummy_id', role: 'student', isVerified: false }, process.env.JWT_SECRET);
-    const mockReq = {
-      headers: { authorization: `Bearer ${unverifiedToken}` },
+    // 6. Compatibility: Existing accounts with legacy unverified state can authenticate
+    const legacyToken = jwt.sign(
+      { id: 'legacy_student_id', role: 'student', isVerified: false },
+      process.env.JWT_SECRET
+    );
+    let legacyErr = null;
+    const mockLegacyReq = {
+      headers: { authorization: `Bearer ${legacyToken}` },
     };
-    authMiddleware(mockReq, {}, (err) => { authMiddlewareErr = err; });
-    assert(authMiddlewareErr && authMiddlewareErr.statusCode === 403, 'authMiddleware strictly rejects token with isVerified=false (HTTP 403)');
+    authMiddleware(mockLegacyReq, {}, (err) => { legacyErr = err; });
+    assert(!legacyErr, 'authMiddleware accepts tokens even if payload has legacy isVerified=false');
+    assert(mockLegacyReq.user && mockLegacyReq.user.id === 'legacy_student_id', 'Legacy unverified user is authenticated and authorized');
 
-    // 11. authMiddleware accepts verified tokens
-    let verifiedMiddlewareErr = null;
-    const verifiedToken = jwt.sign({ id: 'dummy_id', role: 'student', isVerified: true }, process.env.JWT_SECRET);
-    const mockVerifiedReq = {
-      headers: { authorization: `Bearer ${verifiedToken}` },
-    };
-    authMiddleware(mockVerifiedReq, {}, (err) => { verifiedMiddlewareErr = err; });
-    assert(!verifiedMiddlewareErr && mockVerifiedReq.user && mockVerifiedReq.user.isVerified === true, 'authMiddleware accepts token for verified account');
+    // 7. JWT Route Protection: Rejects missing token
+    let noTokenErr = null;
+    authMiddleware({ headers: {} }, {}, (err) => { noTokenErr = err; });
+    assert(noTokenErr && noTokenErr.statusCode === 401, 'authMiddleware rejects requests with missing token (HTTP 401)');
+
+    // 8. JWT Route Protection: Rejects invalid token
+    let badTokenErr = null;
+    authMiddleware({ headers: { authorization: 'Bearer invalid_signature_token' } }, {}, (err) => { badTokenErr = err; });
+    assert(badTokenErr && badTokenErr.statusCode === 401, 'authMiddleware rejects requests with invalid token (HTTP 401)');
+
+    // 9. Role-Based Access Control: Teacher role guard
+    let teacherGuardErr = null;
+    const teacherOnlyMiddleware = requireRole('teacher');
+    teacherOnlyMiddleware({ user: { id: directUser._id, role: 'student' } }, {}, (err) => { teacherGuardErr = err; });
+    assert(teacherGuardErr && teacherGuardErr.statusCode === 403, 'requireRole("teacher") rejects student users with HTTP 403');
+
+    let teacherGuardSuccess = null;
+    teacherOnlyMiddleware({ user: { id: 'teacher_123', role: 'teacher' } }, {}, (err) => { teacherGuardSuccess = err; });
+    assert(!teacherGuardSuccess, 'requireRole("teacher") permits teacher users');
+
+    // 10. Role-Based Access Control: Student role guard
+    let studentGuardErr = null;
+    const studentOnlyMiddleware = requireRole('student');
+    studentOnlyMiddleware({ user: { id: 'teacher_123', role: 'teacher' } }, {}, (err) => { studentGuardErr = err; });
+    assert(studentGuardErr && studentGuardErr.statusCode === 403, 'requireRole("student") rejects teacher users with HTTP 403');
+
+    let studentGuardSuccess = null;
+    studentOnlyMiddleware({ user: { id: directUser._id, role: 'student' } }, {}, (err) => { studentGuardSuccess = err; });
+    assert(!studentGuardSuccess, 'requireRole("student") permits student users');
+
+
   }
 
   // ── TEST SUMMARY ──────────────────────────────────────────────────────

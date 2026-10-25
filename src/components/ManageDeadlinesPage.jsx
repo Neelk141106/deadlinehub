@@ -65,7 +65,7 @@ function DeadlineForm({
         </div>
       )}
 
-      <div className="card p-6 sm:p-8">
+      <div className="card p-4 sm:p-6 md:p-8">
         <form className="space-y-6" onSubmit={onSubmit}>
           <div className="space-y-4">
             <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100 border-b border-slate-100 dark:border-slate-800/80 pb-2">Basic Details</h2>

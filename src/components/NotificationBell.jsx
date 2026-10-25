@@ -136,7 +136,7 @@ export function NotificationBell({ onNavigate }) {
         onClick={() => setIsOpen(!isOpen)}
         aria-label="View notifications"
         aria-expanded={isOpen}
-        className="relative p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-primary-500/20 transition-all cursor-pointer"
+        className="relative flex items-center justify-center min-w-[44px] min-h-[44px] p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-primary-500/20 transition-all cursor-pointer"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -155,7 +155,7 @@ export function NotificationBell({ onNavigate }) {
 
         {/* Unread Count Badge */}
         {unreadCount > 0 && (
-          <span className="absolute -top-0.5 -right-0.5 flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[10px] font-bold text-white bg-primary-600 rounded-full ring-2 ring-white dark:ring-[#151C2C] shadow-sm animate-in zoom-in-50">
+          <span className="absolute top-1 right-1 flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[10px] font-bold text-white bg-primary-600 rounded-full ring-2 ring-white dark:ring-[#151C2C] shadow-sm animate-in zoom-in-50">
             {unreadCount > 99 ? '99+' : unreadCount}
           </span>
         )}
@@ -166,7 +166,7 @@ export function NotificationBell({ onNavigate }) {
         <div
           role="region"
           aria-label="Notifications panel"
-          className="absolute right-0 mt-2 w-[calc(100vw-32px)] sm:w-96 max-w-sm bg-white dark:bg-[#151C2C] rounded-2xl shadow-2xl shadow-slate-900/15 dark:shadow-black/50 border border-slate-200/80 dark:border-slate-800/80 z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-150"
+          className="fixed sm:absolute left-3 right-3 sm:left-auto sm:right-0 top-14 sm:top-auto sm:mt-2 sm:w-96 bg-white dark:bg-[#151C2C] rounded-2xl shadow-2xl shadow-slate-900/15 dark:shadow-black/50 border border-slate-200/80 dark:border-slate-800/80 z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-150"
         >
           {/* Header */}
           <div className="p-4 border-b border-slate-100 dark:border-slate-800/70 flex items-center justify-between">

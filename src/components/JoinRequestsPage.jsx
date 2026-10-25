@@ -340,7 +340,7 @@ export function JoinRequestsPage() {
                         type="button"
                         onClick={() => handleReject(req._id)}
                         disabled={isProcessing}
-                        className="flex-1 md:flex-none flex items-center justify-center gap-1.5 bg-white dark:bg-slate-900 border border-red-200 dark:border-red-900/50 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 font-semibold text-xs py-2 px-3.5 rounded-xl transition-colors disabled:opacity-50 cursor-pointer"
+                        className="flex-1 md:flex-none flex items-center justify-center gap-1.5 min-h-[44px] bg-white dark:bg-slate-900 border border-red-200 dark:border-red-900/50 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 font-semibold text-xs py-2 px-3.5 rounded-xl transition-colors disabled:opacity-50 cursor-pointer"
                       >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
@@ -363,7 +363,7 @@ export function JoinRequestsPage() {
                         type="button"
                         onClick={() => handleApprove(req._id)}
                         disabled={isProcessing}
-                        className="flex-1 md:flex-none flex items-center justify-center gap-1.5 bg-primary-600 hover:bg-primary-700 text-white font-semibold text-xs py-2 px-4 rounded-xl shadow-xs transition-colors disabled:opacity-50 cursor-pointer"
+                        className="flex-1 md:flex-none flex items-center justify-center gap-1.5 min-h-[44px] bg-primary-600 hover:bg-primary-700 text-white font-semibold text-xs py-2 px-4 rounded-xl shadow-xs transition-colors disabled:opacity-50 cursor-pointer"
                       >
                         {isProcessing ? (
                           <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />

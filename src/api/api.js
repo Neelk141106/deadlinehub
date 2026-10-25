@@ -55,10 +55,8 @@ async function handleResponse(res) {
 
     if (res.status === 401 && typeof window !== 'undefined') {
       const isAuthPath = res.url && (
-        res.url.includes('/api/auth/login') ||
-        res.url.includes('/api/auth/register') ||
-        res.url.includes('/api/auth/verify-otp') ||
-        res.url.includes('/api/auth/resend-otp')
+        res.url.includes('/auth/') ||
+        res.url.includes('/api/auth/')
       );
       if (!isAuthPath) {
         window.dispatchEvent(new CustomEvent('deadlinehub:unauthorized'));
@@ -175,24 +173,6 @@ export const authApi = {
       method: 'POST',
       headers: getAuthHeaders(true),
       body: JSON.stringify(userData),
-    });
-    return handleResponse(res);
-  },
-
-  async verifyOtp({ email, otp }) {
-    const res = await fetch(`${API_BASE_URL}/auth/verify-otp`, {
-      method: 'POST',
-      headers: getAuthHeaders(true),
-      body: JSON.stringify({ email, otp }),
-    });
-    return handleResponse(res);
-  },
-
-  async resendOtp({ email }) {
-    const res = await fetch(`${API_BASE_URL}/auth/resend-otp`, {
-      method: 'POST',
-      headers: getAuthHeaders(true),
-      body: JSON.stringify({ email }),
     });
     return handleResponse(res);
   },

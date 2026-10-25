@@ -43,6 +43,19 @@ export function ClassDetailView({ classId, onBack, onEditClass, initialTab = 'ov
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [studentToRemove, setStudentToRemove] = useState(null);
   const [actionInProgress, setActionInProgress] = useState(false);
+
+  // Close modals on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        if (showLeaveConfirm && !actionInProgress) setShowLeaveConfirm(false);
+        else if (studentToRemove && !actionInProgress) setStudentToRemove(null);
+        else if (showDeleteConfirm && !actionInProgress) setShowDeleteConfirm(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [showLeaveConfirm, studentToRemove, showDeleteConfirm, actionInProgress]);
   const [actionError, setActionError] = useState('');
   const [actionSuccess, setActionSuccess] = useState('');
 
@@ -450,7 +463,7 @@ export function ClassDetailView({ classId, onBack, onEditClass, initialTab = 'ov
           </div>
 
           {/* Class Code Card */}
-          <div className="bg-white/15 backdrop-blur-md border border-white/20 rounded-2xl p-4 flex flex-col items-center justify-center shrink-0 min-w-[200px] text-center">
+          <div className="bg-white/15 backdrop-blur-md border border-white/20 rounded-2xl p-4 flex flex-col items-center justify-center shrink-0 w-full sm:w-auto min-w-0 sm:min-w-[200px] text-center">
             <span className="text-[11px] font-semibold text-white/80 uppercase tracking-wider block mb-1">
               Class Code
             </span>
@@ -459,7 +472,7 @@ export function ClassDetailView({ classId, onBack, onEditClass, initialTab = 'ov
             </span>
             <button
               onClick={handleCopyCode}
-              className="w-full py-1.5 px-3 rounded-xl bg-white text-primary-700 hover:bg-white/90 text-xs font-bold transition-all shadow-sm cursor-pointer flex items-center justify-center gap-1.5"
+              className="w-full min-h-[44px] py-2 px-3 rounded-xl bg-white text-primary-700 hover:bg-white/90 text-xs font-bold transition-all shadow-sm cursor-pointer flex items-center justify-center gap-1.5"
             >
               {copiedCode ? (
                 <>
@@ -950,8 +963,13 @@ export function ClassDetailView({ classId, onBack, onEditClass, initialTab = 'ov
 
       {/* Confirmation Modal: Leave Class (Student) */}
       {showLeaveConfirm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
-          <div className="bg-white dark:bg-[#151C2C] rounded-2xl max-w-md w-full border border-slate-200 dark:border-slate-800 shadow-xl p-6 space-y-4 animate-in fade-in zoom-in-95 duration-150">
+        <div
+          onClick={(e) => {
+            if (e.target === e.currentTarget && !actionInProgress) setShowLeaveConfirm(false);
+          }}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs"
+        >
+          <div className="bg-white dark:bg-[#151C2C] rounded-2xl max-w-md w-full border border-slate-200 dark:border-slate-800 shadow-xl p-5 sm:p-6 space-y-4 max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-150">
             <div className="w-12 h-12 rounded-2xl bg-red-50 dark:bg-red-950/60 text-red-600 dark:text-red-400 flex items-center justify-center mx-auto">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
@@ -980,7 +998,7 @@ export function ClassDetailView({ classId, onBack, onEditClass, initialTab = 'ov
                 type="button"
                 onClick={() => setShowLeaveConfirm(false)}
                 disabled={actionInProgress}
-                className="px-4 py-2 text-xs font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors cursor-pointer"
+                className="min-h-[44px] px-4 py-2 text-xs font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors cursor-pointer"
               >
                 Cancel
               </button>
@@ -988,7 +1006,7 @@ export function ClassDetailView({ classId, onBack, onEditClass, initialTab = 'ov
                 type="button"
                 onClick={handleLeaveClass}
                 disabled={actionInProgress}
-                className="px-4 py-2 text-xs font-semibold bg-red-600 hover:bg-red-700 text-white rounded-xl shadow-xs transition-colors cursor-pointer flex items-center gap-1.5"
+                className="min-h-[44px] px-4 py-2 text-xs font-semibold bg-red-600 hover:bg-red-700 text-white rounded-xl shadow-xs transition-colors cursor-pointer flex items-center gap-1.5"
               >
                 {actionInProgress ? 'Leaving...' : 'Confirm Leave Class'}
               </button>
@@ -999,8 +1017,13 @@ export function ClassDetailView({ classId, onBack, onEditClass, initialTab = 'ov
 
       {/* Confirmation Modal: Remove Student (Teacher) */}
       {studentToRemove && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
-          <div className="bg-white dark:bg-[#151C2C] rounded-2xl max-w-md w-full border border-slate-200 dark:border-slate-800 shadow-xl p-6 space-y-4 animate-in fade-in zoom-in-95 duration-150">
+        <div
+          onClick={(e) => {
+            if (e.target === e.currentTarget && !actionInProgress) setStudentToRemove(null);
+          }}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs"
+        >
+          <div className="bg-white dark:bg-[#151C2C] rounded-2xl max-w-md w-full border border-slate-200 dark:border-slate-800 shadow-xl p-5 sm:p-6 space-y-4 max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-150">
             <div className="w-12 h-12 rounded-2xl bg-red-50 dark:bg-red-950/60 text-red-600 dark:text-red-400 flex items-center justify-center mx-auto">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="18" y1="6" x2="6" y2="18" />
@@ -1028,7 +1051,7 @@ export function ClassDetailView({ classId, onBack, onEditClass, initialTab = 'ov
                 type="button"
                 onClick={() => setStudentToRemove(null)}
                 disabled={actionInProgress}
-                className="px-4 py-2 text-xs font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors cursor-pointer"
+                className="min-h-[44px] px-4 py-2 text-xs font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors cursor-pointer"
               >
                 Cancel
               </button>
@@ -1036,7 +1059,7 @@ export function ClassDetailView({ classId, onBack, onEditClass, initialTab = 'ov
                 type="button"
                 onClick={handleRemoveStudent}
                 disabled={actionInProgress}
-                className="px-4 py-2 text-xs font-semibold bg-red-600 hover:bg-red-700 text-white rounded-xl shadow-xs transition-colors cursor-pointer flex items-center gap-1.5"
+                className="min-h-[44px] px-4 py-2 text-xs font-semibold bg-red-600 hover:bg-red-700 text-white rounded-xl shadow-xs transition-colors cursor-pointer flex items-center gap-1.5"
               >
                 {actionInProgress ? 'Removing...' : 'Confirm Remove Student'}
               </button>
@@ -1047,8 +1070,13 @@ export function ClassDetailView({ classId, onBack, onEditClass, initialTab = 'ov
 
       {/* Confirmation Modal: Delete Class (Teacher) */}
       {showDeleteConfirm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs">
-          <div className="bg-white dark:bg-[#151C2C] rounded-2xl max-w-md w-full border border-slate-200 dark:border-slate-800 shadow-xl p-6 space-y-4 animate-in fade-in zoom-in-95 duration-150">
+        <div
+          onClick={(e) => {
+            if (e.target === e.currentTarget && !actionInProgress) setShowDeleteConfirm(false);
+          }}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs"
+        >
+          <div className="bg-white dark:bg-[#151C2C] rounded-2xl max-w-md w-full border border-slate-200 dark:border-slate-800 shadow-xl p-5 sm:p-6 space-y-4 max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-150">
             <div className="w-12 h-12 rounded-2xl bg-red-50 dark:bg-red-950/60 text-red-600 dark:text-red-400 flex items-center justify-center mx-auto">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M3 6h18" />
@@ -1077,7 +1105,7 @@ export function ClassDetailView({ classId, onBack, onEditClass, initialTab = 'ov
                 type="button"
                 onClick={() => setShowDeleteConfirm(false)}
                 disabled={actionInProgress}
-                className="px-4 py-2 text-xs font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors cursor-pointer"
+                className="min-h-[44px] px-4 py-2 text-xs font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors cursor-pointer"
               >
                 Cancel
               </button>
@@ -1085,7 +1113,7 @@ export function ClassDetailView({ classId, onBack, onEditClass, initialTab = 'ov
                 type="button"
                 onClick={handleDeleteClass}
                 disabled={actionInProgress}
-                className="px-4 py-2 text-xs font-semibold bg-red-600 hover:bg-red-700 text-white rounded-xl shadow-xs transition-colors cursor-pointer flex items-center gap-1.5"
+                className="min-h-[44px] px-4 py-2 text-xs font-semibold bg-red-600 hover:bg-red-700 text-white rounded-xl shadow-xs transition-colors cursor-pointer flex items-center gap-1.5"
               >
                 {actionInProgress ? 'Deleting...' : 'Confirm Delete Class'}
               </button>

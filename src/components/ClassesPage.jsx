@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useClasses } from '../context/ClassContext';
 import { useAuth } from '../context/AuthContext';
 import { Input } from './ui/Input';
@@ -27,6 +27,20 @@ export function ClassesPage() {
   const [deleteConfirmId, setDeleteConfirmId] = useState(null);
   const [actionError, setActionError] = useState('');
   const [submitting, setSubmitting] = useState(false);
+
+  // Close modals on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        if (showCreateModal && !submitting) setShowCreateModal(false);
+        else if (editingClass && !submitting) setEditingClass(null);
+        else if (selectedClassForStudents) setSelectedClassForStudents(null);
+        else if (deleteConfirmId && !submitting) setDeleteConfirmId(null);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [showCreateModal, editingClass, selectedClassForStudents, deleteConfirmId, submitting]);
 
   // Create Form state
   const [formData, setFormData] = useState({
@@ -352,9 +366,14 @@ export function ClassesPage() {
 
       {/* Modal: Create Class */}
       {showCreateModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs">
-          <div className="bg-white dark:bg-[#151C2C] rounded-2xl max-w-lg w-full border border-slate-200 dark:border-slate-800 shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-            <div className="p-6 border-b border-slate-100 dark:border-slate-800/80 flex items-center justify-between">
+        <div
+          onClick={(e) => {
+            if (e.target === e.currentTarget && !submitting) setShowCreateModal(false);
+          }}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs"
+        >
+          <div className="bg-white dark:bg-[#151C2C] rounded-2xl max-w-lg w-full border border-slate-200 dark:border-slate-800 shadow-xl overflow-hidden max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-150">
+            <div className="p-5 sm:p-6 border-b border-slate-100 dark:border-slate-800/80 flex items-center justify-between">
               <div>
                 <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">Create New Class</h2>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
@@ -363,7 +382,7 @@ export function ClassesPage() {
               </div>
               <button
                 onClick={() => setShowCreateModal(false)}
-                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <line x1="18" y1="6" x2="6" y2="18" />
@@ -372,7 +391,7 @@ export function ClassesPage() {
               </button>
             </div>
 
-            <form onSubmit={handleCreateSubmit} className="p-6 space-y-4">
+            <form onSubmit={handleCreateSubmit} className="p-5 sm:p-6 space-y-4">
               {actionError && (
                 <div className="p-3 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/50 rounded-xl text-red-600 dark:text-red-400 text-xs font-medium">
                   {actionError}
@@ -392,7 +411,7 @@ export function ClassesPage() {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div className="space-y-1.5">
                   <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
                     Subject / Course
@@ -418,7 +437,7 @@ export function ClassesPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div className="space-y-1.5">
                   <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
                     Division
@@ -473,7 +492,7 @@ export function ClassesPage() {
                 <button
                   type="button"
                   onClick={() => setShowCreateModal(false)}
-                  className="px-4 py-2 text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors cursor-pointer"
+                  className="min-h-[44px] px-4 py-2 text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
@@ -481,7 +500,7 @@ export function ClassesPage() {
                   type="submit"
                   variant="primary"
                   disabled={submitting}
-                  className="px-5 py-2 text-sm font-semibold"
+                  className="min-h-[44px] px-5 py-2 text-sm font-semibold"
                 >
                   {submitting ? 'Creating...' : 'Create Class'}
                 </Button>
@@ -493,9 +512,14 @@ export function ClassesPage() {
 
       {/* Modal: Edit Class */}
       {editingClass && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs">
-          <div className="bg-white dark:bg-[#151C2C] rounded-2xl max-w-lg w-full border border-slate-200 dark:border-slate-800 shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-            <div className="p-6 border-b border-slate-100 dark:border-slate-800/80 flex items-center justify-between">
+        <div
+          onClick={(e) => {
+            if (e.target === e.currentTarget && !submitting) setEditingClass(null);
+          }}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs"
+        >
+          <div className="bg-white dark:bg-[#151C2C] rounded-2xl max-w-lg w-full border border-slate-200 dark:border-slate-800 shadow-xl overflow-hidden max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-150">
+            <div className="p-5 sm:p-6 border-b border-slate-100 dark:border-slate-800/80 flex items-center justify-between">
               <div>
                 <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">Edit Class Details</h2>
                 <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
@@ -504,7 +528,7 @@ export function ClassesPage() {
               </div>
               <button
                 onClick={() => setEditingClass(null)}
-                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <line x1="18" y1="6" x2="6" y2="18" />
@@ -513,7 +537,7 @@ export function ClassesPage() {
               </button>
             </div>
 
-            <form onSubmit={handleEditSubmit} className="p-6 space-y-4">
+            <form onSubmit={handleEditSubmit} className="p-5 sm:p-6 space-y-4">
               {actionError && (
                 <div className="p-3 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/50 rounded-xl text-red-600 dark:text-red-400 text-xs font-medium">
                   {actionError}
@@ -533,7 +557,7 @@ export function ClassesPage() {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div className="space-y-1.5">
                   <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
                     Subject / Course
@@ -559,7 +583,7 @@ export function ClassesPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div className="space-y-1.5">
                   <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">
                     Division
@@ -601,7 +625,7 @@ export function ClassesPage() {
                 <button
                   type="button"
                   onClick={() => setEditingClass(null)}
-                  className="px-4 py-2 text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors cursor-pointer"
+                  className="min-h-[44px] px-4 py-2 text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
@@ -609,7 +633,7 @@ export function ClassesPage() {
                   type="submit"
                   variant="primary"
                   disabled={submitting}
-                  className="px-5 py-2 text-sm font-semibold"
+                  className="min-h-[44px] px-5 py-2 text-sm font-semibold"
                 >
                   {submitting ? 'Saving Changes...' : 'Save Changes'}
                 </Button>
@@ -621,9 +645,14 @@ export function ClassesPage() {
 
       {/* Modal: View Enrolled Students */}
       {selectedClassForStudents && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs">
-          <div className="bg-white dark:bg-[#151C2C] rounded-2xl max-w-xl w-full border border-slate-200 dark:border-slate-800 shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-150">
-            <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+        <div
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setSelectedClassForStudents(null);
+          }}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs"
+        >
+          <div className="bg-white dark:bg-[#151C2C] rounded-2xl max-w-xl w-full border border-slate-200 dark:border-slate-800 shadow-xl overflow-hidden max-h-[90vh] flex flex-col animate-in fade-in zoom-in-95 duration-150">
+            <div className="p-5 sm:p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
               <div>
                 <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">
                   {selectedClassForStudents.className}
@@ -634,7 +663,7 @@ export function ClassesPage() {
               </div>
               <button
                 onClick={() => setSelectedClassForStudents(null)}
-                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <line x1="18" y1="6" x2="6" y2="18" />
@@ -643,7 +672,7 @@ export function ClassesPage() {
               </button>
             </div>
 
-            <div className="p-6 max-h-96 overflow-y-auto">
+            <div className="p-5 sm:p-6 max-h-96 overflow-y-auto">
               {!selectedClassForStudents.students || selectedClassForStudents.students.length === 0 ? (
                 <div className="text-center py-10">
                   <div className="w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-400 flex items-center justify-center mx-auto mb-3">
@@ -690,7 +719,7 @@ export function ClassesPage() {
               <button
                 type="button"
                 onClick={() => setSelectedClassForStudents(null)}
-                className="btn-secondary text-xs font-semibold py-2 px-4 cursor-pointer"
+                className="btn-secondary text-xs font-semibold min-h-[44px] py-2 px-4 cursor-pointer"
               >
                 Close
               </button>

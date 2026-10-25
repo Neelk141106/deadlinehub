@@ -13,17 +13,12 @@ import { JoinRequestsPage } from './components/JoinRequestsPage';
 import { ManageDeadlinesPage } from './components/ManageDeadlinesPage';
 import { ManageAnnouncementsPage } from './components/ManageAnnouncementsPage';
 import { ThemeToggle } from './components/ui/ThemeToggle';
-import { VerifyOtp } from './components/VerifyOtp';
 import { useAuth } from './context/AuthContext';
 
 function App() {
   const { user, logout, loading: authLoading } = useAuth();
   const [currentView, setCurrentView] = useState('landing');
-  const [verificationTarget, setVerificationTarget] = useState({
-    email: '',
-    role: 'student',
-    notice: '',
-  });
+  const [prefilledEmail, setPrefilledEmail] = useState('');
   const [activeTab, setActiveTab] = useState('deadlines');
   const [userRole, setUserRole] = useState('student');
 
@@ -77,7 +72,7 @@ function App() {
 
   if (currentView === 'studentLogin') {
     return <StudentLogin 
-      prefilledEmail={verificationTarget.email}
+      prefilledEmail={prefilledEmail}
       onLogin={(loggedInUser) => {
         const role = loggedInUser?.role || 'student';
         setUserRole(role);
@@ -93,20 +88,12 @@ function App() {
       }} 
       onBack={() => setCurrentView('welcome')} 
       onRegisterClick={() => setCurrentView('studentRegistration')}
-      onVerifyClick={({ email, role }) => {
-        setVerificationTarget({
-          email: email || '',
-          role: role || 'student',
-          notice: 'Please enter the 6-digit verification code sent to your email.',
-        });
-        setCurrentView('verifyOtp');
-      }}
     />;
   }
 
   if (currentView === 'teacherLogin') {
     return <TeacherLogin 
-      prefilledEmail={verificationTarget.email}
+      prefilledEmail={prefilledEmail}
       onLogin={(loggedInUser) => {
         const role = loggedInUser?.role || 'teacher';
         setUserRole(role);
@@ -114,50 +101,18 @@ function App() {
         setCurrentView('app');
       }} 
       onBack={() => setCurrentView('welcome')}
-      onVerifyClick={({ email, role }) => {
-        setVerificationTarget({
-          email: email || '',
-          role: role || 'teacher',
-          notice: 'Please enter the 6-digit verification code sent to your email.',
-        });
-        setCurrentView('verifyOtp');
-      }}
     />;
   }
 
   if (currentView === 'studentRegistration') {
     return <StudentRegistration 
-      onRegister={({ email, role, notice }) => {
-        setVerificationTarget({
-          email: email || '',
-          role: role || 'student',
-          notice: notice || '',
-        });
-        setCurrentView('verifyOtp');
+      onRegister={({ email } = {}) => {
+        if (email) setPrefilledEmail(email);
+        setCurrentView('studentLogin');
       }}
       onLoginClick={() => setCurrentView('studentLogin')}
       onBack={() => setCurrentView('studentLogin')}
     />;
-  }
-
-  if (currentView === 'verifyOtp') {
-    return (
-      <VerifyOtp
-        initialEmail={verificationTarget.email}
-        initialRole={verificationTarget.role}
-        infoNotice={verificationTarget.notice}
-        onVerified={({ email, role }) => {
-          setVerificationTarget((prev) => ({ ...prev, email }));
-          setCurrentView(role === 'teacher' ? 'teacherLogin' : 'studentLogin');
-        }}
-        onBack={() => {
-          setCurrentView(verificationTarget.role === 'teacher' ? 'teacherLogin' : 'studentLogin');
-        }}
-        onNavigateLogin={() => {
-          setCurrentView(verificationTarget.role === 'teacher' ? 'teacherLogin' : 'studentLogin');
-        }}
-      />
-    );
   }
 
   if (currentView === 'joinClass') {

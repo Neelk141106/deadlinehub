@@ -57,14 +57,13 @@ export function StudentRegistration({ onRegister, onLoginClick, onBack }) {
         role: 'student',
         studentCode: formData.studentCode.trim(),
       });
-      setSuccess(res.message || 'Account created! Please enter the 6-digit code sent to your email.');
+      setSuccess(res.message || 'Account created successfully! Redirecting to login...');
       setTimeout(() => {
-        onRegister({
-          email: formData.email.trim(),
-          role: 'student',
-          notice: res.message,
-          requiresVerification: true,
-        });
+        if (onRegister) {
+          onRegister({ email: formData.email.trim() });
+        } else if (onLoginClick) {
+          onLoginClick();
+        }
       }, 1000);
     } catch (err) {
       setError(err.message || 'Registration failed. Please try again.');
@@ -98,7 +97,7 @@ export function StudentRegistration({ onRegister, onLoginClick, onBack }) {
         </button>
       </div>
 
-      <div className="w-full max-w-md card p-8 sm:p-10">
+      <div className="w-full max-w-md card p-5 sm:p-8 sm:p-10">
         {/* Header */}
         <div className="text-center mb-8">
           <div className="w-12 h-12 bg-primary-600 rounded-xl flex items-center justify-center mx-auto mb-5 shadow-md shadow-primary-500/20">
@@ -292,7 +291,7 @@ export function StudentRegistration({ onRegister, onLoginClick, onBack }) {
             type="submit"
             variant="primary"
             disabled={loading}
-            className="w-full justify-center py-2.5 mt-4"
+            className="w-full justify-center py-2.5 min-h-[44px] mt-4"
           >
             {loading ? 'Creating account...' : 'Create Account'}
           </Button>

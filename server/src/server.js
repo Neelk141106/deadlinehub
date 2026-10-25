@@ -214,6 +214,7 @@ app.get('/api/health', (req, res) => {
 
 // Resource Routes
 app.use('/api/auth', authRoutes);
+app.use('/auth', authRoutes); // Fallback for proxy or un-prefixed client requests
 app.use('/api/classes', authMiddleware, classRoutes);
 app.use('/api/deadlines', authMiddleware, deadlineRoutes);
 app.use('/api/announcements', authMiddleware, announcementRoutes);
